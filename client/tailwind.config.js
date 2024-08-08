@@ -4,7 +4,7 @@ export default {
     theme: {
         extend: {
             backgroundImage: {
-                "login-BG": "url('/src/assets/jgj3.jpg')",
+                "login-BG": "url('/src/assets/bg.jpg')",
             },
         },
     },

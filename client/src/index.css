@@ -14,6 +14,11 @@
     src: url(fonts/SFPRODISPLAYREGULAR.OTF);
 }
 
+@font-face {
+    font-family: "Didot";
+    src: url(fonts/Didot.otf);
+}
+
 html,
 body {
     font-family: "SFPro-Mid";
@@ -24,9 +29,9 @@ body {
     font-[SFPro-Reg] {
         font-family: "SFPro-Reg" !important;
     }
-    font-[Merriweather] {
+    /* font-[Merriweather] {
         font-family: "Merriweather";
-    }
+    } */
     /* bg-[bubbleIcon] {
         background-image: url(assets/bubbleicon.svg);
     } */
