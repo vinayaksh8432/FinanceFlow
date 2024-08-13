@@ -22,7 +22,12 @@
 html,
 body {
     font-family: "SFPro-Mid";
-    background: #f4f4f4;
+    /* background: #f4f4f4; */
+}
+
+.login-BG {
+    background: url("assets/bg.jpg");
+    background-size: contain;
 }
 
 @layer utilities {

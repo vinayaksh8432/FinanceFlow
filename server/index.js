@@ -1,11 +1,19 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const CustomerModel = require("./model/customer");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+const authRoutes = require("./routes/users"); // Import the new auth routes
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(
+    cors({
+        origin: "http://localhost:5173",
+        credentials: true,
+    })
+);
+app.use(cookieParser());
 
 mongoose
     .connect("mongodb://127.0.0.1:27017/customer", {
@@ -15,24 +23,27 @@ mongoose
     .then(() => console.log("Connected to MongoDB"))
     .catch((err) => console.error("Could not connect to MongoDB...", err));
 
-app.post("/login", (req, res) => {
-    const { email, password } = req.body;
-    CustomerModel.findOne({ email: email })
-        .then((user) => {
-            if (user) {
-                if (user.password === password) res.json("success");
-                else res.json("password is incorrect");
-            } else res.json("no records exist");
-        })
-        .catch((err) => res.status(500).json("Internal server error"));
+const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
+
+// Use the auth routes
+app.use("/api/users", authRoutes);
+
+app.get("/api/users/user", (req, res) => {
+    const token = req.cookies.token;
+    if (!token) {
+        return res
+            .status(401)
+            .json({ message: "No token, authorization denied" });
+    }
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        res.json(decoded);
+    } catch (error) {
+        res.status(400).json({ message: "Token is not valid" });
+    }
 });
 
-app.post("/signup", (req, res) => {
-    CustomerModel.create(req.body)
-        .then((customer) => res.json(customer))
-        .catch((err) => res.status(500).json(err));
-});
-
-app.listen(3001, () => {
-    console.log("server is currently running"); // Fixed URL
+app.listen(3000, () => {
+    console.log("Server is currently running on port 3000");
 });

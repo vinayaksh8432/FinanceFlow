@@ -1,23 +1,34 @@
 import "./App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Login from "./pages/login";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import MainLayout from "./layout/MainLayout";
-import Dashbaord from "./pages/Dashboard";
-import SignUp from "./pages/signup";
+import Dashboard from "./pages/Dashboard";
+import ExchangeRates from "./components/exchangeRates";
+import AuthPage from "./pages/AuthPage";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
     return (
-        <>
-            <BrowserRouter>
-                <Routes>
-                    <Route element={<MainLayout />} path="/">
-                        <Route element={<Login />} path="/login" />
-                        <Route element={<Dashbaord />} path="/dashboard" />
-                        <Route element={<SignUp />} path="/signup" />
-                    </Route>
-                </Routes>
-            </BrowserRouter>
-        </>
+        <BrowserRouter>
+            <Routes>
+                <Route element={<MainLayout />} path="/">
+                    <Route path="login" element={<AuthPage />} />
+                    <Route path="signup" element={<AuthPage />} />
+                    <Route
+                        path="dashboard"
+                        element={
+                            <ProtectedRoute>
+                                <Dashboard />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route path="exchange" element={<ExchangeRates />} />
+                    <Route
+                        path="*"
+                        element={<Navigate to="/login" replace />}
+                    />
+                </Route>
+            </Routes>
+        </BrowserRouter>
     );
 }
 
