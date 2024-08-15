@@ -3,28 +3,28 @@ import { CgProfile } from "react-icons/cg";
 import { LuLogOut } from "react-icons/lu";
 import { IoIosArrowUp } from "react-icons/io";
 import { FaArrowUpRightFromSquare } from "react-icons/fa6";
-import { logout } from "../utils/api"; // Import the logout function
+import { logout, getUserDetails } from "../utils/api";
 import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
     const [viewProfile, setViewProfile] = useState(false);
     const [user, setUser] = useState(null);
-    const navigate = useNavigate(); // Initialize useNavigate
+    const navigate = useNavigate();
 
     useEffect(() => {
-        const checkUserData = () => {
-            const userData = JSON.parse(localStorage.getItem("user"));
-            if (userData) {
+        const fetchUserData = async () => {
+            try {
+                const userData = await getUserDetails();
                 setUser(userData);
+            } catch (error) {
+                console.error("Failed to fetch user data", error);
+                // If there's an error fetching user data, assume the user is not authenticated
+                navigate("/login");
             }
         };
 
-        checkUserData();
-
-        const interval = setInterval(checkUserData, 1000);
-
-        return () => clearInterval(interval);
-    }, []);
+        fetchUserData();
+    }, [navigate]);
 
     const toggleLogout = () => {
         setViewProfile(!viewProfile);
@@ -32,12 +32,11 @@ export default function Profile() {
 
     const handleLogout = async () => {
         try {
-            await logout(); // Call the logout function from api.jsx
-            localStorage.removeItem("user");
-            navigate("/login"); // Use navigate instead of window.location.href
+            await logout();
+            setUser(null);
+            navigate("/login");
         } catch (error) {
             console.error("Logout failed", error);
-            // Optionally, show an error message to the user
         }
     };
 

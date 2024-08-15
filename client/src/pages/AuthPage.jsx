@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-
 import { RxInstagramLogo } from "react-icons/rx";
 import { RiTwitterXLine } from "react-icons/ri";
 import { GrLinkedin } from "react-icons/gr";

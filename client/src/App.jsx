@@ -2,7 +2,6 @@ import "./App.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import MainLayout from "./layout/MainLayout";
 import Dashboard from "./pages/Dashboard";
-import ExchangeRates from "./components/exchangeRates";
 import AuthPage from "./pages/AuthPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -21,7 +20,6 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
-                    <Route path="exchange" element={<ExchangeRates />} />
                     <Route
                         path="*"
                         element={<Navigate to="/login" replace />}

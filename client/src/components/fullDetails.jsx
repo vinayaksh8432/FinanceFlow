@@ -5,9 +5,12 @@ import CreditScore from "../card/creditScore";
 export default function FullDetails() {
     return (
         <>
-            <div className="grid gap-6 bg-white p-6 shadow-sm">
+            <div
+                className="w-full
+             grid grid-cols-2 gap-6 bg-white p-6 shadow-sm"
+            >
                 <Balance />
-                <Cards />
+                {/* <Cards /> */}
                 <CreditScore />
             </div>
         </>

@@ -37,6 +37,7 @@ export default function LoginComponent() {
 
             if (!response.ok) {
                 const errorData = await response.json();
+                console.error("Login error:", errorData);
                 throw new Error(errorData.message || "Login failed");
             }
 
@@ -44,6 +45,7 @@ export default function LoginComponent() {
             localStorage.setItem("user", JSON.stringify(result.user));
             navigate("/dashboard");
         } catch (error) {
+            console.error("Login error:", error);
             setError(error.message || "Login failed. Please try again.");
         }
     };
@@ -64,6 +66,7 @@ export default function LoginComponent() {
                         <input
                             type="email"
                             name="email"
+                            autoComplete="email"
                             className="border border-zinc-300 rounded-full p-3 px-5"
                             placeholder="Phone / Email"
                             value={email}
