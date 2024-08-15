@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { IoMdArrowRoundForward } from "react-icons/io";
+import { TbEye, TbEyeClosed } from "react-icons/tb";
 
 export default function LoginComponent() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
     const navigate = useNavigate();
     const location = useLocation();
@@ -72,20 +74,41 @@ export default function LoginComponent() {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                         />
-                        <input
-                            type="password"
-                            name="password"
-                            className="border border-zinc-300 rounded-full p-3 px-5"
-                            placeholder="Passcode"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
+                        <div className="flex items-center justify-between border p-3 border-zinc-300 rounded-full">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                name="password"
+                                className="outline-none pl-2 w-full"
+                                placeholder="Passcode"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                            <label
+                                htmlFor="showPassword"
+                                className="text-gray-500 cursor-pointer"
+                            >
+                                {showPassword ? (
+                                    <TbEye size={25} />
+                                ) : (
+                                    <TbEyeClosed size={25} />
+                                )}
+                                <input
+                                    id="showPassword"
+                                    type="checkbox"
+                                    className="hidden"
+                                    checked={showPassword}
+                                    onChange={() =>
+                                        setShowPassword(!showPassword)
+                                    }
+                                />
+                            </label>
+                        </div>
                         <button
                             type="submit"
                             className="border border-zinc-300 rounded-full px-5 p-3 bg-black text-white flex items-center justify-between"
                         >
                             Login to Your Account
-                            <IoMdArrowRoundForward size="25px" />
+                            <IoMdArrowRoundForward size={25} />
                         </button>
                         <div className="flex items-center justify-center">
                             {error && (

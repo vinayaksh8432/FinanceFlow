@@ -20,8 +20,8 @@ export default function Header() {
                         </h2>
                     </div>
                 </div>
-                <button className="bg-yellow-300 rounded-lg font-medium flex items-center gap-3 shadow-sm px-8">
-                    Get Started <MdArrowOutward />
+                <button className="bg-yellow-300 rounded-lg font-medium flex items-center gap-3 shadow-sm px-5">
+                    Get Started <MdArrowOutward size={20}/>
                 </button>
             </div>
         </>

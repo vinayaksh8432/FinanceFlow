@@ -44,10 +44,6 @@ router.post("/login", async (req, res) => {
             return res.status(400).json({ message: "Password is incorrect" });
         }
 
-        if (!JWT_SECRET) {
-            throw new Error("JWT_SECRET is not set");
-        }
-
         const token = jwt.sign({ id: user._id }, JWT_SECRET, {
             expiresIn: "1h",
         });

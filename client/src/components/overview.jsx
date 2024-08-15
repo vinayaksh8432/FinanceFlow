@@ -1,23 +1,32 @@
-import { IoIosArrowDown } from "react-icons/io";
-import { MdOutlineDateRange } from "react-icons/md";
-export default function Overview() {
-    const today = new Date();
-    const firstDay = new Date(
-        today.setDate(today.getDate() - today.getDay() + 1)
-    ); // Start of the week (Monday)
-    const lastDay = new Date(today.setDate(today.getDate() + 6)); // End of the week (Sunday)
+import { MdOutlineDateRange, MdAccessTime } from "react-icons/md";
+import { useState, useEffect } from "react";
 
+export default function Overview() {
     const formatDate = (date) => {
         const day = date.getDate();
         const month = date.toLocaleString("default", { month: "short" });
         return `${day} ${month}`;
     };
 
-    const firstDate = formatDate(firstDay);
-    const lastDate = formatDate(lastDay);
-    const year = lastDay.getFullYear();
+    const formatTime = (date) => {
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+        return `${hours}:${minutes}`;
+    };
 
-    const formattedWeek = `${firstDate} - ${lastDate}, ${year}`;
+    const [currentHour, setCurrentHour] = useState(new Date().getHours());
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentHour(new Date().getHours());
+        }, 60000); // Update every minute
+
+        return () => clearInterval(interval);
+    }, []);
+
+    const today = new Date();
+    const formattedDate = formatDate(today);
+    const formattedTime = formatTime(today);
 
     return (
         <>
@@ -29,10 +38,15 @@ export default function Overview() {
                     </h2>
                 </div>
                 <div>
-                    <button className="flex items-center  gap-2 border border-gray-300 shadow-sm p-2 rounded-lg text-gray-500">
+                    <button className="flex items-center gap-2 border border-gray-300 shadow-sm p-2 rounded-lg text-gray-500">
                         <MdOutlineDateRange size="20px" />
-                        {formattedWeek}
-                        <IoIosArrowDown />
+                        {formattedDate} {formattedTime}
+                        <MdAccessTime
+                            size="20px"
+                            style={{
+                                transform: `rotate(${currentHour * 360}deg)`,
+                            }}
+                        />
                     </button>
                 </div>
             </div>
