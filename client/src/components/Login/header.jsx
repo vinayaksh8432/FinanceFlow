@@ -1,5 +1,5 @@
 import { MdArrowOutward } from "react-icons/md";
-import bubbleicon from "../assets/bubbleicon.svg";
+import bubbleicon from "../../assets/bubbleicon.svg";
 
 export default function Header() {
     return (
@@ -21,7 +21,7 @@ export default function Header() {
                     </div>
                 </div>
                 <button className="bg-yellow-300 rounded-lg font-medium flex items-center gap-3 shadow-sm px-5">
-                    Get Started <MdArrowOutward size={20}/>
+                    Get Started <MdArrowOutward size={20} />
                 </button>
             </div>
         </>

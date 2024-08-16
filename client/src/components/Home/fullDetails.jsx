@@ -1,6 +1,6 @@
-import Balance from "../card/balance";
-import Cards from "../card/cards";
-import CreditScore from "../card/creditScore";
+import Balance from "../../card/balance";
+import Cards from "../../card/cards";
+import CreditScore from "../../card/creditScore";
 
 export default function FullDetails() {
     return (
@@ -11,7 +11,7 @@ export default function FullDetails() {
             >
                 <Balance />
                 {/* <Cards /> */}
-                <CreditScore />
+                {/* <CreditScore /> */}
             </div>
         </>
     );

@@ -5,11 +5,12 @@ import { LuCreditCard } from "react-icons/lu";
 import { MdArrowForwardIos } from "react-icons/md";
 import { FaMoneyBillWave } from "react-icons/fa6";
 
-export default function Menu() {
+export default function Menu({ setActiveSection }) {
     const [activeButton, setActiveButton] = useState("home");
 
     const handleButtonClick = (button) => {
         setActiveButton(button);
+        setActiveSection(button);
     };
 
     return (
@@ -21,7 +22,9 @@ export default function Menu() {
                 <div className="h-full flex flex-col justify-between gap-4">
                     <button
                         className={`w-full flex items-center justify-between rounded-md p-3 px-4 ${
-                            activeButton === "home" ? "bg-white text-black" : "text-gray-400"
+                            activeButton === "home"
+                                ? "bg-white text-black"
+                                : "text-gray-400"
                         }`}
                         onClick={() => handleButtonClick("home")}
                     >
@@ -33,7 +36,9 @@ export default function Menu() {
                     </button>
                     <button
                         className={`w-full flex items-center justify-between rounded-md p-3 px-4 ${
-                            activeButton === "activities" ? "bg-white text-black" : "text-gray-400"
+                            activeButton === "activities"
+                                ? "bg-white text-black"
+                                : "text-gray-400"
                         }`}
                         onClick={() => handleButtonClick("activities")}
                     >
@@ -45,7 +50,9 @@ export default function Menu() {
                     </button>
                     <button
                         className={`w-full flex items-center justify-between rounded-md p-3 px-4 ${
-                            activeButton === "transactions" ? "bg-white text-black" : "text-gray-400"
+                            activeButton === "transactions"
+                                ? "bg-white text-black"
+                                : "text-gray-400"
                         }`}
                         onClick={() => handleButtonClick("transactions")}
                     >
@@ -53,19 +60,23 @@ export default function Menu() {
                             <LuCreditCard size="25px" />
                             Transactions
                         </span>
-                        {activeButton === "transactions" && <MdArrowForwardIos />}
+                        {activeButton === "transactions" && (
+                            <MdArrowForwardIos />
+                        )}
                     </button>
                     <button
                         className={`w-full flex items-center justify-between rounded-md p-3 px-4 ${
-                            activeButton === "emi" ? "bg-white text-black" : "text-gray-400"
+                            activeButton === "loan"
+                                ? "bg-white text-black"
+                                : "text-gray-400"
                         }`}
-                        onClick={() => handleButtonClick("emi")}
+                        onClick={() => handleButtonClick("loan")}
                     >
                         <span className="flex items-center gap-4">
                             <FaMoneyBillWave size="25px" />
                             EMI / Loans
                         </span>
-                        {activeButton === "emi" && <MdArrowForwardIos />}
+                        {activeButton === "loan" && <MdArrowForwardIos />}
                     </button>
                 </div>
             </div>

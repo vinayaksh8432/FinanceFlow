@@ -3,7 +3,7 @@ import { CgProfile } from "react-icons/cg";
 import { LuLogOut } from "react-icons/lu";
 import { IoIosArrowUp } from "react-icons/io";
 import { FaArrowUpRightFromSquare } from "react-icons/fa6";
-import { logout, getUserDetails } from "../utils/api";
+import { logout, getUserDetails } from "../../utils/api";
 import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
@@ -18,7 +18,6 @@ export default function Profile() {
                 setUser(userData);
             } catch (error) {
                 console.error("Failed to fetch user data", error);
-                // If there's an error fetching user data, assume the user is not authenticated
                 navigate("/login");
             }
         };

@@ -1,4 +1,4 @@
-import bubbleicon from "../assets/bubbleicon.svg";
+import bubbleicon from "../../assets/bubbleicon.svg";
 
 export default function CompanyName() {
     return (

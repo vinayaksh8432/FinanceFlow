@@ -3,9 +3,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { RxInstagramLogo } from "react-icons/rx";
 import { RiTwitterXLine } from "react-icons/ri";
 import { GrLinkedin } from "react-icons/gr";
-import LoginComponent from "../components/loginComponent";
-import SignUpComponent from "../components/signUpComponent";
-import Header from "../components/header";
+import LoginComponent from "../components/Login/loginComponent";
+import SignUpComponent from "../components/Login/signUpComponent";
+import Header from "../components/Login/header";
 
 export default function AuthPage() {
     const [isLogin, setIsLogin] = useState(true);
