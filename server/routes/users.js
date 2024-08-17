@@ -74,40 +74,36 @@ router.post("/login", async (req, res) => {
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
-
         if (!isMatch) {
             return res.status(400).json({ message: "Password is incorrect" });
         }
 
-        // Generate OTP
-        const otp = generateOTP();
-
-        try {
-            // Send OTP
-            await sendOTP(user.email, otp);
-
-            const hashedOtp = crypto
-                .createHash("sha256")
-                .update(otp)
-                .digest("hex");
-
-            // Save OTP to user document
-            user.otp = hashedOtp;
-            user.otpExpires = Date.now() + 600000; // OTP expires in 10 minutes
-            await user.save();
-
-            res.json({
-                message: "OTP sent to your email",
+        // Check if OTP exists and is still valid
+        if (user.otpExpires && user.otpExpires > Date.now()) {
+            return res.json({
+                message: "OTP already sent to your email",
                 userId: user._id,
                 requireOtp: true,
             });
-        } catch (otpError) {
-            console.error("Error sending OTP:", otpError);
-            res.status(500).json({
-                message: "Failed to send OTP",
-                error: otpError.message,
-            });
         }
+
+        // Generate new OTP
+        const otp = generateOTP();
+        const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
+
+        // Save OTP to user document
+        user.otp = hashedOtp;
+        user.otpExpires = Date.now() + 600000; // OTP expires in 10 minutes
+        await user.save();
+
+        // Send OTP
+        await sendOTP(user.email, otp);
+
+        res.json({
+            message: "OTP sent to your email",
+            userId: user._id,
+            requireOtp: true,
+        });
     } catch (error) {
         console.error("Login error:", error);
         res.status(500).json({
@@ -134,7 +130,12 @@ router.post("/userAuth", async (req, res) => {
             return res.status(400).json({ message: "Invalid or expired OTP" });
         }
 
-        // OTP is valid, generate token
+        // Clear the OTP after successful verification
+        user.otp = undefined;
+        user.otpExpires = undefined;
+        await user.save();
+
+        // Generate token
         const token = jwt.sign({ id: user._id }, JWT_SECRET, {
             expiresIn: "1h",
         });
@@ -149,6 +150,7 @@ router.post("/userAuth", async (req, res) => {
         res.json({
             message: "Login successful",
             user: { name: user.name, email: user.email },
+            token: token, // Include the token in the response
         });
     } catch (error) {
         console.error("OTP verification error:", error);

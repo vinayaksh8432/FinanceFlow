@@ -14,10 +14,27 @@ export default function LoginComponent() {
     const navigate = useNavigate();
     const location = useLocation();
 
+    const checkAuthStatus = async () => {
+        try {
+            const response = await fetch(
+                `${import.meta.env.VITE_BACKEND_URL}/api/users/user`,
+                {
+                    credentials: "include",
+                }
+            );
+            if (response.ok) {
+                navigate("/dashboard");
+            }
+        } catch (error) {
+            console.error("Auth check failed:", error);
+        }
+    };
+
     useEffect(() => {
         if (location.state && location.state.error) {
             setError(location.state.error);
         }
+        checkAuthStatus();
     }, [location]);
 
     const handleSubmit = async (e) => {
@@ -50,10 +67,6 @@ export default function LoginComponent() {
                 if (result.requireOtp) {
                     setUserId(result.userId);
                     setShowOtpInput(true);
-                } else {
-                    // OTP not required, proceed with login
-                    localStorage.setItem("user", JSON.stringify(result.user));
-                    navigate("/dashboard");
                 }
             } else {
                 // Verify OTP
@@ -78,6 +91,7 @@ export default function LoginComponent() {
 
                 const result = await response.json();
                 localStorage.setItem("user", JSON.stringify(result.user));
+                localStorage.setItem("token", result.token); // Store the token
                 navigate("/dashboard");
             }
         } catch (error) {
