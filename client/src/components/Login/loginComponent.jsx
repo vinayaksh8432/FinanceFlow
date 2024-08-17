@@ -45,58 +45,68 @@ export default function LoginComponent() {
             return;
         }
         try {
-            if (!showOtpInput) {
-                const response = await fetch(
-                    `${import.meta.env.VITE_BACKEND_URL}/api/users/login`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({ email, password }),
-                        credentials: "include",
-                    }
-                );
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || "Login failed");
+            const response = await fetch(
+                `${import.meta.env.VITE_BACKEND_URL}/api/users/login`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ email, password }),
+                    credentials: "include",
                 }
+            );
 
-                const result = await response.json();
-                if (result.requireOtp) {
-                    setUserId(result.userId);
-                    setShowOtpInput(true);
-                }
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Login failed");
+            }
+
+            const result = await response.json();
+            if (result.requireOtp) {
+                setUserId(result.userId);
+                setShowOtpInput(true);
             } else {
-                // Verify OTP
-                const response = await fetch(
-                    `${import.meta.env.VITE_BACKEND_URL}/api/users/userAuth`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({ userId, otp }),
-                        credentials: "include",
-                    }
-                );
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(
-                        errorData.message || "OTP verification failed"
-                    );
-                }
-
-                const result = await response.json();
+                // Login successful without OTP
                 localStorage.setItem("user", JSON.stringify(result.user));
-                localStorage.setItem("token", result.token); // Store the token
+                localStorage.setItem("token", result.token);
                 navigate("/dashboard");
             }
         } catch (error) {
             console.error("Login error:", error);
             setError(error.message || "Login failed. Please try again.");
+        }
+    };
+
+    // Modify the OTP verification part
+    const verifyOtp = async () => {
+        try {
+            const response = await fetch(
+                `${import.meta.env.VITE_BACKEND_URL}/api/users/userAuth`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ userId, otp }),
+                    credentials: "include",
+                }
+            );
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "OTP verification failed");
+            }
+
+            const result = await response.json();
+            localStorage.setItem("user", JSON.stringify(result.user));
+            localStorage.setItem("token", result.token);
+            navigate("/dashboard");
+        } catch (error) {
+            console.error("OTP verification error:", error);
+            setError(
+                error.message || "OTP verification failed. Please try again."
+            );
         }
     };
 

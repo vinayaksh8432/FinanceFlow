@@ -12,6 +12,8 @@ if (!JWT_SECRET) {
     throw new Error("JWT_SECRET is not set in the environment");
 }
 
+const OTP_VALID_DURATION = 600000; // 1 hour in milliseconds
+
 router.post("/register", async (req, res) => {
     try {
         const { name, email, password } = req.body;
@@ -78,12 +80,24 @@ router.post("/login", async (req, res) => {
             return res.status(400).json({ message: "Password is incorrect" });
         }
 
-        // Check if OTP exists and is still valid
+        // Check if OTP is still valid
         if (user.otpExpires && user.otpExpires > Date.now()) {
+            // OTP is still valid, proceed with login without requiring OTP
+            const token = jwt.sign({ id: user._id }, JWT_SECRET, {
+                expiresIn: "1h",
+            });
+
+            res.cookie("token", token, {
+                httpOnly: true,
+                maxAge: 3600000,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "strict",
+            });
+
             return res.json({
-                message: "OTP already sent to your email",
-                userId: user._id,
-                requireOtp: true,
+                message: "Login successful",
+                user: { name: user.name, email: user.email },
+                token: token,
             });
         }
 
@@ -93,7 +107,7 @@ router.post("/login", async (req, res) => {
 
         // Save OTP to user document
         user.otp = hashedOtp;
-        user.otpExpires = Date.now() + 600000; // OTP expires in 10 minutes
+        user.otpExpires = Date.now() + OTP_VALID_DURATION;
         await user.save();
 
         // Send OTP
@@ -169,6 +183,7 @@ router.post("/logout", async (req, res) => {
             const user = await CustomerModel.findById(decoded.id);
             if (user) {
                 user.lastLogin = Date.now();
+                // Do not reset the OTP expiration here
                 await user.save();
             }
         } catch (error) {
