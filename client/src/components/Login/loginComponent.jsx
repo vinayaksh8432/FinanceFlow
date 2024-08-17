@@ -8,6 +8,9 @@ export default function LoginComponent() {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
+    const [otp, setOtp] = useState("");
+    const [showOtpInput, setShowOtpInput] = useState(false);
+    const [userId, setUserId] = useState(null);
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -25,27 +28,58 @@ export default function LoginComponent() {
             return;
         }
         try {
-            const response = await fetch(
-                "http://localhost:3000/api/users/login",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ email, password }),
-                    credentials: "include",
+            if (!showOtpInput) {
+                const response = await fetch(
+                    `${import.meta.env.VITE_BACKEND_URL}/api/users/login`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ email, password }),
+                        credentials: "include",
+                    }
+                );
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || "Login failed");
                 }
-            );
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error("Login error:", errorData);
-                throw new Error(errorData.message || "Login failed");
+                const result = await response.json();
+                if (result.requireOtp) {
+                    setUserId(result.userId);
+                    setShowOtpInput(true);
+                } else {
+                    // OTP not required, proceed with login
+                    localStorage.setItem("user", JSON.stringify(result.user));
+                    navigate("/dashboard");
+                }
+            } else {
+                // Verify OTP
+                const response = await fetch(
+                    `${import.meta.env.VITE_BACKEND_URL}/api/users/userAuth`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ userId, otp }),
+                        credentials: "include",
+                    }
+                );
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(
+                        errorData.message || "OTP verification failed"
+                    );
+                }
+
+                const result = await response.json();
+                localStorage.setItem("user", JSON.stringify(result.user));
+                navigate("/dashboard");
             }
-
-            const result = await response.json();
-            localStorage.setItem("user", JSON.stringify(result.user));
-            navigate("/dashboard");
         } catch (error) {
             console.error("Login error:", error);
             setError(error.message || "Login failed. Please try again.");
@@ -103,11 +137,23 @@ export default function LoginComponent() {
                                 />
                             </label>
                         </div>
+                        {showOtpInput && (
+                            <input
+                                type="text"
+                                className="border border-zinc-300 rounded-full p-3 px-5"
+                                placeholder="Enter 4-digit OTP"
+                                value={otp}
+                                onChange={(e) => setOtp(e.target.value)}
+                                required
+                            />
+                        )}
                         <button
                             type="submit"
                             className="border border-zinc-300 rounded-full px-5 p-3 bg-black text-white flex items-center justify-between"
                         >
-                            Login to Your Account
+                            {showOtpInput
+                                ? "Verify OTP"
+                                : "Login to Your Account"}
                             <IoMdArrowRoundForward size={25} />
                         </button>
                         <div className="flex items-center justify-center">

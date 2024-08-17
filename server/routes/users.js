@@ -3,6 +3,8 @@ const router = express.Router();
 const CustomerModel = require("../model/customer");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const nodemailer = require("nodemailer");
+const crypto = require("crypto");
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -28,6 +30,39 @@ router.post("/register", async (req, res) => {
     }
 });
 
+function generateOTP() {
+    return Math.floor(1000 + Math.random() * 9000).toString();
+}
+
+async function sendOTP(email, otp) {
+    // Create a test account
+    let testAccount = await nodemailer.createTestAccount();
+
+    // Create a transporter using the test account
+    let transporter = nodemailer.createTransport({
+        host: "smtp.ethereal.email",
+        port: 587,
+        secure: false, // true for 465, false for other ports
+        auth: {
+            user: testAccount.user, // generated ethereal user
+            pass: testAccount.pass, // generated ethereal password
+        },
+    });
+
+    // Send mail with defined transport object
+    let info = await transporter.sendMail({
+        from: '"Your App" <noreply@yourapp.com>',
+        to: email,
+        subject: "Your Login OTP",
+        text: `Your OTP is: ${otp}`,
+        html: `<b>Your OTP is: ${otp}</b>`,
+    });
+
+    console.log("Message sent: %s", info.messageId);
+    // Preview URL
+    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+}
+
 router.post("/login", async (req, res) => {
     const { email, password } = req.body;
     try {
@@ -44,6 +79,62 @@ router.post("/login", async (req, res) => {
             return res.status(400).json({ message: "Password is incorrect" });
         }
 
+        // Generate OTP
+        const otp = generateOTP();
+
+        try {
+            // Send OTP
+            await sendOTP(user.email, otp);
+
+            const hashedOtp = crypto
+                .createHash("sha256")
+                .update(otp)
+                .digest("hex");
+
+            // Save OTP to user document
+            user.otp = hashedOtp;
+            user.otpExpires = Date.now() + 600000; // OTP expires in 10 minutes
+            await user.save();
+
+            res.json({
+                message: "OTP sent to your email",
+                userId: user._id,
+                requireOtp: true,
+            });
+        } catch (otpError) {
+            console.error("Error sending OTP:", otpError);
+            res.status(500).json({
+                message: "Failed to send OTP",
+                error: otpError.message,
+            });
+        }
+    } catch (error) {
+        console.error("Login error:", error);
+        res.status(500).json({
+            message: "Internal server error",
+            error: error.message,
+        });
+    }
+});
+
+router.post("/userAuth", async (req, res) => {
+    const { userId, otp } = req.body;
+    try {
+        const user = await CustomerModel.findById(userId);
+        if (!user) {
+            return res.status(400).json({ message: "User not found" });
+        }
+
+        const hashedReceivedOtp = crypto
+            .createHash("sha256")
+            .update(otp)
+            .digest("hex");
+
+        if (user.otp !== hashedReceivedOtp || Date.now() > user.otpExpires) {
+            return res.status(400).json({ message: "Invalid or expired OTP" });
+        }
+
+        // OTP is valid, generate token
         const token = jwt.sign({ id: user._id }, JWT_SECRET, {
             expiresIn: "1h",
         });
@@ -60,7 +151,7 @@ router.post("/login", async (req, res) => {
             user: { name: user.name, email: user.email },
         });
     } catch (error) {
-        console.error("Login error:", error);
+        console.error("OTP verification error:", error);
         res.status(500).json({
             message: "Internal server error",
             error: error.message,
@@ -68,7 +159,20 @@ router.post("/login", async (req, res) => {
     }
 });
 
-router.post("/logout", (req, res) => {
+router.post("/logout", async (req, res) => {
+    const token = req.cookies.token;
+    if (token) {
+        try {
+            const decoded = jwt.verify(token, JWT_SECRET);
+            const user = await CustomerModel.findById(decoded.id);
+            if (user) {
+                user.lastLogin = Date.now();
+                await user.save();
+            }
+        } catch (error) {
+            console.error("Error updating last login time:", error);
+        }
+    }
     res.clearCookie("token");
     res.json({ message: "Logged out successfully" });
 });
