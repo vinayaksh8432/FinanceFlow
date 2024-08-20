@@ -12,6 +12,8 @@ if (!JWT_SECRET) {
     throw new Error("JWT_SECRET is not set in the environment");
 }
 
+const otpStorage = new Map();
+
 const OTP_VALID_DURATION = 600000; // 1 hour in milliseconds
 
 router.post("/register", async (req, res) => {
@@ -80,35 +82,19 @@ router.post("/login", async (req, res) => {
             return res.status(400).json({ message: "Password is incorrect" });
         }
 
-        // Check if OTP is still valid
-        if (user.otpExpires && user.otpExpires > Date.now()) {
-            // OTP is still valid, proceed with login without requiring OTP
-            const token = jwt.sign({ id: user._id }, JWT_SECRET, {
-                expiresIn: "1h",
-            });
-
-            res.cookie("token", token, {
-                httpOnly: true,
-                maxAge: 3600000,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "strict",
-            });
-
-            return res.json({
-                message: "Login successful",
-                user: { name: user.name, email: user.email },
-                token: token,
-            });
-        }
-
         // Generate new OTP
         const otp = generateOTP();
-        const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
 
-        // Save OTP to user document
-        user.otp = hashedOtp;
-        user.otpExpires = Date.now() + OTP_VALID_DURATION;
-        await user.save();
+        // Store OTP in memory with expiration
+        otpStorage.set(user._id.toString(), {
+            otp: otp,
+            expires: Date.now() + OTP_VALID_DURATION,
+        });
+
+        // Set a timeout to remove the OTP after expiration
+        setTimeout(() => {
+            otpStorage.delete(user._id.toString());
+        }, OTP_VALID_DURATION);
 
         // Send OTP
         await sendOTP(user.email, otp);
@@ -135,19 +121,17 @@ router.post("/userAuth", async (req, res) => {
             return res.status(400).json({ message: "User not found" });
         }
 
-        const hashedReceivedOtp = crypto
-            .createHash("sha256")
-            .update(otp)
-            .digest("hex");
-
-        if (user.otp !== hashedReceivedOtp || Date.now() > user.otpExpires) {
+        const storedOtpData = otpStorage.get(userId);
+        if (
+            !storedOtpData ||
+            storedOtpData.otp !== otp ||
+            Date.now() > storedOtpData.expires
+        ) {
             return res.status(400).json({ message: "Invalid or expired OTP" });
         }
 
-        // Clear the OTP after successful verification
-        user.otp = undefined;
-        user.otpExpires = undefined;
-        await user.save();
+        // Remove the OTP from storage after successful verification
+        otpStorage.delete(userId);
 
         // Generate token
         const token = jwt.sign({ id: user._id }, JWT_SECRET, {
@@ -164,7 +148,7 @@ router.post("/userAuth", async (req, res) => {
         res.json({
             message: "Login successful",
             user: { name: user.name, email: user.email },
-            token: token, // Include the token in the response
+            token: token,
         });
     } catch (error) {
         console.error("OTP verification error:", error);

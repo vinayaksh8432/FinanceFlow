@@ -67,7 +67,7 @@ export default function LoginComponent() {
                 setUserId(result.userId);
                 setShowOtpInput(true);
             } else {
-                // Login successful without OTP
+                // This case shouldn't happen now, but keep it for future flexibility
                 localStorage.setItem("user", JSON.stringify(result.user));
                 localStorage.setItem("token", result.token);
                 navigate("/dashboard");
@@ -78,8 +78,8 @@ export default function LoginComponent() {
         }
     };
 
-    // Modify the OTP verification part
-    const verifyOtp = async () => {
+    const verifyOtp = async (e) => {
+        e.preventDefault();
         try {
             const response = await fetch(
                 `${import.meta.env.VITE_BACKEND_URL}/api/users/userAuth`,
@@ -121,46 +121,54 @@ export default function LoginComponent() {
                 <div>
                     <form
                         className="flex flex-col gap-4 w-80"
-                        onSubmit={handleSubmit}
+                        onSubmit={showOtpInput ? verifyOtp : handleSubmit}
                     >
-                        <input
-                            type="email"
-                            name="email"
-                            autoComplete="email"
-                            className="border border-zinc-300 rounded-full p-3 px-5"
-                            placeholder="Phone / Email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                        <div className="flex items-center justify-between border p-3 border-zinc-300 rounded-full">
-                            <input
-                                type={showPassword ? "text" : "password"}
-                                name="password"
-                                className="outline-none pl-2 w-full"
-                                placeholder="Passcode"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                            <label
-                                htmlFor="showPassword"
-                                className="text-gray-500 cursor-pointer"
-                            >
-                                {showPassword ? (
-                                    <TbEye size={25} />
-                                ) : (
-                                    <TbEyeClosed size={25} />
-                                )}
+                        {!showOtpInput && (
+                            <>
                                 <input
-                                    id="showPassword"
-                                    type="checkbox"
-                                    className="hidden"
-                                    checked={showPassword}
-                                    onChange={() =>
-                                        setShowPassword(!showPassword)
-                                    }
+                                    type="email"
+                                    name="email"
+                                    autoComplete="email"
+                                    className="border border-zinc-300 rounded-full p-3 px-5"
+                                    placeholder="Phone / Email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
                                 />
-                            </label>
-                        </div>
+                                <div className="flex items-center justify-between border p-3 border-zinc-300 rounded-full">
+                                    <input
+                                        type={
+                                            showPassword ? "text" : "password"
+                                        }
+                                        name="password"
+                                        className="outline-none pl-2 w-full"
+                                        placeholder="Passcode"
+                                        value={password}
+                                        onChange={(e) =>
+                                            setPassword(e.target.value)
+                                        }
+                                    />
+                                    <label
+                                        htmlFor="showPassword"
+                                        className="text-gray-500 cursor-pointer"
+                                    >
+                                        {showPassword ? (
+                                            <TbEye size={25} />
+                                        ) : (
+                                            <TbEyeClosed size={25} />
+                                        )}
+                                        <input
+                                            id="showPassword"
+                                            type="checkbox"
+                                            className="hidden"
+                                            checked={showPassword}
+                                            onChange={() =>
+                                                setShowPassword(!showPassword)
+                                            }
+                                        />
+                                    </label>
+                                </div>
+                            </>
+                        )}
                         {showOtpInput && (
                             <input
                                 type="text"
