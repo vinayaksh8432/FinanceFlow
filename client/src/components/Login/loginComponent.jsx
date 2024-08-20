@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { IoMdArrowRoundForward } from "react-icons/io";
 import { TbEye, TbEyeClosed } from "react-icons/tb";
@@ -8,11 +8,20 @@ export default function LoginComponent() {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
-    const [otp, setOtp] = useState("");
     const [showOtpInput, setShowOtpInput] = useState(false);
     const [userId, setUserId] = useState(null);
     const navigate = useNavigate();
     const location = useLocation();
+
+    const [otpInputs, setOtpInputs] = useState(["", "", "", "", "", ""]);
+    const otpRefs = [
+        useRef(),
+        useRef(),
+        useRef(),
+        useRef(),
+        useRef(),
+        useRef(),
+    ];
 
     const checkAuthStatus = async () => {
         try {
@@ -67,7 +76,6 @@ export default function LoginComponent() {
                 setUserId(result.userId);
                 setShowOtpInput(true);
             } else {
-                // This case shouldn't happen now, but keep it for future flexibility
                 localStorage.setItem("user", JSON.stringify(result.user));
                 localStorage.setItem("token", result.token);
                 navigate("/dashboard");
@@ -80,6 +88,11 @@ export default function LoginComponent() {
 
     const verifyOtp = async (e) => {
         e.preventDefault();
+        const fullOtp = otpInputs.join("");
+        if (fullOtp.length !== 6) {
+            setError("Please enter all 6 digits of the OTP");
+            return;
+        }
         try {
             const response = await fetch(
                 `${import.meta.env.VITE_BACKEND_URL}/api/users/userAuth`,
@@ -88,7 +101,7 @@ export default function LoginComponent() {
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({ userId, otp }),
+                    body: JSON.stringify({ userId, otp: fullOtp }),
                     credentials: "include",
                 }
             );
@@ -110,6 +123,17 @@ export default function LoginComponent() {
         }
     };
 
+    const handleOtpChange = (index, value) => {
+        const newOtpInputs = [...otpInputs];
+        newOtpInputs[index] = value.replace(/[^0-9]/g, "").slice(0, 1);
+        setOtpInputs(newOtpInputs);
+
+        // Move to next input if value is entered
+        if (value && index < 5) {
+            otpRefs[index + 1].current.focus();
+        }
+    };
+
     return (
         <>
             <div className="flex flex-col items-center gap-4">
@@ -123,7 +147,7 @@ export default function LoginComponent() {
                         className="flex flex-col gap-4 w-80"
                         onSubmit={showOtpInput ? verifyOtp : handleSubmit}
                     >
-                        {!showOtpInput && (
+                        {!showOtpInput ? (
                             <>
                                 <input
                                     type="email"
@@ -167,27 +191,54 @@ export default function LoginComponent() {
                                         />
                                     </label>
                                 </div>
+                                <button
+                                    type="submit"
+                                    className="border border-zinc-300 rounded-full px-5 p-3 bg-black text-white flex items-center justify-between"
+                                >
+                                    Login to Your Account
+                                    <IoMdArrowRoundForward size={25} />
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <div className="flex justify-between">
+                                    {otpInputs.map((digit, index) => (
+                                        <input
+                                            key={index}
+                                            ref={otpRefs[index]}
+                                            type="text"
+                                            maxLength="1"
+                                            className="w-10 h-10 border border-zinc-300 rounded-md text-center"
+                                            value={digit}
+                                            onChange={(e) =>
+                                                handleOtpChange(
+                                                    index,
+                                                    e.target.value
+                                                )
+                                            }
+                                            onKeyDown={(e) => {
+                                                if (
+                                                    e.key === "Backspace" &&
+                                                    !digit &&
+                                                    index > 0
+                                                ) {
+                                                    otpRefs[
+                                                        index - 1
+                                                    ].current.focus();
+                                                }
+                                            }}
+                                        />
+                                    ))}
+                                </div>
+                                <button
+                                    type="submit"
+                                    className="border border-zinc-300 rounded-full px-5 p-3 bg-black text-white flex items-center justify-between"
+                                >
+                                    Verify OTP
+                                    <IoMdArrowRoundForward size={25} />
+                                </button>
                             </>
                         )}
-                        {showOtpInput && (
-                            <input
-                                type="text"
-                                className="border border-zinc-300 rounded-full p-3 px-5"
-                                placeholder="Enter 4-digit OTP"
-                                value={otp}
-                                onChange={(e) => setOtp(e.target.value)}
-                                required
-                            />
-                        )}
-                        <button
-                            type="submit"
-                            className="border border-zinc-300 rounded-full px-5 p-3 bg-black text-white flex items-center justify-between"
-                        >
-                            {showOtpInput
-                                ? "Verify OTP"
-                                : "Login to Your Account"}
-                            <IoMdArrowRoundForward size={25} />
-                        </button>
                         <div className="flex items-center justify-center">
                             {error && (
                                 <span className="text-red-500 text-sm">

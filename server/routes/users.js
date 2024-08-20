@@ -35,7 +35,7 @@ router.post("/register", async (req, res) => {
 });
 
 function generateOTP() {
-    return Math.floor(1000 + Math.random() * 9000).toString();
+    return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
 async function sendOTP(email, otp) {
@@ -82,7 +82,7 @@ router.post("/login", async (req, res) => {
             return res.status(400).json({ message: "Password is incorrect" });
         }
 
-        // Generate new OTP
+        // Generate new 6-digit OTP
         const otp = generateOTP();
 
         // Store OTP in memory with expiration
