@@ -1,20 +1,18 @@
 const express = require("express");
 const router = express.Router();
-const CustomerModel = require("../model/customer");
 const jwt = require("jsonwebtoken");
+
+const CustomerModel = require("../model/customer");
+
+const otpModule = require("../routes/otp");
+
 const bcrypt = require("bcrypt");
-const nodemailer = require("nodemailer");
-const crypto = require("crypto");
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
 if (!JWT_SECRET) {
     throw new Error("JWT_SECRET is not set in the environment");
 }
-
-const otpStorage = new Map();
-
-const OTP_VALID_DURATION = 600000; // 1 hour in milliseconds
 
 router.post("/register", async (req, res) => {
     try {
@@ -34,41 +32,9 @@ router.post("/register", async (req, res) => {
     }
 });
 
-function generateOTP() {
-    return Math.floor(100000 + Math.random() * 900000).toString();
-}
-
-async function sendOTP(email, otp) {
-    // Create a test account
-    let testAccount = await nodemailer.createTestAccount();
-
-    // Create a transporter using the test account
-    let transporter = nodemailer.createTransport({
-        host: "smtp.ethereal.email",
-        port: 587,
-        secure: false, // true for 465, false for other ports
-        auth: {
-            user: testAccount.user, // generated ethereal user
-            pass: testAccount.pass, // generated ethereal password
-        },
-    });
-
-    // Send mail with defined transport object
-    let info = await transporter.sendMail({
-        from: '"Your App" <noreply@yourapp.com>',
-        to: email,
-        subject: "Your Login OTP",
-        text: `Your OTP is: ${otp}`,
-        html: `<b>Your OTP is: ${otp}</b>`,
-    });
-
-    console.log("Message sent: %s", info.messageId);
-    // Preview URL
-    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-}
-
 router.post("/login", async (req, res) => {
     const { email, password } = req.body;
+
     try {
         const user = await CustomerModel.findOne({ email });
         if (!user) {
@@ -78,26 +44,14 @@ router.post("/login", async (req, res) => {
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
+        
         if (!isMatch) {
             return res.status(400).json({ message: "Password is incorrect" });
         }
 
-        // Generate new 6-digit OTP
-        const otp = generateOTP();
-
-        // Store OTP in memory with expiration
-        otpStorage.set(user._id.toString(), {
-            otp: otp,
-            expires: Date.now() + OTP_VALID_DURATION,
-        });
-
-        // Set a timeout to remove the OTP after expiration
-        setTimeout(() => {
-            otpStorage.delete(user._id.toString());
-        }, OTP_VALID_DURATION);
-
-        // Send OTP
-        await sendOTP(user.email, otp);
+        const otp = otpModule.generateOTP();
+        otpModule.storeOTP(user._id.toString(), otp);
+        await otpModule.sendOTP(user.email, otp);
 
         res.json({
             message: "OTP sent to your email",
@@ -121,17 +75,9 @@ router.post("/userAuth", async (req, res) => {
             return res.status(400).json({ message: "User not found" });
         }
 
-        const storedOtpData = otpStorage.get(userId);
-        if (
-            !storedOtpData ||
-            storedOtpData.otp !== otp ||
-            Date.now() > storedOtpData.expires
-        ) {
+        if (!otpModule.verifyOTP(userId, otp)) {
             return res.status(400).json({ message: "Invalid or expired OTP" });
         }
-
-        // Remove the OTP from storage after successful verification
-        otpStorage.delete(userId);
 
         // Generate token
         const token = jwt.sign({ id: user._id }, JWT_SECRET, {
