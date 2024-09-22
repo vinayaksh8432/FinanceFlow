@@ -25,19 +25,10 @@ export default function SignUpComponent() {
     };
     return (
         <>
-            <div className="flex flex-col gap-4">
-                <div>
-                    <h1 className="text-6xl text-center leading-[4.25rem] font-['Greta'] font-bold">
-                        Create Your
-                        <br />
-                        Account
-                    </h1>
-                </div>
-                <div>
-                    <form
-                        className="flex flex-col gap-4 w-80"
-                        onSubmit={handleSubmit}
-                    >
+            <div className="bg-white rounded-3xl px-8 py-4">
+                <h1 className="text-6xl text-center">Create Your Account</h1>
+                <form onSubmit={handleSubmit}>
+                    <div className="flex flex-col gap-4 pt-4">
                         <input
                             type="text"
                             name="name"
@@ -52,11 +43,11 @@ export default function SignUpComponent() {
                             placeholder="Phone / Email"
                             onChange={(e) => setEmail(e.target.value)}
                         />
-                        <div className="flex items-center justify-between border p-3 border-zinc-300 rounded-full">
+                        <div className="flex items-center justify-between border p-3 border-zinc-300 rounded-full bg-white px-4">
                             <input
                                 type={showPassword ? "text" : "password"}
                                 name="password"
-                                className="outline-none pl-2 w-full"
+                                className="outline-none"
                                 placeholder="Passcode"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
@@ -88,15 +79,16 @@ export default function SignUpComponent() {
                             Create Account
                             <IoMdArrowRoundForward size="25px" />
                         </button>
-                        <div className="flex items-center justify-center">
-                            {error && (
-                                <span className="text-red-500 text-sm">
-                                    {error}
-                                </span>
-                            )}
-                        </div>
-                    </form>
-                </div>
+                    </div>
+
+                    <div className="flex justify-center pt-4">
+                        {error && (
+                            <span className="text-red-500 text-sm">
+                                {error}
+                            </span>
+                        )}
+                    </div>
+                </form>
             </div>
         </>
     );

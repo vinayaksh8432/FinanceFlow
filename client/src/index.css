@@ -4,6 +4,30 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+    :root {
+        --color-primary: 247, 251, 258;
+        --color-secondary: 39, 39, 39;
+        --color-white: 247, 251, 254;
+    }
+
+    * {
+        user-select: none;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    html,
+    body {
+        font-family: "SFPro-Mid";
+        /* background: #f4f4f4; */
+        background-color: #f3f4f6;
+        color: rgb(var(--color-secondary));
+    }
+}
+
 @font-face {
     font-family: "SFPro-Mid";
     src: url(fonts/SFPRODISPLAYMEDIUM.OTF);
@@ -17,12 +41,6 @@
 @font-face {
     font-family: "Didot";
     src: url(fonts/Didot.otf);
-}
-
-html,
-body {
-    font-family: "SFPro-Mid";
-    /* background: #f4f4f4; */
 }
 
 .login-BG {

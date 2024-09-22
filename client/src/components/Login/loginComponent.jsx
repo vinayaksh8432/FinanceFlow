@@ -136,35 +136,31 @@ export default function LoginComponent() {
 
     return (
         <>
-            <div className="flex flex-col items-center gap-4">
-                <div>
-                    <h1 className="text-6xl text-center leading-[4.25rem] font-['Greta'] font-bold">
-                        Login to Your <br /> Account
-                    </h1>
-                </div>
-                <div>
-                    <form
-                        className="flex flex-col gap-4 w-80"
-                        onSubmit={showOtpInput ? verifyOtp : handleSubmit}
-                    >
-                        {!showOtpInput ? (
-                            <>
+            <div className="bg-white rounded-3xl px-8 py-4 flex flex-col items-center">
+                <h1 className="text-6xl">Login to Your Account</h1>
+                <form
+                    onSubmit={showOtpInput ? verifyOtp : handleSubmit}
+                    className="w-full"
+                >
+                    {!showOtpInput ? (
+                        <>
+                            <div className="flex flex-col pt-4 gap-4">
                                 <input
                                     type="email"
                                     name="email"
                                     autoComplete="email"
-                                    className="border border-zinc-300 rounded-full p-3 px-5"
+                                    className="border-2 rounded-full p-3 px-5"
                                     placeholder="Phone / Email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                 />
-                                <div className="flex items-center justify-between border p-3 border-zinc-300 rounded-full">
+                                <div className="border-2 p-3 rounded-full bg-white flex justify-between px-4">
                                     <input
                                         type={
                                             showPassword ? "text" : "password"
                                         }
                                         name="password"
-                                        className="outline-none pl-2 w-full"
+                                        className="outline-none"
                                         placeholder="Passcode"
                                         value={password}
                                         onChange={(e) =>
@@ -193,22 +189,24 @@ export default function LoginComponent() {
                                 </div>
                                 <button
                                     type="submit"
-                                    className="border border-zinc-300 rounded-full px-5 p-3 bg-black text-white flex items-center justify-between"
+                                    className="rounded-full px-5 p-3 bg-black text-white flex items-center justify-between"
                                 >
                                     Login to Your Account
                                     <IoMdArrowRoundForward size={25} />
                                 </button>
-                            </>
-                        ) : (
-                            <>
-                                <div className="flex justify-between">
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <div className="flex flex-col items-center">
+                                <div className="flex justify-between py-4 w-full">
                                     {otpInputs.map((digit, index) => (
                                         <input
                                             key={index}
                                             ref={otpRefs[index]}
                                             type="text"
                                             maxLength="1"
-                                            className="w-10 h-10 border border-zinc-300 rounded-md text-center"
+                                            className="w-16 h-16 border-2 rounded-lg text-center text-xl"
                                             value={digit}
                                             onChange={(e) =>
                                                 handleOtpChange(
@@ -232,22 +230,22 @@ export default function LoginComponent() {
                                 </div>
                                 <button
                                     type="submit"
-                                    className="border border-zinc-300 rounded-full px-5 p-3 bg-black text-white flex items-center justify-between"
+                                    className="border-2 rounded-full px-5 p-3 bg-black text-white flex items-center justify-between w-1/2"
                                 >
                                     Verify OTP
                                     <IoMdArrowRoundForward size={25} />
                                 </button>
-                            </>
+                            </div>
+                        </>
+                    )}
+                    <div className="flex justify-center pt-4">
+                        {error && (
+                            <span className="text-red-500 text-sm">
+                                {error}
+                            </span>
                         )}
-                        <div className="flex items-center justify-center">
-                            {error && (
-                                <span className="text-red-500 text-sm">
-                                    {error}
-                                </span>
-                            )}
-                        </div>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
         </>
     );
