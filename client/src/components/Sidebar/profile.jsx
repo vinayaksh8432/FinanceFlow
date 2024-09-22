@@ -33,7 +33,7 @@ export default function Profile() {
         try {
             await logout();
             setUser(null);
-            navigate("/login");
+            navigate("/");
         } catch (error) {
             console.error("Logout failed", error);
         }
