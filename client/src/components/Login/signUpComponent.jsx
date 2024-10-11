@@ -25,30 +25,30 @@ export default function SignUpComponent() {
     };
     return (
         <>
-            <div className="bg-white rounded-3xl px-8 py-4">
+            <div className="bg-white px-8 py-4 rounded-lg">
                 <h1 className="text-6xl text-center">Create Your Account</h1>
                 <form onSubmit={handleSubmit}>
-                    <div className="flex flex-col gap-4 pt-4">
+                    <div className="py-4 flex flex-col gap-4 items-center">
                         <input
                             type="text"
                             name="name"
-                            className="border border-zinc-300 rounded-full p-3 px-5"
+                            className="outline-none border-2 rounded-full py-3 px-5 w-full"
                             placeholder="User Name"
                             onChange={(e) => setName(e.target.value)}
                         />
                         <input
                             type="email"
                             name="email"
-                            className="border border-zinc-300 rounded-full p-3 px-5"
+                            className="outline-none border-2 rounded-full py-3 px-5 w-full"
                             placeholder="Phone / Email"
                             onChange={(e) => setEmail(e.target.value)}
                         />
-                        <div className="flex items-center justify-between border p-3 border-zinc-300 rounded-full bg-white px-4">
+                        <div className="border-2 bg-white py-3 px-4 rounded-full flex items-center w-full">
                             <input
                                 type={showPassword ? "text" : "password"}
                                 name="password"
-                                className="outline-none"
-                                placeholder="Passcode"
+                                className="outline-none w-full"
+                                placeholder="Password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                             />
@@ -74,14 +74,14 @@ export default function SignUpComponent() {
                         </div>
                         <button
                             type="submit"
-                            className="border border-zinc-300 rounded-full px-5 p-3 bg-black text-white flex items-center justify-between"
+                            className="w-1/2 bg-black text-white px-5 py-3 rounded-full flex items-center justify-between"
                         >
-                            Create Account
+                            Create Your Account
                             <IoMdArrowRoundForward size="25px" />
                         </button>
                     </div>
 
-                    <div className="flex justify-center pt-4">
+                    <div className="flex justify-center">
                         {error && (
                             <span className="text-red-500 text-sm">
                                 {error}

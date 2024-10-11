@@ -42,3 +42,13 @@ export const logout = async () => {
         throw error.response?.data || error.message;
     }
 };
+
+export const fetchLoanTypes = async () => {
+    try {
+        const response = await api.get("/loan-types");
+        return response.data;
+    } catch (error) {
+        console.warn("Using mock loan types due to API error:", error);
+        return loanTypes; // Fallback to local data if API fails
+    }
+};

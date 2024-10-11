@@ -11,11 +11,11 @@ function App() {
         <BrowserRouter>
             <Routes>
                 <Route element={<MainLayout />} path="/">
-                    <Route path="/" element={<HomePage />} />
+                    <Route index element={<HomePage />} />
                     <Route path="login" element={<AuthPage />} />
                     <Route path="register" element={<AuthPage />} />
                     <Route
-                        path="dashboard"
+                        path="dashboard/*"
                         element={
                             <ProtectedRoute>
                                 <Dashboard />

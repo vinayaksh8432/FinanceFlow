@@ -4,6 +4,8 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const authRoutes = require("./routes/users");
+const loanTypesRoutes = require("./routes/loanTypes");
+const loanApplicationRoutes = require("./routes/loanApplication");
 
 const app = express();
 
@@ -15,8 +17,6 @@ const allowedOrigins = ["http://localhost:5173", "http://localhost:5174"];
 app.use(
     cors({
         origin: function (origin, callback) {
-            // allow requests with no origin
-            // (like mobile apps or curl requests)
             if (!origin) return callback(null, true);
             if (allowedOrigins.indexOf(origin) === -1) {
                 var msg =
@@ -36,6 +36,8 @@ mongoose
     .catch((err) => console.error("Could not connect to MongoDB...", err));
 
 app.use("/api/users", authRoutes);
+app.use("/api/loan-types", loanTypesRoutes);
+app.use("/api/loan-applications", loanApplicationRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

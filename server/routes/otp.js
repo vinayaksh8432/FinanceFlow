@@ -8,28 +8,33 @@ function generateOTP() {
 }
 
 async function sendOTP(email, otp) {
-    let testAccount = await nodemailer.createTestAccount();
-
+    // Create a transporter using Gmail SMTP
     let transporter = nodemailer.createTransport({
-        host: "smtp.ethereal.email",
-        port: 587,
-        secure: false,
+        service: "gmail",
         auth: {
-            user: testAccount.user,
-            pass: testAccount.pass,
+            user: process.env.EMAIL_USER, // Your Gmail address
+            pass: process.env.EMAIL_APP_PASSWORD, // Your Gmail App Password
         },
     });
 
-    let info = await transporter.sendMail({
-        from: '"Your App" <noreply@yourapp.com>',
+    // Email options
+    let mailOptions = {
+        from: process.env.EMAIL_USER,
         to: email,
         subject: "Your Login OTP",
         text: `Your OTP is: ${otp}`,
-        html: `<b>Your OTP is: ${otp}</b>`,
-    });
+        html: `<h1>Your OTP is: ${otp}</h1>`,
+        // html: `<b>Your OTP is: ${otp}</b>`,
+    };
 
-    console.log("Message sent: %s", info.messageId);
-    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+    try {
+        let info = await transporter.sendMail(mailOptions);
+        console.log("Message sent: %s", info.messageId);
+        return true;
+    } catch (error) {
+        console.error("Error sending email:", error);
+        return false;
+    }
 }
 
 function storeOTP(userId, otp) {

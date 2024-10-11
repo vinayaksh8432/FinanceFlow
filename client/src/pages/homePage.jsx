@@ -34,18 +34,18 @@ export default function HomePage() {
         <>
             <div>
                 <Header />
-                <div className="bg-[url('assets/bluebg.jpg')] rounded-[30px] text-center bg-cover h-[78vh]">
-                    <h1 className="text-9xl text-gray-100 pt-28">
-                        Better financial <br />
-                        lives built
-                    </h1>
-                    <h1 className="text-lg text-gray-100">
-                        Unparalleled budgeting features. Data import. Zero ads.
-                        Bank-grade security.
-                    </h1>
-                </div>
-                <div className="relative pb-20">
-                    <div className="absolute -translate-y-40 flex justify-center text-left gap-4 backdrop-blur-[1px]">
+                <div className="bg-[url('assets/bluebg.jpg')] rounded-t-[80px] text-center bg-cover flex flex-col gap-16 py-20">
+                    <div>
+                        <h1 className="text-9xl text-gray-100 ">
+                            Better financial <br />
+                            lives built
+                        </h1>
+                        <h1 className="text-lg text-gray-100">
+                            Unparalleled budgeting features. Data import. Zero
+                            ads. Bank-grade security.
+                        </h1>
+                    </div>
+                    <div className="flex justify-center text-left gap-4">
                         <FeatureCard
                             icon={MdOutlinePrivacyTip}
                             bgColor="#ecd9ff"
@@ -80,6 +80,7 @@ export default function HomePage() {
                         />
                     </div>
                 </div>
+                <div className="relative"></div>
                 <Footer />
             </div>
         </>

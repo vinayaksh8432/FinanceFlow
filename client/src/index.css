@@ -22,9 +22,24 @@
     html,
     body {
         font-family: "SFPro-Mid";
-        /* background: #f4f4f4; */
         background-color: #f3f4f6;
         color: rgb(var(--color-secondary));
+        margin: 0;
+        padding: 0;
+    }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+        width: 12px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: rgb(var(--color-secondary));
+        border-radius: 10px;
+        border: 3px solid #f1f1f1;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background-color: #555;
     }
 }
 
@@ -39,8 +54,8 @@
 }
 
 @font-face {
-    font-family: "Didot";
-    src: url(fonts/Didot.otf);
+    font-family: "Nohemi";
+    src: url(fonts/BaruSansDemo-Medium.otf);
 }
 
 .login-BG {
@@ -50,12 +65,21 @@
 
 @layer utilities {
     font-[SFPro-Reg] {
-        font-family: "SFPro-Reg" !important;
+        font-family: "SFPro-Reg";
     }
-    /* font-[Merriweather] {
-        font-family: "Merriweather";
-    } */
-    /* bg-[bubbleIcon] {
-        background-image: url(assets/bubbleicon.svg);
-    } */
+    font-[Nohemi] {
+        font-family: "Nohemi";
+    }
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+    -moz-appearance: textfield;
 }

@@ -44,7 +44,7 @@ router.post("/login", async (req, res) => {
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
-        
+
         if (!isMatch) {
             return res.status(400).json({ message: "Password is incorrect" });
         }
@@ -81,12 +81,12 @@ router.post("/userAuth", async (req, res) => {
 
         // Generate token
         const token = jwt.sign({ id: user._id }, JWT_SECRET, {
-            expiresIn: "1h",
+            expiresIn: "1d", // Change to 1 day
         });
 
         res.cookie("token", token, {
             httpOnly: true,
-            maxAge: 3600000,
+            maxAge: 86400000, // 1 day in milliseconds
             secure: process.env.NODE_ENV === "production",
             sameSite: "strict",
         });
@@ -102,6 +102,74 @@ router.post("/userAuth", async (req, res) => {
             message: "Internal server error",
             error: error.message,
         });
+    }
+});
+
+router.post("/resend-otp", async (req, res) => {
+    const { userId } = req.body;
+
+    try {
+        const user = await CustomerModel.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const otp = otpModule.generateOTP();
+        const emailSent = await otpModule.sendOTP(user.email, otp);
+
+        if (!emailSent) {
+            return res
+                .status(500)
+                .json({ message: "Failed to send OTP email" });
+        }
+
+        otpModule.storeOTP(userId, otp);
+
+        res.json({ message: "OTP resent successfully" });
+    } catch (error) {
+        console.error("Error resending OTP:", error);
+        res.status(500).json({ message: "Failed to resend OTP" });
+    }
+});
+
+router.post("/verify-otp", async (req, res) => {
+    const { userId, otp } = req.body;
+
+    try {
+        if (!otpModule.verifyOTP(userId, otp)) {
+            return res.status(400).json({ message: "Invalid or expired OTP" });
+        }
+
+        const user = await CustomerModel.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Generate JWT token
+        const token = jwt.sign({ id: user._id }, JWT_SECRET, {
+            expiresIn: "1d", // Change to 1 day
+        });
+
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+            maxAge: 86400000, // 1 day in milliseconds
+        });
+
+        res.json({
+            message: "OTP verified successfully",
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                // other user fields you want to send
+            },
+            token,
+        });
+    } catch (error) {
+        console.error("Error verifying OTP:", error);
+        res.status(500).json({ message: "Failed to verify OTP" });
     }
 });
 
@@ -124,7 +192,6 @@ router.post("/logout", async (req, res) => {
     res.json({ message: "Logged out successfully" });
 });
 
-// Modify the user route to return user details
 router.get("/user", async (req, res) => {
     const token = req.cookies.token;
     if (!token) {

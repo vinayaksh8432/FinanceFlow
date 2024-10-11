@@ -1,32 +1,34 @@
-import { useState } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Home from "../components/Home/Home";
 import Sidebar from "../components/Sidebar/sidebar";
 import Loan from "../components/Loan/Loan";
 
 export default function Dashboard() {
-    const [activeSection, setActiveSection] = useState("home");
-
-    const renderActiveSection = () => {
-        switch (activeSection) {
-            case "home":
-                return <Home />;
-            case "loan":
-                return <Loan />;
-            // case "transactions":
-            //     return <Transactions />;
-            // case "emi":
-            //     return <EMI />;
-            default:
-                return <Home />;
-        }
-    };
-
     return (
-        <>
-            <div className="flex bg-gray-100 ">
-                <Sidebar setActiveSection={setActiveSection} />
-                {renderActiveSection()}
+        <div className="flex font-[Nohemi]">
+            <div className="w-1/6 sticky self-start top-0 bg-gray-200">
+                <div className=" h-screen p-4 ">
+                    <Sidebar />
+                </div>
             </div>
-        </>
+
+            <div className="flex-1 px-4">
+                <div className="py-4">
+                    <Routes>
+                        <Route index element={<Navigate to="home" replace />} />
+                        <Route path="home" element={<Home />} />
+                        <Route path="loan" element={<Loan />} />
+                        <Route
+                            path="activities"
+                            element={<div>Activities Component</div>}
+                        />
+                        <Route
+                            path="transactions"
+                            element={<div>Transactions Component</div>}
+                        />
+                    </Routes>
+                </div>
+            </div>
+        </div>
     );
 }

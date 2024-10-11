@@ -1,85 +1,65 @@
-import { useState } from "react";
+import { NavLink } from "react-router-dom";
 import { HiMiniHome } from "react-icons/hi2";
 import { IoIosStats } from "react-icons/io";
 import { LuCreditCard } from "react-icons/lu";
 import { MdArrowForwardIos } from "react-icons/md";
 import { FaMoneyBillWave } from "react-icons/fa6";
 
-export default function Menu({ setActiveSection }) {
-    const [activeButton, setActiveButton] = useState("home");
-
-    const handleButtonClick = (button) => {
-        setActiveButton(button);
-        setActiveSection(button);
-    };
+export default function Menu() {
+    const menuItems = [
+        {
+            path: "home",
+            icon: <HiMiniHome size="25px" />,
+            label: "Home",
+        },
+        {
+            path: "activities",
+            icon: <IoIosStats size="25px" />,
+            label: "Activities",
+        },
+        {
+            path: "transactions",
+            icon: <LuCreditCard size="25px" />,
+            label: "Transactions",
+        },
+        {
+            path: "loan",
+            icon: <FaMoneyBillWave size="25px" />,
+            label: "Loans",
+        },
+    ];
 
     return (
-        <>
-            <div>
-                <h1 className="my-4 uppercase text-gray-400 font-[SFPro-Reg]">
-                    Menu
-                </h1>
-                <div className="h-full flex flex-col justify-between gap-4">
-                    <button
-                        className={`w-full flex items-center justify-between rounded-md p-3 px-4 ${
-                            activeButton === "home"
-                                ? "bg-white text-black"
-                                : "text-gray-400"
-                        }`}
-                        onClick={() => handleButtonClick("home")}
+        <div>
+            <h1 className="my-4 uppercase text-gray-400 font-[SFPro-Reg]">
+                Menu
+            </h1>
+            <div className="flex flex-col gap-4">
+                {menuItems.map((item) => (
+                    <NavLink
+                        key={item.path}
+                        to={item.path}
+                        className={({ isActive }) => `
+                            w-full flex items-center justify-between rounded-md py-2 px-3
+                            ${
+                                isActive
+                                    ? "bg-white text-black"
+                                    : "text-gray-400"
+                            }
+                        `}
                     >
-                        <span className="flex items-center gap-4">
-                            <HiMiniHome size="25px" />
-                            Home
-                        </span>
-                        {activeButton === "home" && <MdArrowForwardIos />}
-                    </button>
-                    <button
-                        className={`w-full flex items-center justify-between rounded-md p-3 px-4 ${
-                            activeButton === "activities"
-                                ? "bg-white text-black"
-                                : "text-gray-400"
-                        }`}
-                        onClick={() => handleButtonClick("activities")}
-                    >
-                        <span className="flex items-center gap-4">
-                            <IoIosStats size="25px" />
-                            Activities
-                        </span>
-                        {activeButton === "activities" && <MdArrowForwardIos />}
-                    </button>
-                    <button
-                        className={`w-full flex items-center justify-between rounded-md p-3 px-4 ${
-                            activeButton === "transactions"
-                                ? "bg-white text-black"
-                                : "text-gray-400"
-                        }`}
-                        onClick={() => handleButtonClick("transactions")}
-                    >
-                        <span className="flex items-center gap-4">
-                            <LuCreditCard size="25px" />
-                            Transactions
-                        </span>
-                        {activeButton === "transactions" && (
-                            <MdArrowForwardIos />
+                        {({ isActive }) => (
+                            <>
+                                <span className="flex items-center gap-4">
+                                    {item.icon}
+                                    {item.label}
+                                </span>
+                                {isActive && <MdArrowForwardIos />}
+                            </>
                         )}
-                    </button>
-                    <button
-                        className={`w-full flex items-center justify-between rounded-md p-3 px-4 ${
-                            activeButton === "loan"
-                                ? "bg-white text-black"
-                                : "text-gray-400"
-                        }`}
-                        onClick={() => handleButtonClick("loan")}
-                    >
-                        <span className="flex items-center gap-4">
-                            <FaMoneyBillWave size="25px" />
-                            EMI / Loans
-                        </span>
-                        {activeButton === "loan" && <MdArrowForwardIos />}
-                    </button>
-                </div>
+                    </NavLink>
+                ))}
             </div>
-        </>
+        </div>
     );
 }
