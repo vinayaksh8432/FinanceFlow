@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUserDetails } from "../../utils/api";
-import { CgProfile } from "react-icons/cg";
 import { FaArrowUpRightFromSquare } from "react-icons/fa6";
-import { IoIosArrowDown } from "react-icons/io";
 import { CaretDown, User } from "@phosphor-icons/react";
-import Cards from "./Cards";
 
 export default function Home() {
     const [user, setUser] = useState("");
@@ -33,7 +30,7 @@ export default function Home() {
     return (
         <>
             <div>
-                <div className="flex justify-between py-2">
+                <div className="flex justify-between py-2 px-4">
                     <div>
                         <h1 className="text-lg">Hi, {user.name}!</h1>
                         <h2 className="text-gray-500 leading-[1]">
@@ -43,7 +40,7 @@ export default function Home() {
 
                     <div className="flex relative">
                         {viewProfile && (
-                            <div className="w-full absolute px-4 py-3 border right-0 top-12 text-sm bg-slate-200 rounded-xl flex flex-col gap-2">
+                            <div className="w-full min-w-40 absolute px-4 py-3 border right-0 top-12 text-sm bg-slate-200 rounded-xl flex flex-col gap-2">
                                 <button className="flex items-center gap-2">
                                     <FaArrowUpRightFromSquare size="12px" />
                                     View Profile
@@ -82,9 +79,6 @@ export default function Home() {
                             </button>
                         </div>
                     </div>
-                </div>
-                <div className="bg-white rounded-xl flex flex-col gap-4 p-4">
-                    <Cards />
                 </div>
             </div>
         </>

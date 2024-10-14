@@ -52,3 +52,26 @@ export const fetchLoanTypes = async () => {
         return loanTypes; // Fallback to local data if API fails
     }
 };
+
+export const fetchLoanTenure = async () => {
+    try {
+        const response = await api.get("/loan-tenure");
+        return response.data;
+    } catch (error) {
+        console.warn("Using mock loan tenure due to API error:", error);
+        return loanTenure; // Fallback to local data if API fails
+    }
+};
+
+export const fetchLoanApplications = async () => {
+    try {
+        const response = await api.get("/loan-applications");
+        return response.data;
+    } catch (error) {
+        console.error(
+            "Error in fetchLoanApplications:",
+            error.response || error
+        );
+        throw error.response?.data || error.message;
+    }
+};

@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { loanTypes } = require("../data/loanTypes"); // Make sure this path is correct
+const { loanTypes } = require("../data/loanTypes"); 
 
 router.get("/", (req, res) => {
     try {

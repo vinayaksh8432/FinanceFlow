@@ -5,7 +5,7 @@ import Loan from "../components/Loan/Loan";
 
 export default function Dashboard() {
     return (
-        <div className="flex font-[Nohemi]">
+        <div className="flex relative">
             <div className="w-1/6 sticky self-start top-0 bg-gray-200">
                 <div className=" h-screen p-4 ">
                     <Sidebar />
