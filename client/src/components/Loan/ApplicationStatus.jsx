@@ -13,7 +13,7 @@ import EditModal from "../Home/editModal";
 import { generatePDF } from "../../utils/pdfGenerator";
 import { TailSpin } from "react-loader-spinner";
 
-export default function ApplicationStatus({ onApplyClick }) {
+export default function ApplicationStatus() {
     const [applications, setApplications] = useState([]);
     const [error, setError] = useState("");
     const [actions, setActions] = useState(false);
@@ -138,16 +138,16 @@ export default function ApplicationStatus({ onApplyClick }) {
     };
 
     return (
-        <div className="max-w-7xl p-4">
+        <div className="max-w-7xl bg-white p-4 rounded-md ">
             <h1 className="text-2xl font-bold mb-4">Application Status</h1>
             {applications.length === 0 ? (
                 <div className="flex items-center gap-2 text-sm">
-                    <p className="p-2 border rounded-md shadow-sm flex gap-1 items-center justify-center">
+                    <p className="p-2 border rounded-md shadow-sm flex gap-1 items-center">
                         <Warning /> No applications found.
                     </p>
                     <button
                         onClick={fetchApplications}
-                        className="p-2.5 border rounded-md shadow-sm flex gap-1 items-center justify-center"
+                        className="p-2.5 border rounded-md shadow-sm flex gap-1 items-center"
                         disabled={isLoading}
                     >
                         {isLoading ? (
@@ -160,12 +160,6 @@ export default function ApplicationStatus({ onApplyClick }) {
                         ) : (
                             <ArrowClockwise />
                         )}
-                    </button>
-                    <button
-                        className="p-2 border rounded-md shadow-sm hover:underline"
-                        onClick={onApplyClick}
-                    >
-                        Click here to apply
                     </button>
                 </div>
             ) : (

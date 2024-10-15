@@ -15,7 +15,6 @@ const EditModal = ({ application, onSave, onCancel, onApplicationDeleted }) => {
         LoanType: application?.LoanType || "",
         DesiredLoanAmount: application?.DesiredLoanAmount || "",
         LoanTenure: application?.LoanTenure || "",
-        // Add other fields as needed
     });
     const [error, setError] = useState("");
     const actionMenuRef = useRef(null);

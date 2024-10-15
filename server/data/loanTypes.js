@@ -1,37 +1,42 @@
 const loanTypes = [
     {
         id: "personal",
+        typeImage: "assets/home.svg",
         name: "Personal Loan",
-        description: "For your personal needs",
-        maxAmount: 1000000,
+        description:
+            "Get a Personal Loan upto 35 lakhs in few easy steps with FinanceFlow",
         interestRate: "10.99%",
     },
     {
         id: "home",
+        typeImage: "assets/home.svg",
         name: "Home Loan",
-        description: "Make your dream home a reality",
-        maxAmount: 5000000,
+        description:
+            "Get a Step Closer to  your Dream Home with FinanceFlow  Home Loan",
         interestRate: "7.50%",
     },
     {
         id: "car",
+        typeImage: "assets/home.svg",
         name: "Car Loan",
-        description: "Drive your dream car today",
-        maxAmount: 1500000,
+        description:
+            "Drive your Dream Car with FinanceFlow Car Loan at best interest rate.",
         interestRate: "8.75%",
     },
     {
         id: "education",
+        typeImage: "assets/home.svg",
         name: "Education Loan",
-        description: "Invest in your future",
-        maxAmount: 2000000,
+        description:
+            "Give wings to your career with FinanceFlow Education Loan",
         interestRate: "6.50%",
     },
     {
-        id: "business",
-        name: "Business Loan",
-        description: "Grow your business",
-        maxAmount: 3000000,
+        id: "gold",
+        typeImage: "assets/home.svg",
+        name: "Gold Loan",
+        description:
+            "Apply for Gold Loan with FinanceFlow and get the best interest rates",
         interestRate: "11.50%",
     },
 ];

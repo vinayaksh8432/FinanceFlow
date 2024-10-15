@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Home from "../components/Home/Home";
 import Sidebar from "../components/Sidebar/sidebar";
 import Loan from "../components/Loan/Loan";
+import ApplyLoan from "../components/Loan/ApplyLoan";
 
 export default function Dashboard() {
     return (
@@ -18,6 +19,10 @@ export default function Dashboard() {
                         <Route index element={<Navigate to="home" replace />} />
                         <Route path="home" element={<Home />} />
                         <Route path="loan" element={<Loan />} />
+                        <Route
+                            path="loan/applynewloan"
+                            element={<ApplyLoan />}
+                        />
                         <Route
                             path="activities"
                             element={<div>Activities Component</div>}

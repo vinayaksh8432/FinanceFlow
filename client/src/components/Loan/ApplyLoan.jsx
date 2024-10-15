@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { fetchLoanTypes } from "../../utils/api";
+import { fetchLoanTenure, fetchLoanTypes } from "../../utils/api";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers";
 import { GetState, GetCity } from "react-country-state-city";
+import { ArrowClockwise } from "@phosphor-icons/react";
+import { TailSpin } from "react-loader-spinner";
 import { useNavigate } from "react-router-dom";
 
-export default function ApplyLoan({ onFormSubmit }) {
-    const navigate = useNavigate();
+export default function ApplyLoan() {
     const INDIA_COUNTRY_ID = 101;
     const [selectedLoanType, setSelectedLoanType] = useState("");
     const [selectedLoanTenure, setSelectedLoanTenure] = useState("");
     const [loanTypes, setLoanTypes] = useState([]);
-    const [error, setError] = useState(null);
+    const [loanTenure, setLoanTenure] = useState([]);
     const [martialStatus, setMartialStatus] = useState("");
 
     const [stateList, setStateList] = useState([]);
@@ -20,20 +21,15 @@ export default function ApplyLoan({ onFormSubmit }) {
     const [selectedState, setSelectedState] = useState("");
     const [selectedCity, setSelectedCity] = useState("");
 
-    const loanTenures = [
-        "12 Months",
-        "24 Months",
-        "36 Months",
-        "48 Months",
-        "60 Months",
-    ];
-
     const [postalCode, setPostalCode] = useState("");
 
     const martialStatuses = ["Single", "Married", "Divorced", "Widowed"];
 
     const [occupationStatus, setOccupationStatus] = useState("");
     const occupation = ["Employed", "Self Employed", "Business Owner"];
+
+    const [error, setError] = useState("");
+    const navigate = useNavigate();
 
     useEffect(() => {
         const getLoanTypes = async () => {
@@ -46,8 +42,18 @@ export default function ApplyLoan({ onFormSubmit }) {
                 console.error("Error fetching loan types:", err);
             }
         };
+        const getLoanTenure = async () => {
+            try {
+                const response = await fetchLoanTenure();
+                setLoanTenure(response);
+            } catch (err) {
+                setError(err.message || "Failed to fetch loan tenure");
+                console.error("Error fetching loan tenure:", err);
+            }
+        };
 
         getLoanTypes();
+        getLoanTenure();
     }, []);
 
     const handleLoanTypeSelect = (type) => {
@@ -103,12 +109,6 @@ export default function ApplyLoan({ onFormSubmit }) {
             setCityList([]);
         }
     };
-
-    useEffect(() => {
-        GetState(INDIA_COUNTRY_ID).then((result) => {
-            setStateList(result);
-        });
-    }, []);
 
     useEffect(() => {
         // Fetch states for India when component mounts
@@ -182,37 +182,20 @@ export default function ApplyLoan({ onFormSubmit }) {
 
             const result = await response.json();
             alert("Loan application submitted successfully!");
-            onFormSubmit();
+            navigate("/dashboard/loan");
         } catch (error) {
             setError("Failed to submit loan application. Please try again.");
             console.error("Error:", error);
         }
     };
 
-    const [applicationsFound, setApplicationsFound] = useState(false);
-
-    useEffect(() => {
-        // Check if there are any applications
-        const checkApplications = async () => {
-            try {
-                const response = await fetch(
-                    "http://localhost:3000/api/loan-applications"
-                );
-                const data = await response.json();
-                setApplicationsFound(data.length > 0);
-            } catch (error) {
-                console.error("Error checking applications:", error);
-            }
-        };
-
-        checkApplications();
-    }, []);
+    const [isLoading, setIsLoading] = useState(false);
 
     return (
         <>
-            <div>
-                <h1 className="p-4 py-3 text-xl bg-slate-200 h-full shadow-inner border border-b-0 rounded-t-xl flex justify-between items-center">
-                    Apply Loan in Minutes
+            <div className="bg-white rounded-md rounded-t-xl overflow-hidden">
+                <h1 className="p-4 py-3 text-xl bg-slate-200 h-full shadow-inner flex justify-between items-center">
+                    Apply for a new Loan
                 </h1>
                 <hr />
                 <form
@@ -267,20 +250,20 @@ export default function ApplyLoan({ onFormSubmit }) {
                     <div>
                         <h1 className="pb-2">Loan Tenure</h1>
                         <div className="grid grid-cols-5 gap-4">
-                            {loanTenures.map((tenure, index) => (
+                            {loanTenure.map((tenure) => (
                                 <button
-                                    key={index}
+                                    key={tenure.id}
                                     type="button"
                                     onClick={() =>
-                                        handleLoanTenureSelect(tenure)
+                                        handleLoanTenureSelect(tenure.name)
                                     }
                                     className={`py-2 px-4 rounded-md border border-gray-300 transition-all duration-200 ${
-                                        selectedLoanTenure === tenure
+                                        selectedLoanTenure === tenure.name
                                             ? "bg-gray-800 text-white transition-all"
                                             : "border border-gray-300 hover:bg-gray-100 transition-all"
                                     }`}
                                 >
-                                    {tenure}
+                                    {tenure.name}
                                 </button>
                             ))}
                         </div>
@@ -423,26 +406,55 @@ export default function ApplyLoan({ onFormSubmit }) {
                                         <p>Address Line 2</p>
                                         <input
                                             type="text"
-                                            name="addressLine2" // Changed from addressLine1+2
+                                            name="addressLine2"
                                             id="addressLine2"
                                             className="py-2 px-4 border border-gray-300 rounded-md outline-none text-black"
                                         />
                                     </label>
                                 </div>
-                                <div className="flex justify-between">
-                                    <label className="flex flex-col w-1/6 relative">
+                                <div className="flex items-center gap-4">
+                                    <div className="flex flex-col">
                                         <p>Postal / Zip Code</p>
-
-                                        <input
-                                            type="text"
-                                            value={postalCode}
-                                            onChange={handlePostalCodeChange}
-                                            maxLength={6}
-                                            className="py-2 px-4 border border-gray-300 rounded-md outline-none text-black"
-                                            placeholder="6-digit Postal Code"
-                                        />
-                                    </label>
-                                    <label className="flex flex-col w-2/5">
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="text"
+                                                value={postalCode}
+                                                onChange={
+                                                    handlePostalCodeChange
+                                                }
+                                                maxLength={6}
+                                                className="py-2 px-4 border border-gray-300 rounded-md outline-none text-black"
+                                                placeholder="6-digit Postal Code"
+                                            />
+                                            <button
+                                                className="p-2.5 border rounded-md shadow-sm flex gap-1 items-center justify-center bg-white"
+                                                disabled={isLoading}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    setIsLoading(true);
+                                                    handlePostalCodeChange({
+                                                        target: {
+                                                            value: postalCode,
+                                                        },
+                                                    }).finally(() => {
+                                                        setIsLoading(false);
+                                                    });
+                                                }}
+                                            >
+                                                {isLoading ? (
+                                                    <TailSpin
+                                                        height="15"
+                                                        width="20"
+                                                        color="#000"
+                                                        ariaLabel="loading"
+                                                    />
+                                                ) : (
+                                                    <ArrowClockwise />
+                                                )}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col">
                                         <p>State</p>
                                         <select
                                             onChange={handleStateChange}
@@ -452,9 +464,7 @@ export default function ApplyLoan({ onFormSubmit }) {
                                             )}
                                             className="p-2 border border-gray-300 rounded-md outline-none text-black"
                                         >
-                                            <option value="">
-                                                Select State
-                                            </option>
+                                            <option>Select State</option>
                                             {stateList.map((state, index) => (
                                                 <option
                                                     key={state.id}
@@ -464,8 +474,8 @@ export default function ApplyLoan({ onFormSubmit }) {
                                                 </option>
                                             ))}
                                         </select>
-                                    </label>
-                                    <label className="flex flex-col w-2/5">
+                                    </div>
+                                    <div className="flex flex-col w-full">
                                         <p>City</p>
                                         <select
                                             onChange={handleCityChange}
@@ -479,9 +489,7 @@ export default function ApplyLoan({ onFormSubmit }) {
                                                 cityList.length === 0
                                             }
                                         >
-                                            <option value="">
-                                                Select City
-                                            </option>
+                                            <option>Select City</option>
                                             {cityList.map((city, index) => (
                                                 <option
                                                     key={city.id}
@@ -491,7 +499,7 @@ export default function ApplyLoan({ onFormSubmit }) {
                                                 </option>
                                             ))}
                                         </select>
-                                    </label>
+                                    </div>
                                 </div>
                                 <div className="flex gap-5">
                                     <h1>
