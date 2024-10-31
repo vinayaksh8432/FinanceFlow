@@ -5,7 +5,6 @@ export default function Cards() {
     const card = [
         { image: <User size={28} />, name: "Accounts" },
         { image: <User size={28} />, name: "Activities" },
-        { image: <User size={28} />, name: "Transactions" },
         { image: <User size={28} />, name: "Loan" },
     ];
 

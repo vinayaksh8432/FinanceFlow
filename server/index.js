@@ -6,12 +6,16 @@ const cookieParser = require("cookie-parser");
 const authRoutes = require("./routes/users");
 const loanTypesRoutes = require("./routes/loanTypes");
 const loanApplicationRoutes = require("./routes/loanApplication");
-const loanTenureRoutes = require("./routes/loanTenure");
+const path = require("path");
+const { fileURLToPath } = require("url");
 
 const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
+
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
 
 const allowedOrigins = ["http://localhost:5173", "http://localhost:5174"];
 
@@ -38,8 +42,8 @@ mongoose
 
 app.use("/api/users", authRoutes);
 app.use("/api/loan-types", loanTypesRoutes);
-app.use("/api/loan-tenure", loanTenureRoutes);
 app.use("/api/loan-applications", loanApplicationRoutes);
+app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

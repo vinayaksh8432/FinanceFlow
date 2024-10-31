@@ -1,17 +1,18 @@
 import React, { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { fetchLoanApplications } from "../../utils/api";
 import {
     ArrowClockwise,
-    DotsThree,
+    ArrowLeft,
     DownloadSimple,
     Pen,
     TrashSimple,
     Warning,
-    WarningCircle,
 } from "@phosphor-icons/react";
 import EditModal from "../Home/editModal";
 import { generatePDF } from "../../utils/pdfGenerator";
 import { TailSpin } from "react-loader-spinner";
+import Tooltip from "@mui/material/Tooltip";
 
 export default function ApplicationStatus() {
     const [applications, setApplications] = useState([]);
@@ -19,7 +20,8 @@ export default function ApplicationStatus() {
     const [actions, setActions] = useState(false);
     const [editingApplication, setEditingApplication] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-    const actionMenuRef = useRef(null);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchApplications();
@@ -137,114 +139,131 @@ export default function ApplicationStatus() {
         }
     };
 
+    const handleBackToOptions = () => {
+        navigate("/dashboard/loan");
+    };
+
     return (
-        <div className="max-w-7xl bg-white p-4 rounded-md ">
-            <h1 className="text-2xl font-bold mb-4">Application Status</h1>
-            {applications.length === 0 ? (
-                <div className="flex items-center gap-2 text-sm">
-                    <p className="p-2 border rounded-md shadow-sm flex gap-1 items-center">
-                        <Warning /> No applications found.
-                    </p>
-                    <button
-                        onClick={fetchApplications}
-                        className="p-2.5 border rounded-md shadow-sm flex gap-1 items-center"
-                        disabled={isLoading}
-                    >
-                        {isLoading ? (
-                            <TailSpin
-                                height="15"
-                                width="20"
-                                color="#000"
-                                ariaLabel="loading"
-                            />
-                        ) : (
-                            <ArrowClockwise />
-                        )}
-                    </button>
+        <>
+            {isLoading ? (
+                <div className="m-auto flex h-3/4">
+                    <div className="m-auto flex flex-col gap-4 items-center">
+                        <h1>please wait a moment</h1>
+                        <l-leapfrog size="40" speed="3.0" color="black" />
+                    </div>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {applications.map((app, index) => (
-                        <div
-                            key={app._id}
-                            className="border border-gray-300 rounded-lg shadow-sm p-4 flex items-start justify-between"
-                        >
-                            <div>
-                                <h2 className="text-lg font-semibold">
-                                    {app.FirstName} {app.MiddleName}{" "}
-                                    {app.LastName}
-                                </h2>
-                                <p className="text-sm text-gray-600">
-                                    Loan Type: {app.LoanType}
-                                </p>
-                                <p className="text-sm text-gray-600">
-                                    Amount: {app.DesiredLoanAmount}
-                                </p>
-                                <p className="text-sm text-gray-600">
-                                    Duration: {app.LoanTenure}
-                                </p>
-                                <p className="text-sm text-gray-600">
-                                    Status:{" "}
-                                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                        PENDING
-                                    </span>
-                                </p>
-                            </div>
-                            <div className="relative">
-                                <button
-                                    onClick={() => toggleAction(index)}
-                                    className="relative"
-                                >
-                                    <DotsThree
-                                        size={24}
-                                        className="text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-sm "
+                <div className="rounded-md overflow-hidden h-full">
+                    <div className="p-4 py-3 text-xl bg-slate-200 shadow-inner flex items-center gap-2 rounded-t-xl">
+                        <ArrowLeft
+                            className="text-3xl cursor-pointer hover:bg-gray-300 hover:shadow-inner p-1.5 transition-all rounded-full"
+                            onClick={handleBackToOptions}
+                        />
+                        <h1>Application Status</h1>
+                    </div>
+                    {applications.length === 0 ? (
+                        <div className="flex items-center gap-2 text-sm py-4 bg-white rounded-b-xl px-4">
+                            <p className="p-2 border rounded-md shadow-sm flex gap-1 items-center">
+                                <Warning /> No applications found.
+                            </p>
+                            <button
+                                onClick={fetchApplications}
+                                className="p-2.5 border rounded-md shadow-sm flex gap-1 items-center"
+                                disabled={isLoading}
+                            >
+                                {isLoading ? (
+                                    <TailSpin
+                                        height="15"
+                                        width="20"
+                                        color="#000"
+                                        ariaLabel="loading"
                                     />
-                                </button>
-                                {actions === index && (
-                                    <div
-                                        ref={actionMenuRef}
-                                        className="absolute z-10 rounded-md bg-white border border-gray-200 flex flex-col items-center"
-                                    >
-                                        <button
-                                            onClick={() => handleEdit(app)}
-                                            className="py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 w-full flex justify-between items-center"
-                                        >
-                                            Edit
-                                            <Pen />
-                                        </button>
-                                        <hr className="border-t border-neutral-200 w-4/5" />
-                                        <button
-                                            onClick={() =>
-                                                deleteApplication(app._id)
-                                            }
-                                            className="py-2 px-4 text-sm text-red-700 hover:bg-red-100 hover:text-red-900 w-full flex justify-between items-center"
-                                        >
-                                            Delete
-                                            <TrashSimple />
-                                        </button>
-                                        <hr className="border-t border-neutral-200 w-4/5" />
-                                        <button
-                                            onClick={() => handleDownload(app)}
-                                            className="py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 w-full flex justify-between items-center gap-2"
-                                        >
-                                            Download
-                                            <DownloadSimple />
-                                        </button>
-                                    </div>
+                                ) : (
+                                    <ArrowClockwise />
                                 )}
-                            </div>
+                            </button>
                         </div>
-                    ))}
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 bg-white p-4 rounded-b-xl">
+                            {applications.map((app, index) => (
+                                <div
+                                    key={app._id}
+                                    className="font-[SFPro-Reg] h-full bg-gradient-to-br from-orange-100 border border-gray-600 rounded-lg shadow-sm p-4 flex items-start justify-between"
+                                >
+                                    <div>
+                                        <p className="text-xs">{app.loanId}</p>
+                                        <p className="text-lg mb-4">
+                                            {app.FirstName} {app.MiddleName}{" "}
+                                            {app.LastName}
+                                        </p>
+                                        <p className="text-sm ">
+                                            Loan Type: {app.LoanType}
+                                        </p>
+                                        <p className="text-sm ">
+                                            Amount: {app.DesiredLoanAmount}
+                                        </p>
+                                        <p className="text-sm ">
+                                            Duration: {app.LoanTenure}
+                                        </p>
+                                    </div>
+                                    <div className="h-full flex flex-col justify-between items-end">
+                                        <span className="text-xs bg-yellow-50 text-amber-600 rounded-full border border-amber-600 px-1.5">
+                                            PENDING
+                                        </span>
+                                        <div className="flex gap-2">
+                                            <Tooltip title="Edit" arrow>
+                                                <button
+                                                    onClick={() =>
+                                                        handleEdit(app)
+                                                    }
+                                                    className="text-sm text-gray-700 hover:text-gray-900"
+                                                >
+                                                    {/* Edit */}
+                                                    <Pen />
+                                                </button>
+                                            </Tooltip>
+                                            {/* <hr className="border-t border-neutral-200 w-4/5" /> */}
+                                            <Tooltip title="Delete" arrow>
+                                                <button
+                                                    onClick={() =>
+                                                        deleteApplication(
+                                                            app._id
+                                                        )
+                                                    }
+                                                    className="text-sm text-red-700"
+                                                >
+                                                    {/* Delete */}
+                                                    <TrashSimple />
+                                                </button>
+                                            </Tooltip>
+                                            {/* <hr className="border-t border-neutral-200 w-4/5" /> */}
+                                            <Tooltip title="Download" arrow>
+                                                <button
+                                                    onClick={() =>
+                                                        handleDownload(app)
+                                                    }
+                                                    className="text-sm text-gray-700 hover:text-gray-900"
+                                                >
+                                                    {/* Download */}
+                                                    <DownloadSimple />
+                                                </button>
+                                            </Tooltip>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                    {editingApplication && (
+                        <EditModal
+                            application={editingApplication}
+                            onSave={handleSaveEdit}
+                            onCancel={() => setEditingApplication(null)}
+                            onApplicationDeleted={handleApplicationDeleted}
+                        />
+                    )}
                 </div>
             )}
-            {editingApplication && (
-                <EditModal
-                    application={editingApplication}
-                    onSave={handleSaveEdit}
-                    onCancel={() => setEditingApplication(null)}
-                    onApplicationDeleted={handleApplicationDeleted}
-                />
-            )}
-        </div>
+        </>
     );
 }

@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { fetchLoanTenure, fetchLoanTypes } from "../../utils/api";
 import { ArrowLineRight } from "@phosphor-icons/react";
 import { FaCheck } from "react-icons/fa6";
 import { FaTrash } from "react-icons/fa";
@@ -18,43 +17,8 @@ const EditModal = ({ application, onSave, onCancel, onApplicationDeleted }) => {
     });
     const [error, setError] = useState("");
     const actionMenuRef = useRef(null);
-    const [selectedLoanType, setSelectedLoanType] = useState([]);
-    const [selectedLoanTenure, setSelectedLoanTenure] = useState([]);
     const [action, setAction] = useState(null);
     const [isLoading, setLoading] = useState(false);
-
-    useEffect(() => {
-        const getLoanTypes = async () => {
-            try {
-                const data = await fetchLoanTypes();
-                setSelectedLoanType(data);
-            } catch (err) {
-                setError(err.message || "Failed to fetch loan types");
-                console.error("Error fetching loan types:", err);
-            }
-        };
-
-        const getLoanTenure = async () => {
-            try {
-                const response = await fetchLoanTenure();
-                setSelectedLoanTenure(response);
-            } catch (err) {
-                setError(err.message || "Failed to fetch loan tenure");
-                console.error("Error fetching loan tenure:", err);
-            }
-        };
-
-        getLoanTypes();
-        getLoanTenure();
-    }, []);
-
-    const handleLoanTypeSelect = (loanType) => {
-        setEditedApplication((prev) => ({ ...prev, LoanType: loanType }));
-    };
-
-    const handleLoanTenureSelect = (loanTenure) => {
-        setEditedApplication((prev) => ({ ...prev, LoanTenure: loanTenure }));
-    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -153,105 +117,8 @@ const EditModal = ({ application, onSave, onCancel, onApplicationDeleted }) => {
                     </div>
                     <hr className="border-t border-gray-200 -mx-6" />
                 </div>
-                <div className="flex flex-col h-full justify-evenly">
-                    <h1 className="text-2xl font-semibold tracking-wide">
-                        Edit Application
-                    </h1>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="flex flex-col gap-2">
-                            <label>First Name</label>
-                            <input
-                                type="text"
-                                name="FirstName"
-                                value={editedApplication.FirstName}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded"
-                            />
-                        </div>
-                        <div className="flex flex-col gap-2">
-                            <label>Last Name</label>
-                            <input
-                                type="text"
-                                name="LastName"
-                                value={editedApplication.LastName}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded"
-                            />
-                        </div>
-                        <div>
-                            <label>Email</label>
-                            <input
-                                type="text"
-                                name="email"
-                                value={editedApplication.email}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded"
-                            />
-                        </div>
-                        <div>
-                            <label>Phone</label>
-                            <input
-                                type="number"
-                                name="phone"
-                                value={editedApplication.phone}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded"
-                            />
-                        </div>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                        <label>Loan Type</label>
-                        <div className="grid grid-cols-3 gap-4">
-                            {selectedLoanType.map((type) => (
-                                <button
-                                    key={type.id}
-                                    type="button"
-                                    onClick={() =>
-                                        handleLoanTypeSelect(type.name)
-                                    }
-                                    className={`py-2 px-4 rounded-md border transition-all duration-200 ${
-                                        editedApplication.LoanType === type.name
-                                            ? "bg-gray-800 text-white transition-all"
-                                            : "border-gray-300 hover:bg-gray-100 transition-all"
-                                    }`}
-                                >
-                                    {type.name}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="flex justify-between items-center">
-                        <label>Loan Amount</label>
-                        <input
-                            type="number"
-                            name="DesiredLoanAmount"
-                            value={editedApplication.DesiredLoanAmount}
-                            onChange={handleChange}
-                            className="p-2 border rounded"
-                        />
-                    </div>
-                    <div className="flex flex-col gap-2">
-                        <label>Loan Tenure</label>
-                        <div className="grid grid-cols-3 gap-4">
-                            {selectedLoanTenure.map((tenure) => (
-                                <button
-                                    key={tenure.id}
-                                    type="button"
-                                    onClick={() =>
-                                        handleLoanTenureSelect(tenure.name)
-                                    }
-                                    className={`py-2 px-4 rounded-md border border-gray-300 transition-all duration-200 ${
-                                        editedApplication.LoanTenure ===
-                                        tenure.name
-                                            ? "bg-gray-800 text-white transition-all"
-                                            : "border border-gray-300 hover:bg-gray-100 transition-all"
-                                    }`}
-                                >
-                                    {tenure.name}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
+                <div className="flex justify-center">
+                    Under Development
                 </div>
                 <div>
                     <hr className="border-t border-gray-200 -mx-6 pb-4" />

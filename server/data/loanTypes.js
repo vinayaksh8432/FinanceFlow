@@ -1,43 +1,69 @@
 const loanTypes = [
     {
         id: "personal",
-        typeImage: "assets/home.svg",
-        name: "Personal Loan",
+        typeImage: "assets/personal.svg",
+        name: "Personal",
         description:
-            "Get a Personal Loan upto 35 lakhs in few easy steps with FinanceFlow",
-        interestRate: "10.99%",
+            "Get a Personal Loan upto 12 lakhs in few easy steps with FinanceFlow",
+        shortDescription: "For all your needs",
+        interestRate: "12%",
+        upto: "12 Lakhs",
+        maxAmount: 1200000, // 12 lakhs
+        allowedTenures: ["12 Months", "24 Months", "36 Months"],
     },
     {
         id: "home",
         typeImage: "assets/home.svg",
-        name: "Home Loan",
+        name: "Home",
         description:
-            "Get a Step Closer to  your Dream Home with FinanceFlow  Home Loan",
+            "Get a Step Closer to your Dream Home with FinanceFlow Home Loan",
+        shortDescription: "For your dream home",
         interestRate: "7.50%",
+        upto: "3 Crore",
+        maxAmount: 30000000, // 3 crores
+        allowedTenures: [
+            "12 Months",
+            "24 Months",
+            "36 Months",
+            "48 Months",
+            "60 Months",
+        ],
     },
     {
         id: "car",
-        typeImage: "assets/home.svg",
-        name: "Car Loan",
+        typeImage: "assets/car.svg",
+        name: "Car",
         description:
             "Drive your Dream Car with FinanceFlow Car Loan at best interest rate.",
+        shortDescription: "For your dream car",
         interestRate: "8.75%",
+        upto: "45 Lakh",
+        maxAmount: 4500000, // 45 lakhs
+        allowedTenures: ["12 Months", "24 Months", "36 Months", "48 Months"], 
     },
     {
         id: "education",
-        typeImage: "assets/home.svg",
-        name: "Education Loan",
+        typeImage: "assets/education.svg",
+        name: "Education",
         description:
             "Give wings to your career with FinanceFlow Education Loan",
+        shortDescription: "For your bright future",
         interestRate: "6.50%",
+        upto: "25 Lakhs",
+        maxAmount: 2500000, // 25 lakhs
+        allowedTenures: ["24 Months", "36 Months", "48 Months", "60 Months"], 
     },
     {
         id: "gold",
-        typeImage: "assets/home.svg",
-        name: "Gold Loan",
+        typeImage: "assets/gold.svg",
+        name: "Gold",
         description:
             "Apply for Gold Loan with FinanceFlow and get the best interest rates",
+        shortDescription: "For your urgent needs",
         interestRate: "11.50%",
+        upto: "1 Crore",
+        maxAmount: 10000000, // 1 crore 
+        allowedTenures: ["12 Months", "24 Months", "36 Months"],
     },
 ];
 

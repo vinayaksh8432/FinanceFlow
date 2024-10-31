@@ -18,11 +18,6 @@ export default function Menu() {
             label: "Activities",
         },
         {
-            path: "transactions",
-            icon: <LuCreditCard size="25px" />,
-            label: "Transactions",
-        },
-        {
             path: "loan",
             icon: <FaMoneyBillWave size="25px" />,
             label: "Loans",

@@ -1,34 +1,60 @@
 const mongoose = require("mongoose");
 
-const LoanApplicationSchema = new mongoose.Schema(
-    {
-        DesiredLoanAmount: { type: Number },
-        AnnualIncome: { type: Number },
-        LoanType: { type: String },
-        LoanTenure: { type: String },
-        FirstName: { type: String },
-        MiddleName: { type: String },
-        LastName: { type: String },
-        email: { type: String },
-        phone: { type: Number },
-        DateofBirth: { type: Date },
-        MartialStatus: { type: String },
-        AddressLine1: { type: String },
-        AddressLine2: { type: String },
-        State: { type: String },
-        City: { type: String },
-        PostalCode: { type: Number },
-        StayedInCurrentAddress: { type: String },
-        Occupation: { type: String },
-        YearsOfExperience: { type: String },
-        GrossMonthlyIncome: { type: Number },
-        MonthlyRent: { type: Number },
-        DownPayment: { type: Number },
-        Comments: { type: String },
+const loanApplicationSchema = new mongoose.Schema({
+    loanId: {
+        type: String,
+        required: true,
+        unique: true,
     },
-    {
-        timestamps: true,
-    }
-);
+    // Personal Details
+    FirstName: { type: String, required: true },
+    MiddleName: { type: String },
+    LastName: { type: String, required: true },
+    Email: { type: String, required: true },
+    Phone: { type: String, required: true },
+    DateofBirth: { type: Date, required: true },
+    Gender: { type: String, required: true },
+    MartialStatus: { type: String, required: true },
+    ResidentialStatus: { type: String, required: true },
 
-module.exports = mongoose.model("LoanApplications", LoanApplicationSchema);
+    // Identity Details
+    IdentityProof: { type: String },
+    ProofNumber: { type: String },
+
+    // Address Details
+    AddressLine1: { type: String, required: true },
+    AddressLine2: { type: String },
+    State: { type: String, required: true },
+    City: { type: String, required: true },
+    PostalCode: { type: String, required: true },
+    StayedInCurrentAddress: { type: String, required: true },
+
+    // Employment Info
+    Occupation: { type: String, required: true },
+    YearsOfExperience: { type: String, required: true },
+    GrossMonthlyIncome: { type: Number, required: true },
+    MonthlyRent: { type: Number, required: true },
+
+    // Loan Details
+    LoanType: { type: String, required: true },
+    DesiredLoanAmount: { type: Number, required: true },
+    LoanTenure: { type: Number, required: true },
+    Comments: { type: String },
+
+    // Status and Dates
+    Status: {
+        type: String,
+        enum: ["Pending", "Approved", "Rejected", "Under Review"],
+        default: "Pending",
+    },
+    ApplicationDate: {
+        type: Date,
+        default: Date.now,
+    },
+    LastModified: {
+        type: Date,
+        default: Date.now,
+    },
+});
+
+module.exports = mongoose.model("LoanApplication", loanApplicationSchema);
