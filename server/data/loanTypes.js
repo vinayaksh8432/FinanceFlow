@@ -39,19 +39,19 @@ const loanTypes = [
         interestRate: "8.75%",
         upto: "45 Lakh",
         maxAmount: 4500000, // 45 lakhs
-        allowedTenures: ["12 Months", "24 Months", "36 Months", "48 Months"], 
+        allowedTenures: ["12 Months", "24 Months", "36 Months", "48 Months"],
     },
     {
         id: "education",
         typeImage: "assets/education.svg",
         name: "Education",
         description:
-            "Give wings to your career with FinanceFlow Education Loan",
+            "Give wings to your career with FinanceFlow Education Loan at best interest rate.",
         shortDescription: "For your bright future",
         interestRate: "6.50%",
         upto: "25 Lakhs",
         maxAmount: 2500000, // 25 lakhs
-        allowedTenures: ["24 Months", "36 Months", "48 Months", "60 Months"], 
+        allowedTenures: ["24 Months", "36 Months", "48 Months", "60 Months"],
     },
     {
         id: "gold",
@@ -62,8 +62,20 @@ const loanTypes = [
         shortDescription: "For your urgent needs",
         interestRate: "11.50%",
         upto: "1 Crore",
-        maxAmount: 10000000, // 1 crore 
+        maxAmount: 10000000, // 1 crore
         allowedTenures: ["12 Months", "24 Months", "36 Months"],
+    },
+    {
+        id: "business",
+        typeImage: "assets/business.svg",
+        name: "Business",
+        description:
+            "Grow your Business with FinanceFlow Business Loan at best interest rate",
+        shortDescription: "For your business needs",
+        interestRate: "9.75%",
+        upto: "50 Lakhs",
+        maxAmount: 5000000, // 50 lakhs
+        allowedTenures: ["12 Months", "24 Months", "36 Months", "48 Months"],
     },
 ];
 

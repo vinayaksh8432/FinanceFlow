@@ -1,21 +1,32 @@
-import bubbleicon from "../../assets/bubbleicon.svg";
+import { GoSidebarExpand, GoSidebarCollapse } from "react-icons/go";
 
-export default function CompanyName() {
+export default function CompanyName({ isCollapsed, toggleSidebar }) {
     return (
         <>
-            <div className="flex gap-3 bg-white p-3 rounded-lg shadow-sm">
-                <img
-                    src={bubbleicon}
-                    alt="Finance Flow Logo"
-                    className="rounded-lg w-10"
-                />
-                <div className="flex flex-col justify-center gap-0.5">
-                    <h1 className="leading-[1]">Finance Flow</h1>
-                    <h2 className="font-extralight text-sm text-gray-400 leading-[1]">
-                        Your Money, Your Way
-                    </h2>
+            {isCollapsed ? (
+                <button
+                    onClick={toggleSidebar}
+                    className="h-full w-full mx-auto flex justify-center items-center"
+                >
+                    <GoSidebarCollapse size={25} />
+                </button>
+            ) : (
+                <div className="flex justify-between items-center p-4">
+                    <div
+                        className={`transition-opacity duration-500 text-nowrap ${
+                            isCollapsed ? "opacity-0" : "opacity-100"
+                        }`}
+                    >
+                        <h1 className="text-lg">Finance Flow</h1>
+                        <h2 className="font-light text-xs text-neutral-800 leading-[1]">
+                            Your Money, Your Way
+                        </h2>
+                    </div>
+                    <button onClick={toggleSidebar}>
+                        <GoSidebarExpand size={25} />
+                    </button>
                 </div>
-            </div>
+            )}
         </>
     );
 }

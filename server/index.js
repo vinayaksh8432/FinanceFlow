@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 const authRoutes = require("./routes/users");
 const loanTypesRoutes = require("./routes/loanTypes");
 const loanApplicationRoutes = require("./routes/loanApplication");
+const portfolioRoutes = require("./routes/portfolio");
 const path = require("path");
 const { fileURLToPath } = require("url");
 
@@ -44,6 +45,7 @@ app.use("/api/users", authRoutes);
 app.use("/api/loan-types", loanTypesRoutes);
 app.use("/api/loan-applications", loanApplicationRoutes);
 app.use("/assets", express.static(path.join(__dirname, "public/assets")));
+app.use("/api/portfolio", portfolioRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

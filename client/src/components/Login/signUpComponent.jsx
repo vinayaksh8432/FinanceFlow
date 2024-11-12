@@ -3,6 +3,10 @@ import React, { useState } from "react";
 import { register } from "../../utils/api";
 import { TbEye, TbEyeClosed } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
+import { BsArrowRight } from "react-icons/bs";
+import { ring } from "ldrs";
+
+ring.register();
 
 export default function SignUpComponent() {
     const [name, setName] = useState("");
@@ -11,6 +15,7 @@ export default function SignUpComponent() {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -25,60 +30,100 @@ export default function SignUpComponent() {
     };
     return (
         <>
-            <div className="bg-white px-8 py-4 rounded-lg">
-                <h1 className="text-6xl text-center">Create Your Account</h1>
+            <div className="px-8 py-4 rounded-lg">
+                <h1 className="text-5xl text-center pb-2">
+                    Create your Account
+                </h1>
+                <h1 className="text-center pb-10    ">
+                    Enter your name, email and password to create your account
+                </h1>
                 <form onSubmit={handleSubmit}>
                     <div className="py-4 flex flex-col gap-4 items-center">
-                        <input
-                            type="text"
-                            name="name"
-                            className="outline-none border-2 rounded-full py-3 px-5 w-full"
-                            placeholder="User Name"
-                            onChange={(e) => setName(e.target.value)}
-                        />
-                        <input
-                            type="email"
-                            name="email"
-                            className="outline-none border-2 rounded-full py-3 px-5 w-full"
-                            placeholder="Phone / Email"
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                        <div className="border-2 bg-white py-3 px-4 rounded-full flex items-center w-full">
+                        <div className="w-full flex flex-col gap-1">
+                            <label htmlFor="email">Enter your name</label>
                             <input
-                                type={showPassword ? "text" : "password"}
-                                name="password"
-                                className="outline-none w-full"
-                                placeholder="Password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                type="text"
+                                name="name"
+                                className="outline-none border-2 rounded-lg py-3 px-5 bg-white bg-opacity-10"
+                                placeholder="Name"
+                                onChange={(e) => setName(e.target.value)}
                             />
-                            <label
-                                htmlFor="showPassword"
-                                className="text-gray-500 cursor-pointer"
-                            >
-                                {showPassword ? (
-                                    <TbEye size={25} />
-                                ) : (
-                                    <TbEyeClosed size={25} />
-                                )}
+                        </div>
+                        <div className="w-full flex flex-col gap-1">
+                            <label htmlFor="email">Enter your email</label>
+                            <input
+                                type="email"
+                                name="email"
+                                className="outline-none border-2 rounded-lg py-3 px-5 bg-white bg-opacity-10"
+                                placeholder="example@domain.com"
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                        </div>
+                        <div className="w-full flex flex-col gap-1">
+                            <label htmlFor="password">
+                                Enter your password
+                            </label>
+                            <div className="flex justify-between items-center border-2 rounded-lg py-3 px-5 w-full bg-white bg-opacity-10">
                                 <input
-                                    id="showPassword"
-                                    type="checkbox"
-                                    className="hidden"
-                                    checked={showPassword}
-                                    onChange={() =>
-                                        setShowPassword(!showPassword)
+                                    type={showPassword ? "text" : "password"}
+                                    name="password"
+                                    className="outline-none bg-transparent"
+                                    placeholder="Password"
+                                    value={password}
+                                    onChange={(e) =>
+                                        setPassword(e.target.value)
                                     }
                                 />
-                            </label>
+                                <label
+                                    htmlFor="showPassword"
+                                    className="cursor-pointer"
+                                >
+                                    {showPassword ? (
+                                        <TbEye size={25} />
+                                    ) : (
+                                        <TbEyeClosed size={25} />
+                                    )}
+                                    <input
+                                        id="showPassword"
+                                        type="checkbox"
+                                        className="hidden"
+                                        checked={showPassword}
+                                        onChange={() =>
+                                            setShowPassword(!showPassword)
+                                        }
+                                    />
+                                </label>
+                            </div>
                         </div>
                         <button
                             type="submit"
-                            className="w-1/2 bg-black text-white px-5 py-3 rounded-full flex items-center justify-between"
+                            className="w-full rounded-lg mt-6 px-5 p-3 bg-white text-black font-semibold flex items-center justify-between"
                         >
                             Create Your Account
-                            <IoMdArrowRoundForward size="25px" />
+                            {isLoading ? (
+                                // Default values shown
+                                <l-ring
+                                    size="20"
+                                    stroke="2"
+                                    bg-opacity="0"
+                                    speed="2.5"
+                                    color="black"
+                                ></l-ring>
+                            ) : (
+                                <>
+                                    <BsArrowRight size={25} />
+                                </>
+                            )}
                         </button>
+                        <div className="flex items-center mt-2">
+                            <h1>Already have an account ?</h1>
+                            <a
+                                onClick={() => navigate("/login")}
+                                className="px-2 text-yellow-300 font-semibold"
+                            >
+                                Sign in
+                            </a>
+                        </div>
                     </div>
 
                     <div className="flex justify-center">

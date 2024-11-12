@@ -6,7 +6,6 @@ import {
     User,
 } from "@phosphor-icons/react";
 import React, { useState, useEffect } from "react";
-import { TailSpin, ThreeDots } from "react-loader-spinner";
 import { useNavigate } from "react-router-dom";
 import PersonalDetails from "./components/personalDetails";
 import IdentityDetails from "./components/identityDetails";
@@ -305,14 +304,6 @@ export default function ApplyLoan() {
 
     return (
         <div className="bg-white rounded-xl shadow-sm border border-gray-300 h-full flex flex-col overflow-hidden">
-            <label className="p-4 py-3 text-xl bg-slate-200 shadow-inner flex items-center gap-2">
-                <ArrowLeft
-                    className="text-3xl cursor-pointer hover:bg-gray-300 hover:shadow-inner p-1.5 transition-all rounded-full"
-                    onClick={() => window.history.back()}
-                />
-                <h1>Apply for a new Loan</h1>
-            </label>
-
             <div className="flex flex-1 overflow-y-auto">
                 <div className="w-max border-r bg-gray-50">
                     <div className="flex flex-col p-4">

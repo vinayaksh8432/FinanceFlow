@@ -154,15 +154,8 @@ export default function ApplicationStatus() {
                 </div>
             ) : (
                 <div className="rounded-md overflow-hidden h-full">
-                    <div className="p-4 py-3 text-xl bg-slate-200 shadow-inner flex items-center gap-2 rounded-t-xl">
-                        <ArrowLeft
-                            className="text-3xl cursor-pointer hover:bg-gray-300 hover:shadow-inner p-1.5 transition-all rounded-full"
-                            onClick={handleBackToOptions}
-                        />
-                        <h1>Application Status</h1>
-                    </div>
                     {applications.length === 0 ? (
-                        <div className="flex items-center gap-2 text-sm py-4 bg-white rounded-b-xl px-4">
+                        <>
                             <p className="p-2 border rounded-md shadow-sm flex gap-1 items-center">
                                 <Warning /> No applications found.
                             </p>
@@ -182,13 +175,13 @@ export default function ApplicationStatus() {
                                     <ArrowClockwise />
                                 )}
                             </button>
-                        </div>
+                        </>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 bg-white p-4 rounded-b-xl">
+                        <div className="flex flex-col gap-4">
                             {applications.map((app, index) => (
                                 <div
                                     key={app._id}
-                                    className="font-[SFPro-Reg] h-full bg-gradient-to-br from-orange-100 border border-gray-600 rounded-lg shadow-sm p-4 flex items-start justify-between"
+                                    className="bg-gradient-to-br from-orange-100 border border-gray-600 rounded-lg shadow-sm p-4 flex justify-between"
                                 >
                                     <div>
                                         <p className="text-xs">{app.loanId}</p>
@@ -206,7 +199,7 @@ export default function ApplicationStatus() {
                                             Duration: {app.LoanTenure}
                                         </p>
                                     </div>
-                                    <div className="h-full flex flex-col justify-between items-end">
+                                    <div className="flex flex-col justify-between items-center">
                                         <span className="text-xs bg-yellow-50 text-amber-600 rounded-full border border-amber-600 px-1.5">
                                             PENDING
                                         </span>
@@ -218,11 +211,10 @@ export default function ApplicationStatus() {
                                                     }
                                                     className="text-sm text-gray-700 hover:text-gray-900"
                                                 >
-                                                    {/* Edit */}
                                                     <Pen />
                                                 </button>
                                             </Tooltip>
-                                            {/* <hr className="border-t border-neutral-200 w-4/5" /> */}
+
                                             <Tooltip title="Delete" arrow>
                                                 <button
                                                     onClick={() =>
@@ -232,11 +224,10 @@ export default function ApplicationStatus() {
                                                     }
                                                     className="text-sm text-red-700"
                                                 >
-                                                    {/* Delete */}
                                                     <TrashSimple />
                                                 </button>
                                             </Tooltip>
-                                            {/* <hr className="border-t border-neutral-200 w-4/5" /> */}
+
                                             <Tooltip title="Download" arrow>
                                                 <button
                                                     onClick={() =>
@@ -244,7 +235,6 @@ export default function ApplicationStatus() {
                                                     }
                                                     className="text-sm text-gray-700 hover:text-gray-900"
                                                 >
-                                                    {/* Download */}
                                                     <DownloadSimple />
                                                 </button>
                                             </Tooltip>

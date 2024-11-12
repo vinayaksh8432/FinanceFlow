@@ -16,7 +16,7 @@ export default function Cards() {
 
     return (
         <>
-            <div className="p-4 bg-white rounded-md grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-4 gap-4">
                 {card.map((item, index) => (
                     <div
                         key={index}

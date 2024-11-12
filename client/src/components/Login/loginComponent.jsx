@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { IoMdArrowRoundForward } from "react-icons/io";
 import { TbEyeClosed } from "react-icons/tb";
 import { FaRegEye } from "react-icons/fa";
-import { TailSpin } from "react-loader-spinner";
+import { BsArrowRight } from "react-icons/bs";
+import { ring } from "ldrs";
 
 export default function LoginComponent() {
     const [email, setEmail] = useState("");
@@ -16,6 +16,7 @@ export default function LoginComponent() {
     const location = useLocation();
     const [isResendDisabled, setIsResendDisabled] = useState(false);
     const [resendTimer, setResendTimer] = useState(30);
+    const [isLoading, setIsLoading] = useState(false);
 
     const [otpInputs, setOtpInputs] = useState(["", "", "", "", "", ""]);
 
@@ -217,12 +218,16 @@ export default function LoginComponent() {
         }
     };
 
-    const [isLoading, setIsLoading] = useState(false);
+    ring.register();
+
 
     return (
         <>
-            <div className="bg-white px-8 py-4 flex flex-col items-center rounded-lg">
-                <h1 className="text-6xl text-center">Login to Your Account</h1>
+            <div className="px-8 py-4 flex flex-col items-center rounded-lg">
+                <h1 className="text-5xl text-center pb-2">Welcome Back</h1>
+                <h1 className="text-center pb-10    ">
+                    Enter your email and password to access your account
+                </h1>
                 <form
                     onSubmit={showOtpInput ? verifyOtp : handleSubmit}
                     className="w-full"
@@ -230,64 +235,101 @@ export default function LoginComponent() {
                     {!showOtpInput ? (
                         <>
                             <div className="flex flex-col py-4 gap-4 items-center">
-                                <input
-                                    type="email"
-                                    name="email"
-                                    autoComplete="email"
-                                    className="outline-none border-2 rounded-full py-3 px-5 w-full"
-                                    placeholder="Phone / Email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                />
-
-                                <label
-                                    htmlFor=""
-                                    className="flex justify-between items-center border-2 rounded-full py-3 px-5 w-full"
-                                >
+                                <div className="w-full flex flex-col gap-1">
+                                    <label htmlFor="email">
+                                        Enter your email
+                                    </label>
                                     <input
-                                        type={
-                                            showPassword ? "text" : "password"
-                                        }
-                                        name="password"
-                                        className="outline-none w-full"
-                                        placeholder="Password"
-                                        value={password}
+                                        type="email"
+                                        name="email"
+                                        autoComplete="email"
+                                        className="outline-none border-2 rounded-lg py-3 px-5 bg-white bg-opacity-10"
+                                        placeholder="example@domain.com"
+                                        value={email}
                                         onChange={(e) =>
-                                            setPassword(e.target.value)
+                                            setEmail(e.target.value)
                                         }
                                     />
+                                </div>
+                                <div className="w-full flex flex-col gap-1">
+                                    <label htmlFor="password">
+                                        Enter your password
+                                    </label>
                                     <label
-                                        htmlFor="showPassword"
-                                        className="text-gray-500 cursor-pointer"
+                                        htmlFor=""
+                                        className="flex justify-between items-center border-2 rounded-lg py-3 px-5 w-full bg-white bg-opacity-10"
                                     >
-                                        {showPassword ? (
-                                            <FaRegEye size={25} />
-                                        ) : (
-                                            <TbEyeClosed size={25} />
-                                        )}
                                         <input
-                                            id="showPassword"
-                                            type="checkbox"
-                                            className="hidden"
-                                            checked={showPassword}
-                                            onChange={() =>
-                                                setShowPassword(!showPassword)
+                                            type={
+                                                showPassword
+                                                    ? "text"
+                                                    : "password"
+                                            }
+                                            name="password"
+                                            className="outline-none bg-transparent"
+                                            placeholder="Password"
+                                            value={password}
+                                            onChange={(e) =>
+                                                setPassword(e.target.value)
                                             }
                                         />
+                                        <label
+                                            htmlFor="showPassword"
+                                            className="cursor-pointer"
+                                        >
+                                            {showPassword ? (
+                                                <FaRegEye size={25} />
+                                            ) : (
+                                                <TbEyeClosed size={25} />
+                                            )}
+                                            <input
+                                                id="showPassword"
+                                                type="checkbox"
+                                                className="hidden"
+                                                checked={showPassword}
+                                                onChange={() =>
+                                                    setShowPassword(
+                                                        !showPassword
+                                                    )
+                                                }
+                                            />
+                                        </label>
                                     </label>
-                                </label>
+                                </div>
                                 <button
                                     type="submit"
-                                    className="rounded-full px-5 p-3 bg-black text-white flex items-center justify-between w-1/2"
+                                    className="w-full rounded-lg mt-6 px-5 p-3 bg-white text-black font-semibold flex items-center justify-between"
                                 >
-                                    Login to Your Account
-                                    <IoMdArrowRoundForward size={25} />
+                                    Login to your Account
+                                    {isLoading ? (
+                                        // Default values shown
+                                        <l-ring
+                                            size="20"
+                                            stroke="2"
+                                            bg-opacity="0"
+                                            speed="2.5"
+                                            color="black"
+                                        ></l-ring>
+                                    ) : (
+                                        <>
+                                            <BsArrowRight size={25} />
+                                        </>
+                                    )}
                                 </button>
+                                <div className="flex items-center mt-2">
+                                    <h1>Don't have an account ?</h1>
+                                    <a
+                                        onClick={() => navigate("/register")}
+                                        className="px-2 text-yellow-300 font-semibold"
+                                    >
+                                        Sign up
+                                    </a>
+                                </div>
                             </div>
                         </>
                     ) : (
                         <div className="flex flex-col items-center">
-                            <p className="text-gray-600 pt-2">
+                            <p className="pt-2">
                                 Enter the OTP sent to {email}
                             </p>
                             <div className="flex gap-4 py-4 justify-center">
@@ -297,7 +339,7 @@ export default function LoginComponent() {
                                         ref={otpRefs[index]}
                                         type="text"
                                         maxLength="1"
-                                        className="w-12 h-12 border-2 rounded-lg text-center text-xl"
+                                        className="w-12 h-12 border-b-2 border-white text-center text-xl bg-transparent outline-none"
                                         value={digit}
                                         onChange={(e) =>
                                             handleOtpChange(
@@ -322,16 +364,29 @@ export default function LoginComponent() {
                             </div>
                             <button
                                 type="submit"
-                                className="border-2 rounded-full px-5 p-3 bg-black text-white flex items-center justify-between w-1/2 mb-4"
+                                className="w-full rounded-lg mt-6 px-5 p-3 bg-white text-black font-semibold flex items-center justify-between"
                             >
                                 Verify OTP
-                                <IoMdArrowRoundForward size={25} />
+                                {isLoading ? (
+                                    // Default values shown
+                                    <l-ring
+                                        size="20"
+                                        stroke="2"
+                                        bg-opacity="0"
+                                        speed="2.5"
+                                        color="black"
+                                    ></l-ring>
+                                ) : (
+                                    <>
+                                        <BsArrowRight size={25} />
+                                    </>
+                                )}
                             </button>
                             <button
                                 type="button"
                                 onClick={handleResendOTP}
                                 disabled={isResendDisabled}
-                                className={`text-blue-600 ${
+                                className={`pt-4 ${
                                     isResendDisabled
                                         ? "opacity-50 cursor-not-allowed"
                                         : ""
@@ -351,20 +406,6 @@ export default function LoginComponent() {
                         )}
                     </div>
                 </form>
-                {isLoading && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className="bg-white p-4 rounded-lg shadow-lg flex items-center justify-center">
-                            <TailSpin
-                                visible={true}
-                                height="80"
-                                width="80"
-                                color="#000000"
-                                ariaLabel="tail-spin-loading"
-                                radius="1"
-                            />
-                        </div>
-                    </div>
-                )}
             </div>
         </>
     );

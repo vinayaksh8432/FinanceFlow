@@ -1,5 +1,6 @@
-@import url("https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.cdnfonts.com/css/lufga");
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -9,59 +10,31 @@
         --color-primary: 247, 251, 258;
         --color-secondary: 39, 39, 39;
         --color-white: 247, 251, 254;
+        --radius: 0.5rem;
     }
 
     * {
-        user-select: none;
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-    }
-
-    html {
         scroll-behavior: smooth;
     }
 
     html,
     body {
-        font-family: "SFPro-Mid";
-        background-color: #f3f4f6;
+        font-family: "Outfit";
+        /* background-color: #f3f4f6; */
         color: rgb(var(--color-secondary));
         margin: 0;
         padding: 0;
     }
 
-    ::-webkit-scrollbar {
-        display: none;
+    input[type="email"]::placeholder {
+        color: white;
     }
-
-    /* ::-webkit-scrollbar {
-        width: 12px;
+    input[type="text"]::placeholder {
+        color: white;
     }
-
-    ::-webkit-scrollbar-thumb {
-        background-color: rgb(var(--color-secondary));
-        border-radius: 10px;
-        border: 3px solid #f1f1f1;
+    input[type="password"]::placeholder {
+        color: white;
     }
-
-    ::-webkit-scrollbar-thumb:hover {
-        background-color: #555;
-    } */
-}
-
-@font-face {
-    font-family: "SFPro-Mid";
-    src: url(fonts/SFPRODISPLAYMEDIUM.OTF);
-}
-
-@font-face {
-    font-family: "SFPro-Reg";
-    src: url(fonts/SFPRODISPLAYREGULAR.OTF);
-}
-
-@font-face {
-    font-family: "Nohemi";
-    src: url(fonts/BaruSansDemo-Medium.otf);
 }
 
 .login-BG {
@@ -70,11 +43,11 @@
 }
 
 @layer utilities {
-    font-[SFPro-Reg] {
-        font-family: "SFPro-Reg";
+    font-[Riccione] {
+        font-family: "Riccione";
     }
-    font-[Nohemi] {
-        font-family: "Nohemi";
+    font-[Urbanist] {
+        font-family: "Urbanist";
     }
 }
 

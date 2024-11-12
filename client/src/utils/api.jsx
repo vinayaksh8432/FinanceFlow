@@ -80,3 +80,44 @@ export const submitLoanApplication = async (formData) => {
         );
     }
 };
+
+export const addToPortfolio = async (stockData) => {
+    try {
+        const response = await api.post("/portfolio/add-stock", stockData);
+
+        if (!response.data.success) {
+            throw new Error(
+                response.data.message || "Failed to add stock to portfolio"
+            );
+        }
+
+        return response.data;
+    } catch (error) {
+        console.error("Portfolio addition error:", error);
+        if (error.response?.status === 401) {
+            throw new Error("Please login to add stocks to portfolio");
+        }
+        throw error.response?.data || { message: error.message };
+    }
+};
+
+export const getPortfolioData = async () => {
+    try {
+        const response = await api.get("/portfolio");
+
+        if (!response.data.success && !response.data.holdings) {
+            throw new Error(
+                response.data.message || "Failed to fetch portfolio data"
+            );
+        }
+
+        // console.log("Portfolio data:", response.data);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching portfolio data:", error);
+        if (error.response?.status === 401) {
+            throw new Error("Please login to view portfolio");
+        }
+        throw error.response?.data || { message: error.message };
+    }
+};
