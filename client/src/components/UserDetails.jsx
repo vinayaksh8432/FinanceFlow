@@ -4,7 +4,6 @@ import { getUserDetails, logout } from "../utils/api";
 import { User } from "@phosphor-icons/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { LuBell } from "react-icons/lu";
-import StockSearch from "./Stocks/components/StockSearch";
 
 const menuVariants = {
     initial: {
@@ -51,13 +50,16 @@ export default function UserDetails() {
             label: "Loans",
         },
         {
+            path: "/insurance",
+            label: "Insurance",
+        },
+        {
             path: "/portfolio",
             label: "My Assets",
         },
         {
             path: "/market",
             label: "Market",
-            component: StockSearch,
         },
     ];
 

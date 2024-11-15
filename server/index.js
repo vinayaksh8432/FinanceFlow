@@ -5,6 +5,7 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const authRoutes = require("./routes/users");
 const loanTypesRoutes = require("./routes/loanTypes");
+const insuranceTypesRoutes = require("./routes/insuranceTypes");
 const loanApplicationRoutes = require("./routes/loanApplication");
 const portfolioRoutes = require("./routes/portfolio");
 const path = require("path");
@@ -44,6 +45,7 @@ mongoose
 app.use("/api/users", authRoutes);
 app.use("/api/loan-types", loanTypesRoutes);
 app.use("/api/loan-applications", loanApplicationRoutes);
+app.use("/api/insurance-types", insuranceTypesRoutes);
 app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 app.use("/api/portfolio", portfolioRoutes);
 

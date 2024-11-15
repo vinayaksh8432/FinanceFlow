@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchLoanApplications } from "../../utils/api";
+import { fetchLoanApplications } from "@/utils/api";
 import {
     ArrowClockwise,
     ArrowLeft,
@@ -10,7 +10,7 @@ import {
     Warning,
 } from "@phosphor-icons/react";
 import EditModal from "../Home/editModal";
-import { generatePDF } from "../../utils/pdfGenerator";
+import { generatePDF } from "@/utils/pdfGenerator";
 import { TailSpin } from "react-loader-spinner";
 import Tooltip from "@mui/material/Tooltip";
 
@@ -26,10 +26,6 @@ export default function ApplicationStatus() {
     useEffect(() => {
         fetchApplications();
     }, []);
-
-    const toggleAction = (index) => {
-        setActions(actions === index ? false : index);
-    };
 
     const fetchApplications = async () => {
         setIsLoading(true);
@@ -139,121 +135,104 @@ export default function ApplicationStatus() {
         }
     };
 
-    const handleBackToOptions = () => {
-        navigate("/dashboard/loan");
-    };
-
     return (
         <>
-            {isLoading ? (
-                <div className="m-auto flex h-3/4">
-                    <div className="m-auto flex flex-col gap-4 items-center">
-                        <h1>please wait a moment</h1>
-                        <l-leapfrog size="40" speed="3.0" color="black" />
-                    </div>
-                </div>
-            ) : (
-                <div className="rounded-md overflow-hidden h-full">
-                    {applications.length === 0 ? (
-                        <>
-                            <p className="p-2 border rounded-md shadow-sm flex gap-1 items-center">
-                                <Warning /> No applications found.
-                            </p>
-                            <button
-                                onClick={fetchApplications}
-                                className="p-2.5 border rounded-md shadow-sm flex gap-1 items-center"
-                                disabled={isLoading}
+            <div className="rounded-md overflow-hidden h-full">
+                {applications.length === 0 ? (
+                    <>
+                        <p className="p-2 border rounded-md shadow-sm flex gap-1 items-center">
+                            <Warning /> No applications found.
+                        </p>
+                        <button
+                            onClick={fetchApplications}
+                            className="p-2.5 border rounded-md shadow-sm flex gap-1 items-center"
+                            disabled={isLoading}
+                        >
+                            {isLoading ? (
+                                <TailSpin
+                                    height="15"
+                                    width="20"
+                                    color="#000"
+                                    ariaLabel="loading"
+                                />
+                            ) : (
+                                <ArrowClockwise />
+                            )}
+                        </button>
+                    </>
+                ) : (
+                    <div className="flex flex-col gap-4">
+                        {applications.map((app) => (
+                            <div
+                                key={app._id}
+                                className="bg-gradient-to-br from-orange-100 border border-gray-600 rounded-lg shadow-sm p-4 flex justify-between"
                             >
-                                {isLoading ? (
-                                    <TailSpin
-                                        height="15"
-                                        width="20"
-                                        color="#000"
-                                        ariaLabel="loading"
-                                    />
-                                ) : (
-                                    <ArrowClockwise />
-                                )}
-                            </button>
-                        </>
-                    ) : (
-                        <div className="flex flex-col gap-4">
-                            {applications.map((app, index) => (
-                                <div
-                                    key={app._id}
-                                    className="bg-gradient-to-br from-orange-100 border border-gray-600 rounded-lg shadow-sm p-4 flex justify-between"
-                                >
-                                    <div>
-                                        <p className="text-xs">{app.loanId}</p>
-                                        <p className="text-lg mb-4">
-                                            {app.FirstName} {app.MiddleName}{" "}
-                                            {app.LastName}
-                                        </p>
-                                        <p className="text-sm ">
-                                            Loan Type: {app.LoanType}
-                                        </p>
-                                        <p className="text-sm ">
-                                            Amount: {app.DesiredLoanAmount}
-                                        </p>
-                                        <p className="text-sm ">
-                                            Duration: {app.LoanTenure}
-                                        </p>
-                                    </div>
-                                    <div className="flex flex-col justify-between items-center">
-                                        <span className="text-xs bg-yellow-50 text-amber-600 rounded-full border border-amber-600 px-1.5">
-                                            PENDING
-                                        </span>
-                                        <div className="flex gap-2">
-                                            <Tooltip title="Edit" arrow>
-                                                <button
-                                                    onClick={() =>
-                                                        handleEdit(app)
-                                                    }
-                                                    className="text-sm text-gray-700 hover:text-gray-900"
-                                                >
-                                                    <Pen />
-                                                </button>
-                                            </Tooltip>
+                                <div>
+                                    <p className="text-xs">{app.loanId}</p>
+                                    <p className="text-lg mb-4">
+                                        {app.FirstName} {app.MiddleName}{" "}
+                                        {app.LastName}
+                                    </p>
+                                    <p className="text-sm ">
+                                        Loan Type: {app.LoanType}
+                                    </p>
+                                    <p className="text-sm ">
+                                        Amount: {app.DesiredLoanAmount}
+                                    </p>
+                                    <p className="text-sm ">
+                                        Duration: {app.LoanTenure}
+                                    </p>
+                                </div>
+                                <div className="flex flex-col justify-between items-center">
+                                    <span className="text-xs bg-yellow-50 text-amber-600 rounded-full border border-amber-600 px-1.5">
+                                        PENDING
+                                    </span>
+                                    <div className="flex gap-2">
+                                        <Tooltip title="Edit" arrow>
+                                            <button
+                                                onClick={() => handleEdit(app)}
+                                                className="text-sm text-gray-700 hover:text-gray-900"
+                                            >
+                                                <Pen />
+                                            </button>
+                                        </Tooltip>
 
-                                            <Tooltip title="Delete" arrow>
-                                                <button
-                                                    onClick={() =>
-                                                        deleteApplication(
-                                                            app._id
-                                                        )
-                                                    }
-                                                    className="text-sm text-red-700"
-                                                >
-                                                    <TrashSimple />
-                                                </button>
-                                            </Tooltip>
+                                        <Tooltip title="Delete" arrow>
+                                            <button
+                                                onClick={() =>
+                                                    deleteApplication(app._id)
+                                                }
+                                                className="text-sm text-red-700"
+                                            >
+                                                <TrashSimple />
+                                            </button>
+                                        </Tooltip>
 
-                                            <Tooltip title="Download" arrow>
-                                                <button
-                                                    onClick={() =>
-                                                        handleDownload(app)
-                                                    }
-                                                    className="text-sm text-gray-700 hover:text-gray-900"
-                                                >
-                                                    <DownloadSimple />
-                                                </button>
-                                            </Tooltip>
-                                        </div>
+                                        <Tooltip title="Download" arrow>
+                                            <button
+                                                onClick={() =>
+                                                    handleDownload(app)
+                                                }
+                                                className="text-sm text-gray-700 hover:text-gray-900"
+                                            >
+                                                <DownloadSimple />
+                                            </button>
+                                        </Tooltip>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-                    )}
-                    {editingApplication && (
-                        <EditModal
-                            application={editingApplication}
-                            onSave={handleSaveEdit}
-                            onCancel={() => setEditingApplication(null)}
-                            onApplicationDeleted={handleApplicationDeleted}
-                        />
-                    )}
-                </div>
-            )}
+                            </div>
+                        ))}
+                    </div>
+                )}
+                {editingApplication && (
+                    <EditModal
+                        application={editingApplication}
+                        onSave={handleSaveEdit}
+                        onCancel={() => setEditingApplication(null)}
+                        onApplicationDeleted={handleApplicationDeleted}
+                    />
+                )}
+            </div>
         </>
     );
 }

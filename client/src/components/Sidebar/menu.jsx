@@ -14,6 +14,11 @@ export default function Menu({ isCollapsed }) {
             label: "Loans",
         },
         {
+            path: "insurance",
+            icon: <Bank size="25px" />,
+            label: "Insurance",
+        },
+        {
             path: "portfolio",
             icon: <ChartLineUp size="25px" />,
             label: "Assets",
@@ -27,13 +32,6 @@ export default function Menu({ isCollapsed }) {
 
     return (
         <div className="py-2 flex-1 overflow-hidden">
-            {/* <h1
-                className={`p-4 transition-opacity duration-300 ${
-                    isCollapsed ? "opacity-0" : "opacity-100"
-                }`}
-            >
-                MENU
-            </h1> */}
             <div className="flex flex-col gap-4">
                 {menuItems.map((item) => (
                     <NavLink

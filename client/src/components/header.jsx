@@ -1,7 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { MdArrowOutward } from "react-icons/md";
-import bubbleicon from "../assets/bubbleicon.svg";
 import { VscAccount } from "react-icons/vsc";
 
 export default function Header() {

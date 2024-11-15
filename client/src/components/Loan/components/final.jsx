@@ -1,10 +1,9 @@
 import { useEffect, useState, useCallback, useRef } from "react";
-import { fetchLoanTypes } from "../../../utils/api";
+import { fetchLoanTypes } from "@/utils/api";
 import LoanCalculator from "./chart";
 import { IoMdRadioButtonOff } from "react-icons/io";
 import { IoMdRadioButtonOn } from "react-icons/io";
-import { CaretLineDown, Info, Question } from "@phosphor-icons/react";
-import { FaArrowUp } from "react-icons/fa6";
+import { CaretLineDown, Question } from "@phosphor-icons/react";
 
 export default function Final({ formData, onComplete }) {
     const initialData = {
@@ -269,7 +268,7 @@ export default function Final({ formData, onComplete }) {
     }, []);
 
     return (
-        <div className="flex gap-6 h-full ">
+        <div className="flex gap-6 h-full">
             <div
                 className="flex-1 overflow-y-scroll flex flex-col gap-4 rounded-xl relative"
                 style={{ maxHeight: "calc(100vh - 22vh)" }}

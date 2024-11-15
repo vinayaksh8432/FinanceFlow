@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { getPortfolioData } from "../../utils/api"; // Adjust the import path as needed
+import { getPortfolioData } from "@/utils/api";
 import { FiSearch } from "react-icons/fi";
-import { CurrencyInr, FunnelSimple } from "@phosphor-icons/react";
+import { CurrencyInr } from "@phosphor-icons/react";
 import { RiMoneyRupeeCircleLine } from "react-icons/ri";
 
 export default function Portfolio() {
@@ -107,10 +107,16 @@ export default function Portfolio() {
                                 Quantity
                             </th>
                             <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Price
+                                Current Price
                             </th>
                             <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                 Investment Value
+                            </th>
+                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Profit/Loss
+                            </th>
+                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                P/L %
                             </th>
                         </tr>
                     </thead>
@@ -130,9 +136,6 @@ export default function Portfolio() {
                                             <div>
                                                 <div className="font-medium text-gray-900">
                                                     {holding.companyName}
-                                                </div>
-                                                <div className="text-sm text-gray-500">
-                                                    {holding.sector || "N/A"}
                                                 </div>
                                             </div>
                                         </div>
@@ -155,12 +158,44 @@ export default function Portfolio() {
                                             {holding.investmentValue}
                                         </div>
                                     </td>
+                                    <td
+                                        className={`px-6 py-4 whitespace-nowrap ${
+                                            holding.profitLoss >= 0
+                                                ? "text-green-600"
+                                                : "text-red-600"
+                                        }`}
+                                    >
+                                        <div className="flex items-center">
+                                            <CurrencyInr className="mr-1" />
+                                            {Math.abs(
+                                                holding.profitLoss
+                                            ).toFixed(2)}
+                                            {holding.profitLoss >= 0
+                                                ? " +"
+                                                : " -"}
+                                        </div>
+                                    </td>
+                                    <td
+                                        className={`px-6 py-4 whitespace-nowrap ${
+                                            holding.profitLossPercentage >= 0
+                                                ? "text-green-600"
+                                                : "text-red-600"
+                                        }`}
+                                    >
+                                        {holding.profitLossPercentage >= 0
+                                            ? "+"
+                                            : ""}
+                                        {holding.profitLossPercentage.toFixed(
+                                            2
+                                        )}
+                                        %
+                                    </td>
                                 </tr>
                             ))
                         ) : (
                             <tr>
                                 <td
-                                    colSpan="5"
+                                    colSpan="7"
                                     className="px-6 py-8 text-center text-gray-500"
                                 >
                                     No holdings found in your portfolio.

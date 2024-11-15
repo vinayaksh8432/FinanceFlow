@@ -121,3 +121,56 @@ export const getPortfolioData = async () => {
         throw error.response?.data || { message: error.message };
     }
 };
+
+export const fetchInsuranceTypes = async () => {
+    try {
+        const response = await api.get("/insurance-types");
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching insurance types:", error);
+        throw error.response?.data || error.message;
+    }
+};
+
+export const fetchAllInsurance = async () => {
+    try {
+        const response = await api.get("/insurance-types/all");
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching insurance data:", error);
+        throw error.response?.data || error.message;
+    }
+};
+
+export const addInsurance = async (insuranceData) => {
+    try {
+        const response = await api.post("/insurance-types/add", insuranceData);
+        return response.data;
+    } catch (error) {
+        console.error("Error adding insurance:", error);
+        throw error.response?.data || error.message;
+    }
+};
+
+export const updateInsurance = async (id, insuranceData) => {
+    try {
+        const response = await api.put(
+            `/insurance-types/update/${id}`,
+            insuranceData
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error updating insurance:", error);
+        throw error.response?.data || error.message;
+    }
+};
+
+export const deleteInsurance = async (id) => {
+    try {
+        const response = await api.delete(`/insurance-types/delete/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error deleting insurance:", error);
+        throw error.response?.data || error.message;
+    }
+};

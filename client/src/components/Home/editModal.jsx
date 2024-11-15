@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { ArrowLineRight } from "@phosphor-icons/react";
 import { FaCheck } from "react-icons/fa6";
 import { FaTrash } from "react-icons/fa";
@@ -117,9 +117,7 @@ const EditModal = ({ application, onSave, onCancel, onApplicationDeleted }) => {
                     </div>
                     <hr className="border-t border-gray-200 -mx-6" />
                 </div>
-                <div className="flex justify-center">
-                    Under Development
-                </div>
+                <div className="flex justify-center">Under Development</div>
                 <div>
                     <hr className="border-t border-gray-200 -mx-6 pb-4" />
                     <div className="flex gap-4 items-center">

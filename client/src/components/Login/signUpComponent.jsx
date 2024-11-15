@@ -1,6 +1,6 @@
 import { IoMdArrowRoundForward } from "react-icons/io";
 import React, { useState } from "react";
-import { register } from "../../utils/api";
+import { register } from "@/utils/api";
 import { TbEye, TbEyeClosed } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
 import { BsArrowRight } from "react-icons/bs";

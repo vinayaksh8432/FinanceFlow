@@ -22,7 +22,6 @@ const portfolioSchema = new mongoose.Schema({
     holdings: [stockHoldingSchema],
     totalInvestment: { type: Number, default: 0 },
     currentValue: { type: Number, default: 0 },
-    totalProfitLoss: { type: Number, default: 0 },
     lastUpdated: { type: Date, default: Date.now },
 });
 

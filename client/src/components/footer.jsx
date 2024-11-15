@@ -1,4 +1,3 @@
-import bubbleicon from "../assets/bubbleicon.svg";
 import { FaLinkedinIn } from "react-icons/fa6";
 import { FaFacebook } from "react-icons/fa6";
 import { FaTwitter } from "react-icons/fa";

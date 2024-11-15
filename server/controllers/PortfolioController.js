@@ -11,7 +11,6 @@ exports.getPortfolio = async (req, res) => {
                     currentValue: 0,
                     holdings: [],
                     totalInvestment: 0,
-                    totalProfitLoss: 0,
                 },
             });
         }
@@ -71,7 +70,6 @@ exports.addStock = async (req, res) => {
                 holdings: [],
                 totalInvestment: 0,
                 currentValue: 0,
-                totalProfitLoss: 0,
             });
         }
 
@@ -126,8 +124,6 @@ exports.addStock = async (req, res) => {
             (sum, holding) => sum + holding.currentValue,
             0
         );
-        portfolio.totalProfitLoss =
-            portfolio.currentValue - portfolio.totalInvestment;
         portfolio.lastUpdated = new Date();
 
         // Save the updated portfolio

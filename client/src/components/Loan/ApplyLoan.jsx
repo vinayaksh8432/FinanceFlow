@@ -16,7 +16,7 @@ import { FaRegAddressCard } from "react-icons/fa6";
 import { MdOutlineHomeWork } from "react-icons/md";
 import { PiBuildingOffice } from "react-icons/pi";
 import { BsFileEarmarkText } from "react-icons/bs";
-import { submitLoanApplication } from "../../utils/api";
+import { submitLoanApplication } from "@/utils/api";
 import Alert from "@mui/material/Alert";
 import { leapfrog } from "ldrs";
 import { ring2 } from "ldrs";

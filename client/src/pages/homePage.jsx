@@ -3,7 +3,7 @@ import Header from "../components/header";
 import { MdOutlinePrivacyTip, MdOutlineAttachMoney } from "react-icons/md";
 import { AiOutlineBank } from "react-icons/ai";
 import { LuHeartHandshake } from "react-icons/lu";
-import phone from "../assets/phone.png";
+import phone from "../assets/phone.svg";
 import graph from "../assets/graph.svg";
 import loan from "../assets/loan.svg";
 import { LockLaminated } from "@phosphor-icons/react";
@@ -12,7 +12,6 @@ import {
     ResponsiveContainer,
     AreaChart,
     Area,
-    CartesianGrid,
     Tooltip,
     XAxis,
 } from "recharts";
@@ -205,7 +204,7 @@ export default function HomePage() {
                     <img
                         src={phone}
                         alt="Phone"
-                        className="w-52 h-52 object-cover bg-gradient-to-br from-slate-400 to-slate-200 rounded-bl-[50%] pl-2 pb-5"
+                        className="w-52 h-52 object-cover bg-gradient-to-br from-slate-400 to-slate-200 rounded-bl-[50%] pl-2 pb-5 pt-8"
                     />
                     <div className="w-52 h-52 bg-gradient-to-bl from-blue-300 to-blue-50 rounded-tl-[50%] flex flex-col justify-center items-end gap-6 px-8 pr-4">
                         <LockLaminated size={30} />
