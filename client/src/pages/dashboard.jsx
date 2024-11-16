@@ -9,6 +9,7 @@ import UserDetails from "../components/UserDetails";
 import Home from "@/components/Home/Home";
 import Insurance from "@/components/Insurance/insurance";
 import ApplyInsurance from "@/components/Insurance/components/applyInsurance";
+import InsuranceStatus from "@/components/Insurance/components/insuranceStatus";
 import { leapfrog } from "ldrs";
 import { useEffect, useState } from "react";
 
@@ -57,6 +58,10 @@ export default function Dashboard() {
                                     <Route
                                         path="insurance/applynewinsurance"
                                         element={<ApplyInsurance />}
+                                    />
+                                    <Route
+                                        path="insurance/insurancestatus"
+                                        element={<InsuranceStatus />}
                                     />
                                     <Route path="loan" element={<Loan />} />
                                     <Route

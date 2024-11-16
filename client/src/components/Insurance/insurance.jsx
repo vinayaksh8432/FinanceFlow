@@ -6,36 +6,41 @@ import { GiReceiveMoney } from "react-icons/gi";
 import { FaLaptopCode } from "react-icons/fa";
 import { MdOutlineSupportAgent } from "react-icons/md";
 import { FaJoget } from "react-icons/fa6";
+import health from "@/assets/heart.png";
+import car from "@/assets/car.png";
+import airplane from "@/assets/airplane.svg";
+import umb from "@/assets/umb.svg";
+import coin from "@/assets/coin.svg";
 
 export default function Insurance() {
     const insuranceTypes = [
         {
             id: "Health",
-            typeImage: "assets/healthInsurance.svg",
+            typeImage: health,
             name: "Health Insurance Policy",
             description: "Get the convenience of No cost EMI",
         },
         {
             id: "Car",
-            typeImage: "assets/car.svg",
+            typeImage: car,
             name: "Car Insurance Policy",
             description: "Stay insured with your car",
         },
         {
             id: "Travel",
-            typeImage: "assets/travel.svg",
+            typeImage: airplane,
             name: "Travel Insurance Policy",
             description: "Emergency travel expenses covered",
         },
         {
             id: "Life",
-            typeImage: "assets/life.svg",
+            typeImage: umb,
             name: "Life Insurance Policy",
             description: "Secure your family's future",
         },
         {
             id: "Investment Plans",
-            typeImage: "assets/investment.svg",
+            typeImage: coin,
             name: "Investment Plans",
             description: "Invest in the best plans",
         },
@@ -68,7 +73,7 @@ export default function Insurance() {
         { icon: <MdPhonelink />, text: "one stop insurance platform" },
         {
             icon: <GiReceiveMoney />,
-            text: "affordable customized coverage plans",
+            text: "affordable customized coverage",
         },
         { icon: <FaLaptopCode />, text: "100% digital process" },
         { icon: <MdOutlineSupportAgent />, text: "dedicated customer support" },
@@ -77,22 +82,21 @@ export default function Insurance() {
 
     return (
         <div className="h-full flex flex-col gap-4">
-            <div className="grid grid-cols-3 gap-4 overflow-x-auto">
+            <div className="grid grid-cols-6 gap-4">
                 {insuranceTypes.map((type, index) => (
                     <div
                         key={type.id || index}
-                        className="flex-shrink-0 p-6 bg-blue-300 bg-opacity-40 rounded-lg shadow-inner flex items-center justify-between"
+                        className="bg-blue-500 bg-opacity-40 border rounded-xl flex gap-2 flex-col items-center text-center overflow-hidden"
                     >
-                        <div className="">
-                            <h2 className="text-base font-medium mb-2">
-                                {type.name}
-                            </h2>
-                            <p className="text-sm">{type.description}</p>
-                        </div>
+                        <h2 className="text-sm font-medium bg-blue-200 w-full py-1">
+                            {type.name}
+                        </h2>
+                        {/* <p className="text-sm">{type.description}</p> */}
+
                         <img
                             src={type.typeImage}
                             alt={`${type.name} icon`}
-                            className="w-24 h-auto object-contain drop-shadow-md"
+                            className="w-16 h-auto object-contain drop-shadow-md"
                         />
                     </div>
                 ))}
@@ -103,7 +107,7 @@ export default function Insurance() {
                     {reasons.map((reason, index) => (
                         <div
                             key={index}
-                            className="border rounded-lg p-4 flex flex-col gap-2 bg-blue-300 bg-opacity-40 shadow-inner"
+                            className="border rounded-lg p-4 flex gap-2 items-center bg-blue-300 bg-opacity-40 shadow-inner"
                         >
                             <div className="text-4xl">{reason.icon}</div>
                             <p className="uppercase text-sm">{reason.text}</p>

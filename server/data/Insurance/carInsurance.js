@@ -6,7 +6,7 @@ const CarInsurance = [
         type: "Retail",
         catagory: "Car",
         price: "3031",
-        coverage: "5,00,000",
+        coverage: 500000,
         details: {
             1: "Covers expenses for own damage and third-party liability",
             2: "Personal accident cover for owner-driver up to Rs. 15 lakh",
@@ -20,7 +20,7 @@ const CarInsurance = [
         type: "Retail",
         catagory: "Car",
         price: "3043",
-        coverage: "5,00,000",
+        coverage: 500000,
         details: {
             1: "3 plan variants to choose from - Silver, Gold & Platinum",
             2: "Modern treatment methods covered",

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { fetchAllInsurance } from "@/utils/api";
+import { fetchAllInsurance, createInsuranceQuota } from "@/utils/api";
+import { useNavigate } from "react-router-dom";
 import { leapfrog } from "ldrs";
 leapfrog.register();
 
@@ -8,6 +9,8 @@ export default function ApplyInsurance() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedType, setSelectedType] = useState("All");
+    const [processingQuoteId, setProcessingQuoteId] = useState(null); // Track which quote is being processed
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -28,6 +31,19 @@ export default function ApplyInsurance() {
 
         fetchData();
     }, []);
+
+    const handleGetQuote = async (insurance) => {
+        try {
+            setProcessingQuoteId(insurance.id); // Set the ID of the insurance being processed
+            await createInsuranceQuota(insurance);
+            navigate("/dashboard/insurance/insurancestatus");
+        } catch (err) {
+            console.error("Error getting quote:", err);
+            setError("Failed to create insurance quote. Please try again.");
+        } finally {
+            setProcessingQuoteId(null); // Clear the processing state
+        }
+    };
 
     const filteredData = Array.isArray(insuranceData)
         ? selectedType === "All"
@@ -50,10 +66,15 @@ export default function ApplyInsurance() {
 
     return (
         <>
-            <div className="flex gap-4 px-4 py-4 overflow-hidden h-full">
-                <div className="flex flex-col items-start sticky top-0">
-                    <h1 className="text-xl font-bold mb-4">Filters</h1>
-                    <div className="grid grid-cols-1 gap-3 text-sm border border-gray-300 p-4 rounded-xl w-48">
+            <div
+                className="flex gap-4 overflow-hidden h-full"
+                style={{ maxHeight: "calc(100vh - 14vh)" }}
+            >
+                <div className="flex flex-col gap-4 items-start sticky top-0 border border-gray-300 rounded-xl p-4">
+                    <h1 className="text-xl font-bold">Filters</h1>
+                    <hr className="border border-gray-200 w-full" />
+                    <p className="font-medium">Catagory</p>
+                    <div className="grid grid-cols-2 gap-3 text-sm rounded-xl">
                         {["All", "Health", "Car"].map((type) => (
                             <button
                                 key={type}
@@ -61,7 +82,7 @@ export default function ApplyInsurance() {
                                 className={`px-4 py-2 rounded-lg transition-colors ${
                                     selectedType === type
                                         ? "bg-blue-500 text-white"
-                                        : "bg-gray-100 hover:bg-gray-200"
+                                        : "bg-blue-100 hover:bg-gray-200"
                                 }`}
                             >
                                 {type}
@@ -69,18 +90,15 @@ export default function ApplyInsurance() {
                         ))}
                     </div>
                 </div>
-                <div
-                    className="flex-1 overflow-y-auto h-full"
-                    style={{ maxHeight: "calc(100vh - 18vh)" }}
-                >
-                    <h1 className="text-xl font-bold mb-4">
+                <div className="flex-1 flex flex-col gap-4 h-full border border-gray-300 rounded-xl p-4">
+                    <h1 className="text-xl font-bold">
                         Results ({filteredData.length})
                     </h1>
-                    <div className="flex flex-col gap-4">
+                    <div className="overflow-y-auto flex flex-col gap-4 border-y border-gray-300 rounded-xl">
                         {filteredData.map((insurance) => (
                             <div
                                 key={insurance.id}
-                                className="border border-gray-300 shadow-sm rounded-xl p-6 hover:shadow-md transition-shadow"
+                                className="border border-gray-400 shadow-sm rounded-xl p-6 hover:shadow-md transition-shadow"
                             >
                                 <div className="flex justify-between">
                                     <div className="flex gap-4 items-start">
@@ -145,8 +163,22 @@ export default function ApplyInsurance() {
                                     <button className="px-4 py-2 border border-blue-500 rounded-full hover:bg-blue-50 transition-colors">
                                         Know More
                                     </button>
-                                    <button className="text-white px-4 py-2 border border-blue-400 bg-gradient-to-r from-blue-500 to-blue-300 rounded-full hover:shadow-md transition-all">
-                                        Get Quote
+                                    <button
+                                        onClick={() =>
+                                            handleGetQuote(insurance)
+                                        }
+                                        disabled={
+                                            processingQuoteId === insurance.id
+                                        }
+                                        className={`text-white px-4 py-2 border border-blue-400 bg-gradient-to-r from-blue-500 to-blue-300 rounded-full hover:shadow-md transition-all ${
+                                            processingQuoteId === insurance.id
+                                                ? "opacity-50 cursor-not-allowed"
+                                                : ""
+                                        }`}
+                                    >
+                                        {processingQuoteId === insurance.id
+                                            ? "Processing..."
+                                            : "Get Quote"}
                                     </button>
                                 </div>
                             </div>

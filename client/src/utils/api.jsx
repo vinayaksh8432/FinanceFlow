@@ -174,3 +174,53 @@ export const deleteInsurance = async (id) => {
         throw error.response?.data || error.message;
     }
 };
+
+export const createInsuranceQuota = async (insuranceData) => {
+    try {
+        // Clean the coverage and price values by removing commas and converting to numbers
+        const cleanNumber = (value) => {
+            if (typeof value === "string") {
+                return Number(value.replace(/,/g, ""));
+            }
+            return value;
+        };
+
+        const response = await api.post("/insurance-quotas/create", {
+            name: insuranceData.name,
+            type: insuranceData.catagory,
+            coverage: cleanNumber(insuranceData.coverage),
+            premium: cleanNumber(insuranceData.price),
+            startDate: new Date(),
+            endDate: new Date(
+                new Date().setFullYear(new Date().getFullYear() + 1)
+            ),
+            status: "Active",
+            details: insuranceData.details,
+            // The userId will be extracted from the JWT token in the backend
+            // using the authMiddleware, so we don't need to send it explicitly
+        });
+
+        if (!response.data.success) {
+            throw new Error(
+                response.data.message || "Failed to create insurance quota"
+            );
+        }
+
+        return response.data;
+    } catch (error) {
+        if (error.response?.data?.message) {
+            throw new Error(error.response.data.message);
+        }
+        throw error;
+    }
+};
+
+export const fetchUserQuotas = async () => {
+    try {
+        const response = await api.get("/insurance-quotas/user-quotas");
+        return response.data.data; // Make sure we return the data array from the response
+    } catch (error) {
+        console.error("Error fetching user quotas:", error);
+        throw error.response?.data || error.message;
+    }
+};
