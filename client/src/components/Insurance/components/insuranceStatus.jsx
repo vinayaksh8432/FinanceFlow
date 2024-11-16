@@ -17,7 +17,7 @@ const PolicyCard = ({ policy, isExpanded, onToggle, rowRef }) => {
                 return null;
         }
     };
-    
+
     const [showDetails, setShowDetails] = useState(false);
 
     return (
