@@ -1,49 +1,84 @@
-// routes/loanApplicationRoutes.js
-
 const express = require("express");
 const router = express.Router();
+const authMiddleware = require("../middleware/authMiddleware");
 const {
     submitLoanApplication,
 } = require("../controllers/LoanApplicationController");
 const LoanApplication = require("../model/loanApplication");
 
-router.post("/submit", submitLoanApplication);
+router.use(authMiddleware);
+
+router.post("/", submitLoanApplication);
 
 router.get("/", async (req, res) => {
     try {
-        const applications = await LoanApplication.find();
-        res.json(applications);
+        const applications = await LoanApplication.find({
+            userId: req.user._id,
+        });
+        res.json({
+            success: true,
+            applications,
+        });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
     }
 });
 
-router.put("/updateApplication/:id", async (req, res) => {
+// Update application
+router.put("/:id", async (req, res) => {
     try {
-        const updatedApplication = await LoanApplication.findByIdAndUpdate(
-            req.params.id,
+        const application = await LoanApplication.findOneAndUpdate(
+            { _id: req.params.id, userId: req.user._id },
             req.body,
             { new: true }
         );
-        if (!updatedApplication) {
-            return res.status(404).send("Application not found");
+
+        if (!application) {
+            return res.status(404).json({
+                success: false,
+                message: "Application not found or unauthorized",
+            });
         }
-        res.json(updatedApplication);
+
+        res.json({
+            success: true,
+            application,
+        });
     } catch (error) {
-        res.status(400).send(error.message);
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
     }
 });
 
-router.delete("/deleteApplication/:id", async (req, res) => {
+// Delete application
+router.delete("/:id", async (req, res) => {
     try {
-        const result = await LoanApplication.deleteOne({ _id: req.params.id });
-        if (result.deletedCount === 1) {
-            res.json({ message: "Successfully Deleted" });
-        } else {
-            res.status(404).json({ message: "Application not found" });
+        const result = await LoanApplication.deleteOne({
+            _id: req.params.id,
+            userId: req.user._id,
+        });
+
+        if (result.deletedCount === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "Application not found or unauthorized",
+            });
         }
+
+        res.json({
+            success: true,
+            message: "Successfully deleted",
+        });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
     }
 });
 

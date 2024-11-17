@@ -30,7 +30,6 @@ export default function ApplyLoan() {
     const [isLoading, setIsLoading] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-    const [submitStatus, setSubmitStatus] = useState(null);
     const [formData, setFormData] = useState({
         personalDetails: {
             isComplete: false,
@@ -239,16 +238,13 @@ export default function ApplyLoan() {
             const response = await submitLoanApplication(completeFormData);
 
             if (response && response.message) {
-                setSubmitStatus("success");
                 setShowConfirmDialog(false);
-                setTimeout(() => {
-                    navigate("/dashboard/loan/loanstatus");
-                }, 5000); // Redirect to dashboard after 5 seconds
+                navigate("/dashboard/loan/loanstatus");
             } else {
                 throw new Error("Invalid response from server");
             }
         } catch (error) {
-            setSubmitStatus("error");
+            console.error("Error submitting loan application:", error);
             setErrorMessage(
                 error.message ||
                     "Failed to submit loan application. Please try again."
@@ -270,7 +266,6 @@ export default function ApplyLoan() {
                 setErrorMessage(
                     "Please complete all required fields in all steps"
                 );
-                setTimeout(() => setErrorMessage(""), 5000);
             }
         }
     };
@@ -444,26 +439,6 @@ export default function ApplyLoan() {
                             onClose={() => setErrorMessage("")}
                         >
                             {errorMessage}
-                        </Alert>
-                    )}
-
-                    {submitStatus === "success" && (
-                        <Alert
-                            severity="success"
-                            className="absolute bottom-20 left-6 right-6 flex items-center"
-                        >
-                            <div className="flex items-center gap-2">
-                                Loan application submitted successfully!
-                                Redirecting
-                                <l-ring-2
-                                    size="18"
-                                    stroke="1"
-                                    stroke-length="0.25"
-                                    bg-opacity="0.1"
-                                    speed="0.8"
-                                    color="black"
-                                />
-                            </div>
                         </Alert>
                     )}
 

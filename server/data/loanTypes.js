@@ -6,7 +6,7 @@ const loanTypes = [
         description:
             "Get a Personal Loan upto 12 lakhs in few easy steps with FinanceFlow",
         shortDescription: "For all your needs",
-        interestRate: "12%",
+        interestRate: "8%",
         upto: "12 Lakhs",
         maxAmount: 1200000, // 12 lakhs
         allowedTenures: ["12 Months", "24 Months", "36 Months"],

@@ -58,6 +58,9 @@ export const fetchLoanApplications = async () => {
         const response = await api.get("/loan-applications");
         return response.data;
     } catch (error) {
+        if (error.response?.status === 401) {
+            throw new Error("Please login to view your applications");
+        }
         console.error(
             "Error in fetchLoanApplications:",
             error.response || error
@@ -68,9 +71,12 @@ export const fetchLoanApplications = async () => {
 
 export const submitLoanApplication = async (formData) => {
     try {
-        const response = await api.post("/loan-applications/submit", formData);
+        const response = await api.post("/loan-applications/", formData);
         return response.data;
     } catch (error) {
+        if (error.response?.status === 401) {
+            throw new Error("Please login to submit an application");
+        }
         console.error("Loan submission error:", error.response || error);
         throw (
             error.response?.data || {

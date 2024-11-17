@@ -1,11 +1,17 @@
 import { NavLink } from "react-router-dom";
-import { House, Bank, ChartLineUp, ShoppingCart } from "@phosphor-icons/react";
+import {
+    Bank,
+    ChartLineUp,
+    ShoppingCart,
+    HouseLine,
+} from "@phosphor-icons/react";
+import { RiShieldCrossLine } from "react-icons/ri";
 
 export default function Menu({ isCollapsed }) {
     const menuItems = [
         {
             path: "home",
-            icon: <House size="25px" />,
+            icon: <HouseLine size="25px" />,
             label: "Home",
         },
         {
@@ -15,7 +21,7 @@ export default function Menu({ isCollapsed }) {
         },
         {
             path: "insurance",
-            icon: <Bank size="25px" />,
+            icon: <RiShieldCrossLine size="25px" />,
             label: "Insurance",
         },
         {

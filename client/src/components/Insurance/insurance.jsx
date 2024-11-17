@@ -6,8 +6,9 @@ import { GiReceiveMoney } from "react-icons/gi";
 import { FaLaptopCode } from "react-icons/fa";
 import { MdOutlineSupportAgent } from "react-icons/md";
 import { FaJoget } from "react-icons/fa6";
-import health from "@/assets/heart.png";
-import car from "@/assets/car.png";
+import heart from "@/assets/heart.svg";
+import car from "@/assets/car.svg";
+import twoWheel from "@/assets/twoWheel.svg";
 import airplane from "@/assets/airplane.svg";
 import umb from "@/assets/umb.svg";
 import coin from "@/assets/coin.svg";
@@ -16,37 +17,42 @@ export default function Insurance() {
     const insuranceTypes = [
         {
             id: "Health",
-            typeImage: health,
+            typeImage: heart,
             name: "Health Insurance Policy",
-            description: "Get the convenience of No cost EMI",
+            size: "50px",
         },
         {
             id: "Car",
             typeImage: car,
             name: "Car Insurance Policy",
-            description: "Stay insured with your car",
+            size: "57px",
+        },
+        {
+            id: "Two Wheeler",
+            typeImage: twoWheel,
+            name: "Two-Wheeler Policy",
+            size: "45px",
         },
         {
             id: "Travel",
             typeImage: airplane,
             name: "Travel Insurance Policy",
-            description: "Emergency travel expenses covered",
+            size: "55px",
         },
         {
             id: "Life",
             typeImage: umb,
             name: "Life Insurance Policy",
-            description: "Secure your family's future",
+            size: "55px",
         },
         {
             id: "Investment Plans",
             typeImage: coin,
             name: "Investment Plans",
-            description: "Invest in the best plans",
+            size: "57px",
         },
     ];
 
-    const [currentIndex, setCurrentIndex] = useState(0);
     const navigate = useNavigate();
 
     const handleMyInsuranceClick = () => {
@@ -55,18 +61,6 @@ export default function Insurance() {
 
     const handleNewInsuranceClick = () => {
         navigate("/dashboard/insurance/applynewinsurance");
-    };
-
-    const handleNext = () => {
-        if (currentIndex < insuranceTypes.length - 3) {
-            setCurrentIndex(currentIndex + 1);
-        }
-    };
-
-    const handlePrev = () => {
-        if (currentIndex > 0) {
-            setCurrentIndex(currentIndex - 1);
-        }
     };
 
     const reasons = [
@@ -82,21 +76,21 @@ export default function Insurance() {
 
     return (
         <div className="h-full flex flex-col gap-4">
-            <div className="grid grid-cols-6 gap-4">
+            <div className="grid grid-cols-7 gap-4">
                 {insuranceTypes.map((type, index) => (
                     <div
                         key={type.id || index}
-                        className="bg-blue-500 bg-opacity-40 border rounded-xl flex gap-2 flex-col items-center text-center overflow-hidden"
+                        className="bg-blue-500 bg-opacity-40 border rounded-xl flex flex-col items-center text-center overflow-hidden"
                     >
                         <h2 className="text-sm font-medium bg-blue-200 w-full py-1">
                             {type.name}
                         </h2>
-                        {/* <p className="text-sm">{type.description}</p> */}
 
                         <img
                             src={type.typeImage}
                             alt={`${type.name} icon`}
-                            className="w-16 h-auto object-contain drop-shadow-md"
+                            className="w-16 h-auto object-contain drop-shadow-md py-2"
+                            style={{ width: type.size }}
                         />
                     </div>
                 ))}

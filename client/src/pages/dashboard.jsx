@@ -8,8 +8,8 @@ import Portfolio from "../components/Stocks/Portfolio";
 import UserDetails from "../components/UserDetails";
 import Home from "@/components/Home/Home";
 import Insurance from "@/components/Insurance/insurance";
-import ApplyInsurance from "@/components/Insurance/components/applyInsurance";
-import InsuranceStatus from "@/components/Insurance/components/insuranceStatus";
+import ApplyInsurance from "@/components/Insurance/applyInsurance";
+import InsuranceStatus from "@/components/Insurance/insuranceStatus";
 import { leapfrog } from "ldrs";
 import { useEffect, useState } from "react";
 

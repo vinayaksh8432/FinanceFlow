@@ -2,20 +2,21 @@ import { useState, useEffect } from "react";
 import { fetchAllInsurance, createInsuranceQuota } from "@/utils/api";
 import { useNavigate } from "react-router-dom";
 import { leapfrog } from "ldrs";
+import { Heartbeat } from "@phosphor-icons/react";
+import { MdDoneAll } from "react-icons/md";
+import { AiOutlineCar } from "react-icons/ai";
 leapfrog.register();
 
 export default function ApplyInsurance() {
     const [insuranceData, setInsuranceData] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedType, setSelectedType] = useState("All");
-    const [processingQuoteId, setProcessingQuoteId] = useState(null); // Track which quote is being processed
+    const [processingQuoteId, setProcessingQuoteId] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                setLoading(true);
                 const data = await fetchAllInsurance();
                 setInsuranceData(data);
                 setError(null);
@@ -24,8 +25,6 @@ export default function ApplyInsurance() {
                     "Failed to fetch insurance data. Please try again later."
                 );
                 console.error("Error:", err);
-            } finally {
-                setLoading(false);
             }
         };
 
@@ -34,14 +33,14 @@ export default function ApplyInsurance() {
 
     const handleGetQuote = async (insurance) => {
         try {
-            setProcessingQuoteId(insurance.id); // Set the ID of the insurance being processed
+            setProcessingQuoteId(insurance.id);
             await createInsuranceQuota(insurance);
             navigate("/dashboard/insurance/insurancestatus");
         } catch (err) {
             console.error("Error getting quote:", err);
             setError("Failed to create insurance quote. Please try again.");
         } finally {
-            setProcessingQuoteId(null); // Clear the processing state
+            setProcessingQuoteId(null);
         }
     };
 
@@ -67,30 +66,35 @@ export default function ApplyInsurance() {
     return (
         <>
             <div
-                className="flex gap-4 overflow-hidden h-full"
+                className="flex overflow-hidden h-full border border-gray-300 rounded-xl"
                 style={{ maxHeight: "calc(100vh - 14vh)" }}
             >
-                <div className="flex flex-col gap-4 items-start sticky top-0 border border-gray-300 rounded-xl p-4">
+                <div className="bg-gray-50 flex flex-col gap-4 items-start sticky top-0 border-r border-gray-300 p-4">
                     <h1 className="text-xl font-bold">Filters</h1>
                     <hr className="border border-gray-200 w-full" />
                     <p className="font-medium">Catagory</p>
-                    <div className="grid grid-cols-2 gap-3 text-sm rounded-xl">
-                        {["All", "Health", "Car"].map((type) => (
+                    <div className="flex flex-col gap-3 text-sm rounded-xl">
+                        {[
+                            { icon: <MdDoneAll size={20} />, label: "All" },
+                            { icon: <Heartbeat size={20} />, label: "Health" },
+                            { icon: <AiOutlineCar size={20} />, label: "Car" },
+                        ].map((type) => (
                             <button
                                 key={type}
-                                onClick={() => setSelectedType(type)}
-                                className={`px-4 py-2 rounded-lg transition-colors ${
-                                    selectedType === type
+                                onClick={() => setSelectedType(type.label)}
+                                className={`px-4 py-2 rounded-lg transition-colors flex gap-2 items-center ${
+                                    selectedType === type.label
                                         ? "bg-blue-500 text-white"
-                                        : "bg-blue-100 hover:bg-gray-200"
+                                        : "bg-blue-100 hover:bg-blue-200"
                                 }`}
                             >
-                                {type}
+                                {type.icon}
+                                {type.label}
                             </button>
                         ))}
                     </div>
                 </div>
-                <div className="flex-1 flex flex-col gap-4 h-full border border-gray-300 rounded-xl p-4">
+                <div className="bg-white flex-1 flex flex-col gap-4 h-full p-4">
                     <h1 className="text-xl font-bold">
                         Results ({filteredData.length})
                     </h1>

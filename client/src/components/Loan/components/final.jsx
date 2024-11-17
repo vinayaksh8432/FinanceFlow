@@ -25,7 +25,6 @@ export default function Final({ formData, onComplete }) {
     const [apiError, setApiError] = useState("");
     const [loanTypes, setLoanTypes] = useState([]);
     const [selectedLoanType, setSelectedLoanType] = useState(null);
-    const [showIcon, setShowIcon] = useState(false);
     const componentRef = useRef(null);
 
     const validateField = (name, value) => {
@@ -87,7 +86,7 @@ export default function Final({ formData, onComplete }) {
     const formatIndianCurrency = (num) => {
         if (num === "") return "";
         const numStr = num.replace(/[₹,]/g, "");
-        if (isNaN(numStr)) return "";
+        if (isNaN(numStr)) return "0";
 
         const parts = numStr.split(".");
         let integerPart = parts[0];
@@ -253,25 +252,11 @@ export default function Final({ formData, onComplete }) {
         return `₹${num}`; // For numbers less than 1000
     };
 
-    const handleScroll = () => {
-        if (componentRef.current.scrollTop < 50) {
-            setShowIcon(true);
-        } else {
-            setShowIcon(false);
-        }
-    };
-
-    useEffect(() => {
-        const current = componentRef.current;
-        current.addEventListener("scroll", handleScroll);
-        return () => current.removeEventListener("scroll", handleScroll);
-    }, []);
-
     return (
         <div className="flex gap-6 h-full">
             <div
                 className="flex-1 overflow-y-scroll flex flex-col gap-4 rounded-xl relative"
-                style={{ maxHeight: "calc(100vh - 22vh)" }}
+                style={{ maxHeight: "calc(100vh - 23vh)" }}
                 ref={componentRef}
             >
                 <div className="">
@@ -517,11 +502,6 @@ export default function Final({ formData, onComplete }) {
                         </span>
                     )}
                 </div>
-                {showIcon && (
-                    <div className="absolute left-1/2 bottom-4 bg-white border rounded-full p-1 cursor-pointer shadow-sm transition-all hover:bg-gray-100">
-                        <CaretLineDown />
-                    </div>
-                )}
             </div>
 
             <div className="w-1/3 sticky top-0">
