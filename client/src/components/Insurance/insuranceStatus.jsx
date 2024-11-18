@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchUserQuotas } from "@/utils/api";
+import { fetchUserQuotas, deleteInsuranceQuota } from "@/utils/api";
 import {
     ArrowClockwise,
     TrashSimple,
@@ -128,11 +128,8 @@ const PolicyCard = ({ policy, onDelete, onDownload }) => {
             {showDetails && (
                 <div className="px-4 pb-2">
                     <div className="text-sm font-medium">Policy Details:</div>
-                    <div className="text-sm text-gray-600 grid grid-cols-3 gap-2">
+                    <div className="text-sm text-gray-600">
                         <div>
-                            <span className="font-medium">
-                                Coverage Details:
-                            </span>
                             {policy.details && (
                                 <ul className="space-y-1">
                                     {Object.entries(policy.details).map(
@@ -189,28 +186,7 @@ export default function InsuranceStatus() {
                 return;
             }
 
-            const response = await fetch(
-                `${import.meta.env.VITE_BACKEND_URL}/api/insurance/${id}`,
-                {
-                    method: "DELETE",
-                    credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
-
-            if (!response.ok) {
-                throw new Error(
-                    `Failed to delete policy. Status: ${response.status}`
-                );
-            }
-
-            const data = await response.json();
-            if (!data.success) {
-                throw new Error(data.message || "Failed to delete policy");
-            }
-
+            await deleteInsuranceQuota(id);
             alert("Policy deleted successfully");
             await fetchPolicies();
         } catch (err) {

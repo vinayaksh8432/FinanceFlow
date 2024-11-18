@@ -63,8 +63,53 @@ const getUserQuotas = async (req, res) => {
         });
     }
 };
-// Make sure both functions are exported
+
+const deleteInsuranceQuota = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const userQuota = await InsuranceQuota.findOne({
+            userId: req.user._id,
+        });
+
+        if (!userQuota) {
+            return res.status(404).json({
+                success: false,
+                message: "No insurance quotas found for user",
+            });
+        }
+
+        // Find the policy in the user's policies array
+        const policyIndex = userQuota.policies.findIndex(
+            (policy) => policy._id.toString() === id
+        );
+
+        if (policyIndex === -1) {
+            return res.status(404).json({
+                success: false,
+                message: "Policy not found",
+            });
+        }
+
+        // Remove the policy from the array
+        userQuota.policies.splice(policyIndex, 1);
+        await userQuota.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Insurance policy deleted successfully",
+        });
+    } catch (error) {
+        console.error("Error deleting insurance quota:", error);
+        res.status(400).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
 module.exports = {
     createInsuranceQuota,
     getUserQuotas,
+    deleteInsuranceQuota,
 };

@@ -141,42 +141,20 @@ export const fetchInsuranceTypes = async () => {
 export const fetchAllInsurance = async () => {
     try {
         const response = await api.get("/insurance-types/all");
-        return response.data;
+        // Transform the response to match the UI structure
+        const transformedData = response.data.reduce((acc, insurance) => {
+            acc[insurance.category] = {
+                category: insurance.category,
+                items: insurance.items.map((item) => ({
+                    ...item,
+                    catagory: insurance.category, // Keep catagory for backward compatibility
+                })),
+            };
+            return acc;
+        }, {});
+        return transformedData;
     } catch (error) {
         console.error("Error fetching insurance data:", error);
-        throw error.response?.data || error.message;
-    }
-};
-
-export const addInsurance = async (insuranceData) => {
-    try {
-        const response = await api.post("/insurance-types/add", insuranceData);
-        return response.data;
-    } catch (error) {
-        console.error("Error adding insurance:", error);
-        throw error.response?.data || error.message;
-    }
-};
-
-export const updateInsurance = async (id, insuranceData) => {
-    try {
-        const response = await api.put(
-            `/insurance-types/update/${id}`,
-            insuranceData
-        );
-        return response.data;
-    } catch (error) {
-        console.error("Error updating insurance:", error);
-        throw error.response?.data || error.message;
-    }
-};
-
-export const deleteInsurance = async (id) => {
-    try {
-        const response = await api.delete(`/insurance-types/delete/${id}`);
-        return response.data;
-    } catch (error) {
-        console.error("Error deleting insurance:", error);
         throw error.response?.data || error.message;
     }
 };
@@ -227,6 +205,23 @@ export const fetchUserQuotas = async () => {
         return response.data.data; // Make sure we return the data array from the response
     } catch (error) {
         console.error("Error fetching user quotas:", error);
+        throw error.response?.data || error.message;
+    }
+};
+
+export const deleteInsuranceQuota = async (quotaId) => {
+    try {
+        const response = await api.delete(
+            `/insurance-quotas/delete/${quotaId}`
+        );
+        if (!response.data.success) {
+            throw new Error(
+                response.data.message || "Failed to delete insurance quota"
+            );
+        }
+        return response.data;
+    } catch (error) {
+        console.error("Error deleting insurance quota:", error);
         throw error.response?.data || error.message;
     }
 };

@@ -1,14 +1,12 @@
 import { useState, useEffect } from "react";
 import { fetchAllInsurance, createInsuranceQuota } from "@/utils/api";
 import { useNavigate } from "react-router-dom";
-import { leapfrog } from "ldrs";
 import { Heartbeat } from "@phosphor-icons/react";
 import { MdDoneAll } from "react-icons/md";
 import { AiOutlineCar } from "react-icons/ai";
-leapfrog.register();
 
 export default function ApplyInsurance() {
-    const [insuranceData, setInsuranceData] = useState([]);
+    const [insuranceData, setInsuranceData] = useState({});
     const [error, setError] = useState(null);
     const [selectedType, setSelectedType] = useState("All");
     const [processingQuoteId, setProcessingQuoteId] = useState(null);
@@ -31,9 +29,22 @@ export default function ApplyInsurance() {
         fetchData();
     }, []);
 
+    const getFilteredData = () => {
+        if (!insuranceData || Object.keys(insuranceData).length === 0)
+            return [];
+
+        if (selectedType === "All") {
+            return Object.values(insuranceData).flatMap(
+                (category) => category.items
+            );
+        }
+
+        return insuranceData[selectedType]?.items || [];
+    };
+
     const handleGetQuote = async (insurance) => {
         try {
-            setProcessingQuoteId(insurance.id);
+            setProcessingQuoteId(insurance.itemId); // Updated to use itemId
             await createInsuranceQuota(insurance);
             navigate("/dashboard/insurance/insurancestatus");
         } catch (err) {
@@ -43,14 +54,6 @@ export default function ApplyInsurance() {
             setProcessingQuoteId(null);
         }
     };
-
-    const filteredData = Array.isArray(insuranceData)
-        ? selectedType === "All"
-            ? insuranceData
-            : insuranceData.filter(
-                  (insurance) => insurance.catagory === selectedType
-              )
-        : [];
 
     if (error) {
         return (
@@ -63,47 +66,50 @@ export default function ApplyInsurance() {
         );
     }
 
+    const filteredData = getFilteredData();
+
     return (
-        <>
-            <div
-                className="flex overflow-hidden h-full border border-gray-300 rounded-xl"
-                style={{ maxHeight: "calc(100vh - 14vh)" }}
-            >
-                <div className="bg-gray-50 flex flex-col gap-4 items-start sticky top-0 border-r border-gray-300 p-4">
-                    <h1 className="text-xl font-bold">Filters</h1>
-                    <hr className="border border-gray-200 w-full" />
-                    <p className="font-medium">Catagory</p>
-                    <div className="flex flex-col gap-3 text-sm rounded-xl">
-                        {[
-                            { icon: <MdDoneAll size={20} />, label: "All" },
-                            { icon: <Heartbeat size={20} />, label: "Health" },
-                            { icon: <AiOutlineCar size={20} />, label: "Car" },
-                        ].map((type) => (
-                            <button
-                                key={type}
-                                onClick={() => setSelectedType(type.label)}
-                                className={`px-4 py-2 rounded-lg transition-colors flex gap-2 items-center ${
-                                    selectedType === type.label
-                                        ? "bg-blue-500 text-white"
-                                        : "bg-blue-100 hover:bg-blue-200"
-                                }`}
-                            >
-                                {type.icon}
-                                {type.label}
-                            </button>
-                        ))}
-                    </div>
+        <div
+            className="flex overflow-hidden h-full border border-gray-300 rounded-xl"
+            style={{ maxHeight: "calc(100vh - 14vh)" }}
+        >
+            <div className="bg-gray-50 flex flex-col gap-4 items-start sticky top-0 border-r border-gray-300 p-4">
+                <h1 className="text-xl font-bold">Filters</h1>
+                <hr className="border border-gray-200 w-full" />
+                <p className="font-medium">Category</p>
+                <div className="flex flex-col gap-3 text-sm rounded-xl">
+                    {[
+                        { icon: <MdDoneAll size={20} />, label: "All" },
+                        { icon: <Heartbeat size={20} />, label: "Health" },
+                        { icon: <AiOutlineCar size={20} />, label: "Car" },
+                    ].map((type) => (
+                        <button
+                            key={type.label}
+                            onClick={() => setSelectedType(type.label)}
+                            className={`px-4 py-2 rounded-lg transition-colors flex gap-2 items-center ${
+                                selectedType === type.label
+                                    ? "bg-blue-500 text-white"
+                                    : "bg-blue-100 hover:bg-blue-200"
+                            }`}
+                        >
+                            {type.icon}
+                            {type.label}
+                        </button>
+                    ))}
                 </div>
-                <div className="bg-white flex-1 flex flex-col gap-4 h-full p-4">
-                    <h1 className="text-xl font-bold">
-                        Results ({filteredData.length})
-                    </h1>
-                    <div className="overflow-y-auto flex flex-col gap-4 border-y border-gray-300 rounded-xl">
-                        {filteredData.map((insurance) => (
-                            <div
-                                key={insurance.id}
-                                className="border border-gray-400 shadow-sm rounded-xl p-6 hover:shadow-md transition-shadow"
-                            >
+            </div>
+
+            <div className="bg-white flex-1 flex flex-col gap-4 h-full p-4">
+                <h1 className="text-xl font-bold">
+                    Results ({filteredData.length})
+                </h1>
+                <div className="overflow-y-auto flex flex-col gap-4 border-y border-gray-400 rounded-md">
+                    {filteredData.map((insurance) => (
+                        <div
+                            key={insurance.itemId}
+                            className="border border-gray-400 rounded-md shadow-sm hover:shadow-md transition-shadow"
+                        >
+                            <div className="p-6">
                                 <div className="flex justify-between">
                                     <div className="flex gap-4 items-start">
                                         <img
@@ -117,16 +123,16 @@ export default function ApplyInsurance() {
                                                     {insurance.name}
                                                 </h2>
                                                 <p className="pb-1 text-gray-600">
-                                                    {insurance.id}
+                                                    {insurance.itemId}
                                                 </p>
                                             </div>
                                             <div className="flex gap-2">
-                                                <label className="text-xs bg-blue-100 px-3 py-1 rounded-full uppercase">
+                                                <span className="text-xs bg-blue-100 px-3 py-1 rounded-full uppercase">
                                                     {insurance.type}
-                                                </label>
-                                                <label className="text-xs bg-green-100 px-3 py-1 rounded-full uppercase">
+                                                </span>
+                                                <span className="text-xs bg-green-100 px-3 py-1 rounded-full uppercase">
                                                     {insurance.catagory}
-                                                </label>
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
@@ -153,9 +159,9 @@ export default function ApplyInsurance() {
                                         Key Features:
                                     </h3>
                                     <ul className="list-disc list-inside space-y-1 text-gray-600">
-                                        {Object.values(insurance.details).map(
-                                            (detail, index) => (
-                                                <li key={index}>{detail}</li>
+                                        {Object.entries(insurance.details).map(
+                                            ([key, value]) => (
+                                                <li key={key}>{value}</li>
                                             )
                                         )}
                                     </ul>
@@ -172,24 +178,26 @@ export default function ApplyInsurance() {
                                             handleGetQuote(insurance)
                                         }
                                         disabled={
-                                            processingQuoteId === insurance.id
+                                            processingQuoteId ===
+                                            insurance.itemId
                                         }
                                         className={`text-white px-4 py-2 border border-blue-400 bg-gradient-to-r from-blue-500 to-blue-300 rounded-full hover:shadow-md transition-all ${
-                                            processingQuoteId === insurance.id
+                                            processingQuoteId ===
+                                            insurance.itemId
                                                 ? "opacity-50 cursor-not-allowed"
                                                 : ""
                                         }`}
                                     >
-                                        {processingQuoteId === insurance.id
+                                        {processingQuoteId === insurance.itemId
                                             ? "Processing..."
                                             : "Get Quote"}
                                     </button>
                                 </div>
                             </div>
-                        ))}
-                    </div>
+                        </div>
+                    ))}
                 </div>
             </div>
-        </>
+        </div>
     );
 }

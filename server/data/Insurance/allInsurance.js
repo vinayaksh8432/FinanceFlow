@@ -1,7 +1,15 @@
-const { CarInsurance } = require("./carInsurance");
 const { HealthInsurance } = require("./healthInsurance");
+const { CarInsurance } = require("./carInsurance");
 
-// Combine all insurance data
-const allInsurance = [...HealthInsurance, ...CarInsurance];
+const allInsurance = [
+    {
+        category: "Health",
+        items: HealthInsurance.items,
+    },
+    {
+        category: "Car",
+        items: CarInsurance.items,
+    },
+];
 
-module.exports = { allInsurance };
+module.exports = { HealthInsurance, CarInsurance, allInsurance };
