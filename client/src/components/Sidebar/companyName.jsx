@@ -4,12 +4,14 @@ export default function CompanyName({ isCollapsed, toggleSidebar }) {
     return (
         <>
             {isCollapsed ? (
-                <button
-                    onClick={toggleSidebar}
-                    className="h-full w-full mx-auto flex justify-center items-center"
-                >
-                    <GoSidebarCollapse size={25} />
-                </button>
+                <div className="mx-auto flex items-center justify-center h-full">
+                    <button
+                        onClick={toggleSidebar}
+                        className="mx-auto flex justify-center"
+                    >
+                        <GoSidebarCollapse size={25} />
+                    </button>
+                </div>
             ) : (
                 <div className="flex justify-between items-center p-4">
                     <div
@@ -18,7 +20,7 @@ export default function CompanyName({ isCollapsed, toggleSidebar }) {
                         }`}
                     >
                         <h1 className="text-lg">Finance Flow</h1>
-                        <h2 className="font-light text-xs text-neutral-800 leading-[1]">
+                        <h2 className="font-light text-xs text-slate-200 leading-[1]">
                             Your Money, Your Way
                         </h2>
                     </div>

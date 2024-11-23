@@ -37,7 +37,12 @@ export default function Menu({ isCollapsed }) {
     ];
 
     return (
-        <div className="py-2 flex-1 overflow-hidden">
+        <div className="py-2 flex-1 overflow-hidden transition-all duration-300">
+            {!isCollapsed && (
+                <h1 className="text-sm font-extralight p-4 opacity-100 transition-opacity duration-300">
+                    MANAGE
+                </h1>
+            )}
             <div className="flex flex-col gap-4">
                 {menuItems.map((item) => (
                     <NavLink
@@ -45,15 +50,15 @@ export default function Menu({ isCollapsed }) {
                         to={item.path}
                         className={({ isActive }) => `
                             flex items-center
-                            transition-all duration-300 text-black
-                            ${isActive ? "bg-white" : ""}
+                            transition-all duration-300
+                            ${isActive ? "bg-white text-black" : ""}
                         `}
                         title={item.label}
                     >
                         {isCollapsed ? (
-                            <span className="pl-4 py-2">{item.icon}</span>
+                            <span className="px-7 py-2">{item.icon}</span>
                         ) : (
-                            <span className="flex items-center gap-4 px-4 py-2">
+                            <span className="flex items-center gap-4 px-8 py-2">
                                 {item.icon}
                                 <span>{item.label}</span>
                             </span>

@@ -71,7 +71,14 @@ export const fetchLoanApplications = async () => {
 
 export const submitLoanApplication = async (formData) => {
     try {
-        const response = await api.post("/loan-applications/", formData);
+        const response = await api.post("/loan-applications", formData, {
+            headers: {
+                // Don't set Content-Type - axios will set it automatically for FormData
+                // Including the boundary parameter
+            },
+        });
+        console.log("Form data", response.data);
+
         return response.data;
     } catch (error) {
         if (error.response?.status === 401) {

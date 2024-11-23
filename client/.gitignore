@@ -27,4 +27,4 @@ dist-ssr
 .env.local
 *.zip
 *.eps
-client/src/assets/loginBG-2.jpg
+*.pdf

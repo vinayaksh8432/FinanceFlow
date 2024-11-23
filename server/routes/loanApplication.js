@@ -5,10 +5,11 @@ const {
     submitLoanApplication,
 } = require("../controllers/LoanApplicationController");
 const LoanApplication = require("../model/loanApplication");
+const uploadMiddleware = require("../middleware/upload");
 
 router.use(authMiddleware);
 
-router.post("/", submitLoanApplication);
+router.post("/", uploadMiddleware, submitLoanApplication);
 
 router.get("/", async (req, res) => {
     try {

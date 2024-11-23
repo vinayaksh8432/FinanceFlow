@@ -12,19 +12,21 @@ export default function Sidebar() {
     return (
         <div
             className={`
-                transition-all duration-300 ease-in-out
-                ${isCollapsed ? "w-16 rounded-r-3xl" : "w-52"}
-                bg-blue-300 sticky self-start top-0 h-screen 
-                z-10 border border-l-0 border-t-0 border-blue-400
+                transition-all duration-300 ease-in-out text-white
+                ${isCollapsed ? "w-20 rounded-r-3xl" : "w-52"}
+                sticky self-start top-0 h-screen
+                z-10 border-l-0 border-b-0 border-black bg-gradient-to-tr from-blue-500 to-blue-700
             `}
         >
-            <div className="h-18 border-b border-b-blue-400 relative">
+            <div className="h-18 relative border-b border-neutral-300">
                 <CompanyName
                     isCollapsed={isCollapsed}
                     toggleSidebar={toggleSidebar}
                 />
             </div>
-            <Menu isCollapsed={isCollapsed} />
+            <div className="">
+                <Menu isCollapsed={isCollapsed} />
+            </div>
         </div>
     );
 }

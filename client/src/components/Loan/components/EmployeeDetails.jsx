@@ -7,20 +7,32 @@ import React, {
 } from "react";
 import { LoanApplicationContext } from "@/context/LoanApplicationContext";
 
-export default function PersonalDetails({ onValidate }) {
+export default function EmployeeDetails({ onValidate }) {
     const { loanApplication, updateLoanApplication, validateForm, errors } =
         useContext(LoanApplicationContext);
 
+    const occupationOptions = [
+        { value: "", label: "Select Occupation" },
+        { value: "Employed", label: "Employed" },
+        { value: "Self Employed", label: "Self Employed" },
+        { value: "Business Owner", label: "Business Owner" },
+    ];
+
+    const employmentStatusOptions = [
+        { value: "", label: "Select Status" },
+        { value: "Permanent", label: "Permanent" },
+        { value: "Contractual", label: "Contractual" },
+        { value: "Retainership", label: "Retainership" },
+        { value: "Part time", label: "Part Time" },
+    ];
+
     const initialFormData = useMemo(
         () => ({
-            FirstName: loanApplication.FirstName || "",
-            MiddleName: loanApplication.MiddleName || "",
-            LastName: loanApplication.LastName || "",
-            Email: loanApplication.Email || "",
-            Phone: loanApplication.Phone || "",
-            DateofBirth: loanApplication.DateofBirth || "",
-            Gender: loanApplication.Gender || "",
-            MartialStatus: loanApplication.MartialStatus || "",
+            occupation: loanApplication.occupation || "",
+            employmentStatus: loanApplication.employmentStatus || "",
+            grossIncome: loanApplication.grossIncome || "",
+            yearsExperience: loanApplication.yearsExperience || "",
+            monthsExperience: loanApplication.monthsExperience || "",
         }),
         [loanApplication]
     );
@@ -33,7 +45,7 @@ export default function PersonalDetails({ onValidate }) {
     }, [formData]);
 
     const handleValidation = useCallback(() => {
-        const isValid = validateForm("personalDetails", formData);
+        const isValid = validateForm("employeeDetails", formData);
         onValidate(isValid);
         return isValid;
     }, [formData, validateForm, onValidate]);
@@ -91,82 +103,48 @@ export default function PersonalDetails({ onValidate }) {
         <form onSubmit={handleSubmit}>
             <div>
                 <h1 className="text-xl font-semibold px-4 py-3">
-                    Personal Details
+                    Employment Information
                 </h1>
                 <hr className="border-t border-dashed border-gray-300 my-3" />
-                <div className="grid grid-cols-3 gap-4 px-4 py-2">
+                <div className="grid grid-cols-2 gap-4 px-4 py-3">
                     {[
                         {
-                            name: "FirstName",
-                            label: "First Name",
-                            type: "text",
-                            required: true,
-                        },
-                        {
-                            name: "MiddleName",
-                            label: "Middle Name",
-                            type: "text",
-                            required: false,
-                        },
-                        {
-                            name: "LastName",
-                            label: "Last Name",
-                            type: "text",
-                            required: true,
-                        },
-                        {
-                            name: "Email",
-                            label: "Email",
-                            type: "email",
-                            placeholder: "example@example.com",
-                            required: true,
-                        },
-                        {
-                            name: "Phone",
-                            label: "Phone",
-                            type: "tel",
-                            isPhone: true,
-                            placeholder: "XXXXXXXXXX",
-                            maxLength: 10,
-                            pattern: "[0-9]{10}",
-                            required: true,
-                        },
-                        {
-                            name: "DateofBirth",
-                            label: "Date of Birth",
-                            type: "date",
-                            max: new Date(
-                                new Date().setFullYear(
-                                    new Date().getFullYear() - 21
-                                )
-                            )
-                                .toISOString()
-                                .split("T")[0],
-                            required: true,
-                        },
-                        {
-                            name: "Gender",
-                            label: "Gender",
+                            name: "occupation",
+                            label: "Organization Type",
                             type: "select",
-                            options: [
-                                { value: "", label: "Select Gender" },
-                                { value: "Male", label: "Male" },
-                                { value: "Female", label: "Female" },
-                                { value: "Other", label: "Other" },
-                            ],
+                            options: occupationOptions,
                             required: true,
                         },
                         {
-                            name: "MartialStatus",
-                            label: "Marital Status",
+                            name: "employmentStatus",
+                            label: "Employment Status",
                             type: "select",
-                            options: [
-                                { value: "", label: "Select Marital Status" },
-                                { value: "Single", label: "Single" },
-                                { value: "Married", label: "Married" },
-                                { value: "Divorced", label: "Divorced" },
-                                { value: "Widowed", label: "Widowed" },
-                            ],
+                            options: employmentStatusOptions,
+                            required: true,
+                        },
+                        {
+                            name: "grossIncome",
+                            label: "Gross Monthly Income",
+                            type: "number",
+                            placeholder: "Ex: ₹15,000",
+                            required: true,
+                        },
+                        {
+                            name: "yearsExperience",
+                            label: "Total Work Experience (Years)",
+                            type: "number",
+                            placeholder: "00",
+                            min: 0,
+                            max: 50,
+                            required: true,
+                        },
+                        {
+                            name: "monthsExperience",
+                            label: "Total Work Experience (Months)",
+                            type: "number",
+                            placeholder: "00",
+                            min: 0,
+                            max: 12,
                             required: true,
                         },
                     ].map((field) => (
@@ -182,24 +160,11 @@ export default function PersonalDetails({ onValidate }) {
                                     ""
                                 )}
                             </label>
-                            {field.isPhone ? (
-                                <div className="flex w-full items-center border border-gray-300 rounded-lg overflow-hidden">
-                                    <h1 className="py-2 px-3 border-r bg-gray-100">
-                                        +91
-                                    </h1>
-                                    <input
-                                        {...getInputProps(
-                                            field.name,
-                                            field.type
-                                        )}
-                                        placeholder={field.placeholder}
-                                        className="p-2 w-full outline-none"
-                                        maxLength={field.maxLength}
-                                        pattern={field.pattern}
-                                    />
-                                </div>
-                            ) : field.type === "select" ? (
-                                <select {...getInputProps(field.name)}>
+                            {field.type === "select" ? (
+                                <select
+                                    {...getInputProps(field.name)}
+                                    className="py-2 px-4 border rounded-md outline-none text-black"
+                                >
                                     {field.options.map((option) => (
                                         <option
                                             key={option.value}
@@ -213,7 +178,21 @@ export default function PersonalDetails({ onValidate }) {
                                 <input
                                     {...getInputProps(field.name, field.type)}
                                     placeholder={field.placeholder}
+                                    min={field.min}
                                     max={field.max}
+                                    onInput={
+                                        field.type === "number" &&
+                                        (field.name === "yearsExperience" ||
+                                            field.name === "monthsExperience")
+                                            ? (e) => {
+                                                  const { value } = e.target;
+                                                  if (value.length > 2) {
+                                                      e.target.value =
+                                                          value.slice(0, 2);
+                                                  }
+                                              }
+                                            : undefined
+                                    }
                                 />
                             )}
                             {touched[field.name] && errors[field.name] && (

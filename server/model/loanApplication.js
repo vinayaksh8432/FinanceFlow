@@ -20,11 +20,18 @@ const loanApplicationSchema = new mongoose.Schema({
     DateofBirth: { type: Date, required: true },
     Gender: { type: String, required: true },
     MartialStatus: { type: String, required: true },
-    ResidentialStatus: { type: String, required: true },
 
     // Identity Details
-    IdentityProof: { type: String },
-    ProofNumber: { type: String },
+    DocumentType: { type: String, required: true },
+    DocumentNumber: { type: String, required: true },
+    DocumentFile: {
+        type: {
+            fileName: String,
+            fileType: String,
+            fileData: String,
+        },
+        required: true,
+    },
 
     // Address Details
     AddressLine1: { type: String, required: true },
@@ -33,18 +40,24 @@ const loanApplicationSchema = new mongoose.Schema({
     City: { type: String, required: true },
     PostalCode: { type: String, required: true },
     StayedInCurrentAddress: { type: String, required: true },
+    ResidentialStatus: { type: String, required: true },
 
     // Employment Info
     Occupation: { type: String, required: true },
-    YearsOfExperience: { type: String, required: true },
+    EmploymentStatus: { type: String, required: true },
+    YearsOfExperience: {
+        years: { type: Number, required: true },
+        months: { type: Number, required: true },
+    },
     GrossMonthlyIncome: { type: Number, required: true },
-    MonthlyRent: { type: Number, required: true },
 
     // Loan Details
     LoanType: { type: String, required: true },
     DesiredLoanAmount: { type: Number, required: true },
     LoanTenure: { type: Number, required: true },
-    Comments: { type: String },
+    monthlyEmi: { type: Number, required: true },
+    loanAmountWithInterest: { type: Number, required: true },
+    totalLoanAmount: { type: Number, required: true },
 
     // Status and Dates
     Status: {

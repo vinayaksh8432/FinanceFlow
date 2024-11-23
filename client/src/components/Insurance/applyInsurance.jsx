@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Heartbeat } from "@phosphor-icons/react";
 import { MdDoneAll } from "react-icons/md";
 import { AiOutlineCar } from "react-icons/ai";
+import { useNotifications } from "@/context/notification";
 
 export default function ApplyInsurance() {
     const [insuranceData, setInsuranceData] = useState({});
@@ -11,6 +12,8 @@ export default function ApplyInsurance() {
     const [selectedType, setSelectedType] = useState("All");
     const [processingQuoteId, setProcessingQuoteId] = useState(null);
     const navigate = useNavigate();
+
+    const { addNotification } = useNotifications();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -44,12 +47,26 @@ export default function ApplyInsurance() {
 
     const handleGetQuote = async (insurance) => {
         try {
-            setProcessingQuoteId(insurance.itemId); // Updated to use itemId
+            setProcessingQuoteId(insurance.itemId);
             await createInsuranceQuota(insurance);
+
+            // Add notification
+            addNotification({
+                message: `New insurance quote created for ${insurance.name}`,
+                type: "quote",
+                link: "/dashboard/insurance/insurancestatus",
+            });
+
             navigate("/dashboard/insurance/insurancestatus");
         } catch (err) {
             console.error("Error getting quote:", err);
             setError("Failed to create insurance quote. Please try again.");
+
+            // Add error notification
+            addNotification({
+                message: `Failed to create quote for ${insurance.name}`,
+                type: "error",
+            });
         } finally {
             setProcessingQuoteId(null);
         }
@@ -100,14 +117,14 @@ export default function ApplyInsurance() {
             </div>
 
             <div className="bg-white flex-1 flex flex-col gap-4 h-full p-4">
-                <h1 className="text-xl font-bold">
+                <h1 className="text-xl font-bold border-b border-gray-300 pb-4">
                     Results ({filteredData.length})
                 </h1>
-                <div className="overflow-y-auto flex flex-col gap-4 border-y border-gray-400 rounded-md">
+                <div className="overflow-y-auto flex flex-col gap-4  rounded-md">
                     {filteredData.map((insurance) => (
                         <div
                             key={insurance.itemId}
-                            className="border border-gray-400 rounded-md shadow-sm hover:shadow-md transition-shadow"
+                            className="border border-gray-300 rounded-md shadow-sm hover:shadow-md transition-shadow"
                         >
                             <div className="p-6">
                                 <div className="flex justify-between">

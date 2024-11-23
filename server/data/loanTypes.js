@@ -39,7 +39,13 @@ const loanTypes = [
         interestRate: "8.75%",
         upto: "45 Lakh",
         maxAmount: 4500000, // 45 lakhs
-        allowedTenures: ["12 Months", "24 Months", "36 Months", "48 Months"],
+        allowedTenures: [
+            "12 Months",
+            "24 Months",
+            "36 Months",
+            "48 Months",
+            "60 Months",
+        ],
     },
     {
         id: "education",

@@ -1,229 +1,32 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchLoanApplications } from "@/utils/api";
-import {
-    ArrowClockwise,
-    Pen,
-    TrashSimple,
-    DownloadSimple,
-    Warning,
-} from "@phosphor-icons/react";
 import { generatePDF } from "@/utils/pdfGenerator";
-import { TailSpin } from "react-loader-spinner";
-import Tooltip from "@mui/material/Tooltip";
-import { LuBadgeCheck } from "react-icons/lu";
-import { ClockClockwise } from "@phosphor-icons/react";
-import { FiAlertCircle } from "react-icons/fi";
-
-const ApplicationCard = ({ application, onDelete, onDownload }) => {
-    const [showDetails, setShowDetails] = useState(false);
-
-    const getStatusStyle = (status) => {
-        switch (status?.toLowerCase()) {
-            case "approved":
-                return "text-green-500 bg-green-100 border-green-500";
-            case "pending":
-                return "text-amber-600 bg-yellow-50 border-amber-600";
-            case "rejected":
-                return "text-red-500 bg-red-100 border-red-500";
-            case "under review":
-                return "text-blue-500 bg-blue-100 border-blue-500";
-            default:
-                return "text-gray-500 bg-gray-100 border-gray-500";
-        }
-    };
-
-    const getStatusIcon = (status) => {
-        switch (status) {
-            case "Active":
-                return <LuBadgeCheck className="w-6 h-6 text-green-500" />;
-            case "Pending":
-                return <ClockClockwise className="w-6 h-6 text-yellow-500" />;
-            case "Expired":
-                return <FiAlertCircle className="w-6 h-6 text-red-500" />;
-            default:
-                return null;
-        }
-    };
-
-    const formatAddress = () => {
-        const parts = [
-            application.AddressLine1,
-            application.AddressLine2,
-            application.City,
-            application.State,
-            application.PostalCode,
-        ].filter(Boolean);
-        return parts.join(", ");
-    };
-
-    const formatDate = (dateString) => {
-        if (!dateString) return "N/A";
-        const date = new Date(dateString);
-        return date instanceof Date && !isNaN(date)
-            ? date.toLocaleDateString("en-IN", {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
-              })
-            : "N/A";
-    };
-
-    return (
-        <div className="border border-gray-300 rounded-xl overflow-hidden flex flex-col gap-2 h-full shadow-sm">
-            <div className="flex flex-col bg-blue-300 bg-opacity-40">
-                <div className="flex items-center justify-between w-full px-4 py-2">
-                    <div>
-                        <h1 className="text-xs">{application.loanId}</h1>
-                        <h3 className="text-lg font-semibold">
-                            {application.FirstName} {application.MiddleName}{" "}
-                            {application.LastName}
-                        </h3>
-                        <span className="font-medium">
-                            {application.LoanType}
-                        </span>
-                    </div>
-                    {application.Status && (
-                        <div
-                            className={`flex items-center gap-2 border px-2 py-1 rounded-md ${getStatusStyle(
-                                application.Status
-                            )}`}
-                        >
-                            {application.Status}{" "}
-                            {getStatusIcon(application.Status)}
-                        </div>
-                    )}
-                </div>
-                <hr className="border border-gray-300 w-full" />
-            </div>
-
-            <div className="grid grid-cols-3 gap-4 px-4 pb-2">
-                <div className="flex flex-col">
-                    <span className="text-gray-600">Amount</span>
-                    <span className="font-medium">
-                        ₹
-                        {parseFloat(
-                            application.DesiredLoanAmount
-                        ).toLocaleString()}
-                    </span>
-                </div>
-                <div className="flex flex-col">
-                    <span className="text-gray-600">Duration</span>
-                    <span className="font-medium">
-                        {application.LoanTenure} years
-                    </span>
-                </div>
-                <div className="flex flex-col">
-                    <span className="text-gray-600">Applied On</span>
-                    <span className="font-medium">
-                        {formatDate(application.ApplicationDate)}
-                    </span>
-                </div>
-            </div>
-
-            <div className="flex justify-between items-center px-4 border-y border-gray-300 py-2">
-                <button
-                    className="border border-gray-400 rounded-full px-2"
-                    onClick={() => setShowDetails(!showDetails)}
-                >
-                    {showDetails ? "Hide Details" : "View Details"}
-                </button>
-                <div className="flex gap-2">
-                    <Tooltip title="Delete" arrow>
-                        <button
-                            onClick={() => onDelete(application._id)}
-                            className="text-red-700 hover:text-red-900"
-                        >
-                            <TrashSimple />
-                        </button>
-                    </Tooltip>
-                    <Tooltip title="Download" arrow>
-                        <button
-                            onClick={() => onDownload(application)}
-                            className="text-gray-700 hover:text-gray-900"
-                        >
-                            <DownloadSimple />
-                        </button>
-                    </Tooltip>
-                </div>
-            </div>
-
-            {showDetails && (
-                <div className="px-4 pb-2">
-                    <div className="text-sm font-medium">
-                        Application Details:
-                    </div>
-                    <div className="text-sm text-gray-600 grid grid-cols-3 gap-2">
-                        <div>
-                            <span className="font-medium">Personal Info:</span>
-                            <p>Email: {application.Email}</p>
-                            <p>Phone: {application.Phone}</p>
-                            <p>
-                                Date of Birth:{" "}
-                                {formatDate(application.DateofBirth)}
-                            </p>
-                            <p>Gender: {application.Gender}</p>
-                            <p>Marital Status: {application.MartialStatus}</p>
-                        </div>
-
-                        <div>
-                            <span className="font-medium">Address:</span>
-                            <p>{formatAddress()}</p>
-                            <p>
-                                Duration at Current Address:{" "}
-                                {application.StayedInCurrentAddress}
-                            </p>
-                        </div>
-
-                        <div>
-                            <span className="font-medium">
-                                Employment Info:
-                            </span>
-                            <p>Occupation: {application.Occupation}</p>
-                            <p>
-                                Experience: {application.YearsOfExperience}{" "}
-                                years
-                            </p>
-                            <p>
-                                Monthly Income: ₹
-                                {application.GrossMonthlyIncome.toLocaleString()}
-                            </p>
-                            <p>
-                                Monthly Rent: ₹
-                                {application.MonthlyRent.toLocaleString()}
-                            </p>
-                        </div>
-
-                        {application.Comments && (
-                            <>
-                                <p className="mt-2">
-                                    <span className="font-medium">
-                                        Additional Comments:
-                                    </span>
-                                </p>
-                                <p>{application.Comments}</p>
-                            </>
-                        )}
-                    </div>
-                </div>
-            )}
-        </div>
-    );
-};
+import {
+    Download,
+    Trash2,
+    RefreshCw,
+    FileText,
+    AlertCircle,
+    Clock,
+    CheckCircle,
+    XCircle,
+    CalendarClock,
+    IndianRupee,
+    PiggyBank,
+    HandCoins,
+    Calendar1,
+} from "lucide-react";
+import { Calendar } from "@phosphor-icons/react/dist/ssr";
 
 export default function ApplicationStatus() {
     const [applications, setApplications] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
-    const [editingApplication, setEditingApplication] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        fetchApplications();
-    }, []);
-
     const fetchApplications = async () => {
-        setIsLoading(true);
+        setLoading(true);
         try {
             const response = await fetchLoanApplications();
             if (response.success) {
@@ -241,21 +44,63 @@ export default function ApplicationStatus() {
                 navigate("/login");
             }
         } finally {
-            setIsLoading(false);
+            setLoading(false);
         }
     };
 
-    const deleteApplication = async (id) => {
-        try {
-            // Show confirmation dialog
-            if (
-                !window.confirm(
-                    "Are you sure you want to delete this application?"
-                )
-            ) {
-                return;
-            }
+    useEffect(() => {
+        fetchApplications();
+    }, []);
 
+    const getStatusStyle = (status) => {
+        const styles = {
+            approved: {
+                bg: "bg-green-50",
+                text: "text-green-700",
+                border: "border-green-200",
+                icon: <CheckCircle className="w-5 h-5 text-green-500" />,
+            },
+            pending: {
+                bg: "bg-yellow-50",
+                text: "text-yellow-700",
+                border: "border-yellow-200",
+                icon: <Clock className="w-5 h-5 text-yellow-500" />,
+            },
+            rejected: {
+                bg: "bg-red-50",
+                text: "text-red-700",
+                border: "border-red-200",
+                icon: <XCircle className="w-5 h-5 text-red-500" />,
+            },
+            "under review": {
+                bg: "bg-blue-50",
+                text: "text-blue-700",
+                border: "border-blue-200",
+                icon: <Clock className="w-5 h-5 text-blue-500" />,
+            },
+        };
+        return styles[status?.toLowerCase()] || styles.pending;
+    };
+
+    const formatDate = (dateString) => {
+        if (!dateString) return "N/A";
+        const date = new Date(dateString);
+        return date instanceof Date && !isNaN(date)
+            ? date.toLocaleDateString("en-IN", {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+              })
+            : "N/A";
+    };
+
+    const handleDelete = async (id) => {
+        if (
+            !window.confirm("Are you sure you want to delete this application?")
+        ) {
+            return;
+        }
+        try {
             const response = await fetch(
                 `${
                     import.meta.env.VITE_BACKEND_URL
@@ -263,32 +108,15 @@ export default function ApplicationStatus() {
                 {
                     method: "DELETE",
                     credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
                 }
             );
-
-            if (!response.ok) {
-                throw new Error(
-                    `Failed to delete application. Status: ${response.status}`
-                );
+            if (response.ok) {
+                await fetchApplications();
+            } else {
+                throw new Error("Failed to delete application");
             }
-
-            const data = await response.json();
-            if (!data.success) {
-                throw new Error(data.message || "Failed to delete application");
-            }
-
-            // Show success message
-            alert("Application deleted successfully");
-
-            // Refresh the applications list
-            await fetchApplications();
         } catch (err) {
-            console.error("Error deleting application:", err);
-            setError(err.message || "Failed to delete application");
-            alert("Failed to delete application. Please try again.");
+            setError(err.message);
         }
     };
 
@@ -298,63 +126,164 @@ export default function ApplicationStatus() {
             const url = URL.createObjectURL(pdfBlob);
             const link = document.createElement("a");
             link.href = url;
-            link.download = `application_${application._id}.pdf`;
+            link.download = `loan_application_${application.loanId}.pdf`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            URL.revokeObjectURL(url); // Clean up the URL object
+            URL.revokeObjectURL(url);
         } catch (err) {
-            console.error("Error generating PDF:", err);
-            setError(err.message);
+            setError("Failed to download application");
         }
     };
 
-    if (isLoading) {
-        return (
-            <div className="flex justify-center items-center h-full">
-                <TailSpin
-                    height="50"
-                    width="50"
-                    color="#000"
-                    ariaLabel="loading"
-                />
-            </div>
-        );
-    }
+    const LoadingSkeleton = () => (
+        <div className="animate-pulse space-y-4">
+            {[1, 2].map((n) => (
+                <div key={n} className="bg-white rounded-xl shadow-sm p-6">
+                    <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
+                    <div className="h-8 bg-gray-200 rounded w-3/4 mb-6"></div>
+                    <div className="grid grid-cols-3 gap-4">
+                        <div className="h-20 bg-gray-200 rounded"></div>
+                        <div className="h-20 bg-gray-200 rounded"></div>
+                        <div className="h-20 bg-gray-200 rounded"></div>
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+
+    if (loading) return <LoadingSkeleton />;
 
     return (
-        <>
-            <div>
-                {applications.length === 0 ? (
-                    <div className="text-center text-gray-500 py-12">
-                        <p>No applications found.</p>
-                        <button
-                            onClick={fetchApplications}
-                            className="mt-4 p-2.5 border rounded-md shadow-sm flex gap-1 items-center mx-auto"
-                        >
-                            <ArrowClockwise /> Refresh
-                        </button>
-                    </div>
-                ) : (
-                    <div className="flex flex-col gap-6 relative">
-                        {applications.map((app) => (
-                            <ApplicationCard
-                                key={app._id}
-                                application={app}
-                                onDelete={deleteApplication}
-                                onDownload={handleDownload}
-                            />
-                        ))}
-                    </div>
-                )}
-            </div>
-
+        <div className="w-full px-2 py-4">
             {error && (
-                <div className="p-2 border rounded-md shadow-sm text-red-600">
-                    <Warning className="inline-block mr-2" />
-                    {error}
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700">
+                    <AlertCircle className="w-5 h-5" />
+                    <span>{error}</span>
                 </div>
             )}
-        </>
+
+            {applications.length === 0 ? (
+                <div className="text-center py-12 bg-white rounded-xl shadow-sm border border-gray-200">
+                    <FileText className="w-12 h-12 mx-auto text-gray-400 mb-3" />
+                    <p className="text-lg font-medium text-gray-900 mb-1">
+                        No applications found
+                    </p>
+                    <p className="text-sm text-gray-500">
+                        Your loan applications will appear here
+                    </p>
+                </div>
+            ) : (
+                <div className="space-y-4">
+                    {applications.map((application) => {
+                        const statusStyle = getStatusStyle(application.Status);
+                        return (
+                            <div
+                                key={application._id}
+                                className="flex flex-col gap-6 bg-white p-8 rounded-2xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300"
+                            >
+                                <div className="flex justify-between items-start">
+                                    <div className="space-y-2">
+                                        <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
+                                            {application.FirstName}{" "}
+                                            {application.LastName}
+                                        </h2>
+                                        <div className="space-y-1">
+                                            <p className="text-sm font-medium text-gray-600">
+                                                Loan ID:{" "}
+                                                <span className="text-gray-900">
+                                                    {application.loanId}
+                                                </span>
+                                            </p>
+                                            <p className="text-sm font-medium text-gray-600">
+                                                Loan Type:{" "}
+                                                <span className="text-gray-900">
+                                                    {application.LoanType} Loan
+                                                </span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div
+                                        className={`px-5 py-2.5 rounded-full flex items-center gap-2 ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border} shadow-sm`}
+                                    >
+                                        {statusStyle.icon}
+                                        <span className="font-semibold">
+                                            {application.Status}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-4 gap-6">
+                                    {[
+                                        {
+                                            label: "Loan Amount",
+                                            value: `₹ ${Number(
+                                                application.totalLoanAmount
+                                            ).toLocaleString()}`,
+                                            icon: <PiggyBank />,
+                                        },
+                                        {
+                                            label: "Tenure",
+                                            value: `${application.LoanTenure} Months`,
+                                            icon: <CalendarClock />,
+                                        },
+                                        {
+                                            label: "Monthly EMI",
+                                            value: `₹ ${application.monthlyEmi}`,
+                                            icon: <HandCoins />,
+                                        },
+                                        {
+                                            label: "Applied On",
+                                            value: formatDate(
+                                                application.ApplicationDate
+                                            ),
+                                            icon: <Calendar1 />,
+                                        },
+                                    ].map((item, index) => (
+                                        <div
+                                            key={index}
+                                            className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-5 flex flex-col gap-2 shadow-sm"
+                                        >
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-lg">
+                                                    {item.icon}
+                                                </span>
+                                                <p className="text-sm font-medium text-gray-600">
+                                                    {item.label}
+                                                </p>
+                                            </div>
+                                            <p className="text-lg font-bold text-gray-900">
+                                                {item.value}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="flex gap-3 pt-2">
+                                    <button
+                                        onClick={() =>
+                                            handleDownload(application)
+                                        }
+                                        className="inline-flex items-center justify-center px-6 py-3 border-2 border-gray-300 rounded-lg text-sm font-semibold bg-white hover:bg-blue-50 focus:outline-none transition-all duration-200"
+                                    >
+                                        <Download className="w-4 h-4 mr-2" />
+                                        Download Application
+                                    </button>
+                                    <button
+                                        onClick={() =>
+                                            handleDelete(application._id)
+                                        }
+                                        className="inline-flex items-center justify-center px-6 py-3 border-2 border-red-200 rounded-lg text-sm font-semibold text-red-600 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200"
+                                    >
+                                        <Trash2 className="w-4 h-4 mr-2" />
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+        </div>
     );
 }

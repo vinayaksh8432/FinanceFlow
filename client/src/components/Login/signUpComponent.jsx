@@ -31,13 +31,11 @@ export default function SignUpComponent() {
     return (
         <>
             <div className="px-8 py-4 rounded-lg">
-                <h1 className="text-5xl text-center pb-2">
-                    Create your Account
-                </h1>
-                <h1 className="text-center pb-10    ">
+                <h1 className="text-5xl text-center pb-2">Create Account</h1>
+                <h1 className="text-center pb-5">
                     Enter your name, email and password to create your account
                 </h1>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} className="authForm">
                     <div className="py-4 flex flex-col gap-4 items-center">
                         <div className="w-full flex flex-col gap-1">
                             <label htmlFor="email">Enter your name</label>
@@ -108,7 +106,7 @@ export default function SignUpComponent() {
                                     bg-opacity="0"
                                     speed="2.5"
                                     color="black"
-                                ></l-ring>
+                                />
                             ) : (
                                 <>
                                     <BsArrowRight size={25} />

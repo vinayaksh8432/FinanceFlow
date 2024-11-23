@@ -230,7 +230,7 @@ export default function LoginComponent() {
                 </h1>
                 <form
                     onSubmit={showOtpInput ? verifyOtp : handleSubmit}
-                    className="w-full"
+                    className="w-full authForm"
                 >
                     {!showOtpInput ? (
                         <>
