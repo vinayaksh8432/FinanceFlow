@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 
-const CustomerModel = require("../model/customer");
+const UserModel = require("../model/users");
 
 const otpModule = require("../routes/otp");
 
@@ -14,11 +14,30 @@ if (!JWT_SECRET) {
     throw new Error("JWT_SECRET is not set in the environment");
 }
 
+router.get("/", async (req, res) => {
+    const token = req.cookies.token;
+    if (!token) {
+        return res
+            .status(401)
+            .json({ message: "No token, authorization denied" });
+    }
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const user = await UserModel.findById(decoded.id).select("-password");
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.json({ name: user.name, email: user.email });
+    } catch (error) {
+        res.status(400).json({ message: "Token is not valid" });
+    }
+});
+
 router.post("/register", async (req, res) => {
     try {
         const { name, email, password } = req.body;
         const hashedPassword = await bcrypt.hash(password, 10);
-        const user = await CustomerModel.create({
+        const user = await UserModel.create({
             name,
             email,
             password: hashedPassword,
@@ -36,7 +55,7 @@ router.post("/login", async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const user = await CustomerModel.findOne({ email });
+        const user = await UserModel.findOne({ email });
         if (!user) {
             return res
                 .status(400)
@@ -70,7 +89,7 @@ router.post("/login", async (req, res) => {
 router.post("/userAuth", async (req, res) => {
     const { userId, otp } = req.body;
     try {
-        const user = await CustomerModel.findById(userId);
+        const user = await UserModel.findById(userId);
         if (!user) {
             return res.status(400).json({ message: "User not found" });
         }
@@ -109,7 +128,7 @@ router.post("/resend-otp", async (req, res) => {
     const { userId } = req.body;
 
     try {
-        const user = await CustomerModel.findById(userId);
+        const user = await UserModel.findById(userId);
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
@@ -140,7 +159,7 @@ router.post("/verify-otp", async (req, res) => {
             return res.status(400).json({ message: "Invalid or expired OTP" });
         }
 
-        const user = await CustomerModel.findById(userId);
+        const user = await UserModel.findById(userId);
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
@@ -178,7 +197,7 @@ router.post("/logout", async (req, res) => {
     if (token) {
         try {
             const decoded = jwt.verify(token, JWT_SECRET);
-            const user = await CustomerModel.findById(decoded.id);
+            const user = await UserModel.findById(decoded.id);
             if (user) {
                 user.lastLogin = Date.now();
                 // Do not reset the OTP expiration here
@@ -190,27 +209,6 @@ router.post("/logout", async (req, res) => {
     }
     res.clearCookie("token");
     res.json({ message: "Logged out successfully" });
-});
-
-router.get("/user", async (req, res) => {
-    const token = req.cookies.token;
-    if (!token) {
-        return res
-            .status(401)
-            .json({ message: "No token, authorization denied" });
-    }
-    try {
-        const decoded = jwt.verify(token, JWT_SECRET);
-        const user = await CustomerModel.findById(decoded.id).select(
-            "-password"
-        );
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-        res.json({ name: user.name, email: user.email });
-    } catch (error) {
-        res.status(400).json({ message: "Token is not valid" });
-    }
 });
 
 module.exports = router;

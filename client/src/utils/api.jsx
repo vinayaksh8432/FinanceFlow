@@ -27,7 +27,7 @@ export const login = async (userData) => {
 
 export const getUserDetails = async () => {
     try {
-        const response = await api.get("/users/user");
+        const response = await api.get("/users/");
         return response.data;
     } catch (error) {
         throw error.response?.data || error.message;

@@ -39,7 +39,7 @@ export default function LoginComponent() {
     const checkAuthStatus = async () => {
         try {
             const response = await fetch(
-                `${import.meta.env.VITE_BACKEND_URL}/api/users/user`,
+                `${import.meta.env.VITE_BACKEND_URL}/api/users/`,
                 {
                     credentials: "include",
                 }
@@ -220,7 +220,6 @@ export default function LoginComponent() {
 
     ring.register();
 
-
     return (
         <>
             <div className="px-8 py-4 flex flex-col items-center rounded-lg">
@@ -320,7 +319,7 @@ export default function LoginComponent() {
                                     <h1>Don't have an account ?</h1>
                                     <a
                                         onClick={() => navigate("/register")}
-                                        className="px-2 text-yellow-300 font-semibold"
+                                        className="px-2 text-yellow-300 font-semibold cursor-pointer"
                                     >
                                         Sign up
                                     </a>

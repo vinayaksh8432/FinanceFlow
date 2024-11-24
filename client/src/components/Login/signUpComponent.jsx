@@ -117,7 +117,7 @@ export default function SignUpComponent() {
                             <h1>Already have an account ?</h1>
                             <a
                                 onClick={() => navigate("/login")}
-                                className="px-2 text-yellow-300 font-semibold"
+                                className="px-2 text-yellow-300 font-semibold cursor-pointer"
                             >
                                 Sign in
                             </a>

@@ -14,9 +14,9 @@ const stockHoldingSchema = new mongoose.Schema({
 });
 
 const portfolioSchema = new mongoose.Schema({
-    customerId: {
+    userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Customer",
+        ref: "user",
         required: true,
     },
     holdings: [stockHoldingSchema],

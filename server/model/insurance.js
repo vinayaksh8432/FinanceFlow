@@ -39,7 +39,7 @@ const insuranceSchema = new mongoose.Schema(
         category: {
             type: String,
             required: true,
-            enum: ["Health", "Car"],
+            enum: ["Health", "Car", "TwoWheeler", "Life"],
         },
         items: [insuranceItemSchema],
     },

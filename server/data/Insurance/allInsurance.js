@@ -1,5 +1,7 @@
 const { HealthInsurance } = require("./healthInsurance");
 const { CarInsurance } = require("./carInsurance");
+const { TwoWheelInsurance } = require("./twoWheelInsurance");
+const { LifeInsurance } = require("./lifeInsurance");
 
 const allInsurance = [
     {
@@ -10,6 +12,19 @@ const allInsurance = [
         category: "Car",
         items: CarInsurance.items,
     },
+    {
+        category: "TwoWheeler",
+        items: TwoWheelInsurance.items,
+    },
+    {
+        category: "Life",
+        items: LifeInsurance.items,
+    },
 ];
 
-module.exports = { HealthInsurance, CarInsurance, allInsurance };
+module.exports = {
+    HealthInsurance,
+    CarInsurance,
+    TwoWheelInsurance,
+    allInsurance,
+};

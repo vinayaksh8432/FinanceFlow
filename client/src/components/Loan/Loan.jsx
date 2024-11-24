@@ -2,11 +2,6 @@ import React, { useEffect, useState } from "react";
 import { ArrowCircleRight } from "@phosphor-icons/react";
 import { useNavigate } from "react-router-dom";
 import { fetchLoanTypes } from "@/utils/api";
-import { IoPricetag } from "react-icons/io5";
-import { MdPhoneInTalk } from "react-icons/md";
-import { FaRupeeSign } from "react-icons/fa";
-import { FaBolt } from "react-icons/fa";
-import { PiHandCoinsDuotone } from "react-icons/pi";
 
 export default function Loan() {
     const navigate = useNavigate();
@@ -32,29 +27,6 @@ export default function Loan() {
 
         getLoanTypes();
     }, []);
-
-    const reasons = [
-        {
-            icon: <FaBolt />,
-            text: "Quick and easy loan application process",
-        },
-        {
-            icon: <IoPricetag />,
-            text: "Lowest interest rates in the market",
-        },
-        {
-            icon: <PiHandCoinsDuotone />,
-            text: "Flexible repayment options",
-        },
-        {
-            icon: <FaRupeeSign />,
-            text: "No hidden charges",
-        },
-        {
-            icon: <MdPhoneInTalk />,
-            text: "24/7 customer support",
-        },
-    ];
 
     return (
         <div className="h-full flex gap-10 p-2">

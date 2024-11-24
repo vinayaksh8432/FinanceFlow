@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const User = require("../model/customer"); // adjust path as needed
+const User = require("../model/users"); // adjust path as needed
 
 const authMiddleware = async (req, res, next) => {
     try {

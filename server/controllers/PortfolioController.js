@@ -2,7 +2,7 @@ const Portfolio = require("../model/portfolio");
 
 exports.getPortfolio = async (req, res) => {
     try {
-        const portfolio = await Portfolio.findOne({ customerId: req.user.id });
+        const portfolio = await Portfolio.findOne({ userId: req.user.id });
 
         if (!portfolio) {
             return res.status(200).json({
@@ -62,11 +62,11 @@ exports.addStock = async (req, res) => {
         }
 
         // Find or create portfolio for the user
-        let portfolio = await Portfolio.findOne({ customerId: req.user.id });
+        let portfolio = await Portfolio.findOne({ userId: req.user.id });
 
         if (!portfolio) {
             portfolio = new Portfolio({
-                customerId: req.user.id,
+                userId: req.user.id,
                 holdings: [],
                 totalInvestment: 0,
                 currentValue: 0,

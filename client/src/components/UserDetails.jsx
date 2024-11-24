@@ -61,11 +61,27 @@ export default function UserDetails() {
     const activeRouteLabel = [
         {
             path: "/home",
-            label: "Home",
+            label: "Dashboard",
+        },
+        {
+            path: "/loan/applynewloan",
+            label: "Apply new loan",
+        },
+        {
+            path: "/loan/loanstatus",
+            label: "My loans",
         },
         {
             path: "/loan",
-            label: "Loans",
+            label: "Loan",
+        },
+        {
+            path: "/insurance/applynewinsurance",
+            label: "Apply new insurance",
+        },
+        {
+            path: "/insurance/insurancestatus",
+            label: "My insurances",
         },
         {
             path: "/insurance",
@@ -136,9 +152,11 @@ export default function UserDetails() {
     );
 
     return (
-        <div className="flex justify-between h-18 p-6 border-b border-neutral-300 bg-white shadow-sm">
+        <div className="flex justify-between h-18 p-6 border-b border-neutral-300 bg-white shadow-sm sticky left-0 top-0 z-30">
             <NavLink
-                to={`/dashboard${activeRoute ? activeRoute.path : ""}`}
+                to={`/dashboard${
+                    activeRoute ? activeRoute.path.split("/")[0] : ""
+                }`}
                 className="text-2xl leading-[1] flex items-center gap-6 font-semibold text-blue-600 hover:text-blue-700 transition-colors"
             >
                 {activeRoute ? activeRoute.label : "undefined"}

@@ -1,9 +1,13 @@
-import Cards from "./Cards";
+import InsuranceCard from "./InsuranceCard";
+import LoanCard from "./LoanCard";
 
 export default function Home() {
     return (
         <>
-            <Cards />
+            <div className="space-y-4">
+                <LoanCard />
+                <InsuranceCard />
+            </div>
         </>
     );
 }

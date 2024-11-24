@@ -1,4 +1,10 @@
-import { ArrowCircleLeft, ArrowCircleRight, User } from "@phosphor-icons/react";
+import {
+    ArrowCircleLeft,
+    ArrowCircleRight,
+    CheckCircle,
+    User,
+    XCircle,
+} from "@phosphor-icons/react";
 import React, { useState, useContext } from "react";
 import { FaRegAddressCard } from "react-icons/fa6";
 import { MdOutlineHomeWork } from "react-icons/md";
@@ -13,6 +19,11 @@ import {
     LoanApplicationProvider,
     LoanApplicationContext,
 } from "@/context/LoanApplicationContext";
+import { tailspin } from "ldrs";
+import { useNotifications } from "@/context/notification";
+import { useNavigate } from "react-router-dom";
+
+tailspin.register();
 
 const sidebar = [
     {
@@ -59,16 +70,28 @@ function ApplyLoanContent() {
     } = useContext(LoanApplicationContext) || {};
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const { addNotification } = useNotifications();
+    const navigate = useNavigate();
+
     const handleSubmit = async () => {
         try {
+            showConfirm(false);
             setIsSubmitting(true);
-            console.log("Full Loan Application Data:", loanApplication);
             const response = await submitApplication();
-            console.log("Submission response:", response);
             alert("Loan application submitted successfully!");
+            addNotification({
+                message: `Your application has been submitted successfully`,
+                type: "quote",
+                link: "/dashboard/loan/loanstatus",
+            });
+            navigate("/dashboard/loan/loanstatus");
         } catch (error) {
             console.error("Submission Error:", error);
             alert(error.message || "Failed to submit loan application");
+            addNotification({
+                message: `Failed to submit application ${error.message}`,
+                type: "error",
+            });
         } finally {
             setIsSubmitting(false);
         }
@@ -93,6 +116,12 @@ function ApplyLoanContent() {
         if (selectedComponent > 0) {
             setSelectedComponent(selectedComponent - 1);
         }
+    };
+
+    const [confirm, setConfirm] = useState(false);
+
+    const showConfirm = () => {
+        setConfirm(!confirm);
     };
 
     const CurrentComponent = sidebar[selectedComponent].component;
@@ -205,25 +234,58 @@ function ApplyLoanContent() {
                     )}
 
                     {selectedComponent === sidebar.length - 1 ? (
-                        <button
-                            onClick={handleSubmit}
-                            disabled={
-                                !componentValidation.every(
-                                    (validation) => validation
-                                ) || isSubmitting
-                            }
-                            className={`p-2 rounded-lg bg-green-600 text-white transition-all duration-200 flex gap-1 items-center ${
-                                !componentValidation.every(
-                                    (validation) => validation
-                                ) || isSubmitting
-                                    ? "opacity-50 cursor-not-allowed"
-                                    : ""
-                            }`}
-                        >
-                            {isSubmitting
-                                ? "Submitting..."
-                                : "Submit Application"}
-                        </button>
+                        <div className="relative">
+                            <button
+                                // onClick={handleSubmit}
+                                onClick={showConfirm}
+                                disabled={
+                                    !componentValidation.every(
+                                        (validation) => validation
+                                    ) || isSubmitting
+                                }
+                                className={`p-2 rounded-lg bg-green-600 text-white transition-all duration-200 flex gap-1 items-center ${
+                                    !componentValidation.every(
+                                        (validation) => validation
+                                    ) || isSubmitting
+                                        ? "opacity-50 cursor-not-allowed"
+                                        : ""
+                                }`}
+                            >
+                                {isSubmitting ? (
+                                    <div className="m-auto flex px-5">
+                                        <l-tailspin
+                                            size="20"
+                                            stroke="3"
+                                            speed="1"
+                                            color="white"
+                                        />
+                                    </div>
+                                ) : (
+                                    "Submit Application"
+                                )}
+                            </button>
+                            {confirm && (
+                                <div className="flex flex-col gap-4 absolute right-0 -top-32 bg-white p-4 w-48 text-sm border rounded-xl">
+                                    Are you sure you want to submit your
+                                    application?
+                                    <div className="flex gap-2">
+                                        <button
+                                            className="border px-2 py-1 rounded-md flex items-center gap-2 hover:bg-gray-50"
+                                            onClick={() => handleSubmit()}
+                                        >
+                                            Yes
+                                            <CheckCircle />
+                                        </button>
+                                        <button
+                                            className="border px-2 py-1 rounded-md flex items-center gap-2 hover:bg-gray-50"
+                                            onClick={() => showConfirm(false)}
+                                        >
+                                            No <XCircle />
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     ) : (
                         <button
                             onClick={handleNext}

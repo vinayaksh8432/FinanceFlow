@@ -4,6 +4,7 @@ import {
     ChartLineUp,
     ShoppingCart,
     HouseLine,
+    SquaresFour,
 } from "@phosphor-icons/react";
 import { RiShieldCrossLine } from "react-icons/ri";
 
@@ -11,8 +12,8 @@ export default function Menu({ isCollapsed }) {
     const menuItems = [
         {
             path: "home",
-            icon: <HouseLine size="25px" />,
-            label: "Home",
+            icon: <SquaresFour size="25px" />,
+            label: "Dashboard",
         },
         {
             path: "loan",

@@ -15,7 +15,7 @@ const HealthInsurance = {
         },
         {
             itemId: "Bajaj Allianz General Insurance",
-            image: "assets/amhi.svg",
+            image: "assets/bajaj.svg",
             name: "Bajaj Allianz Health Guard Insurance Plan",
             type: "Retail",
             price: "6962",

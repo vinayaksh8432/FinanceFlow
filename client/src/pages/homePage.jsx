@@ -8,13 +8,7 @@ import graph from "../assets/graph.svg";
 import loan from "../assets/loan.svg";
 import { LockLaminated } from "@phosphor-icons/react";
 import { RiStockFill } from "react-icons/ri";
-import {
-    ResponsiveContainer,
-    AreaChart,
-    Area,
-    Tooltip,
-    XAxis,
-} from "recharts";
+import { ResponsiveContainer, AreaChart, Area, Tooltip, XAxis } from "recharts";
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
@@ -176,7 +170,7 @@ export default function HomePage() {
                     <div className="absolute bg-blue-600 -bottom-[36rem] w-full h-[50rem] rounded-t-[50%]"></div>
                 </motion.div>
             </div>
-            <div className="bg-blue-100 flex justify-between px-36 py-16">
+            <div className="bg-white/75 flex justify-between px-36 py-16">
                 <div className="w-1/2 flex flex-col justify-between">
                     <div className="flex flex-col gap-2">
                         <h2 className="uppercase text-sm">Try it now !</h2>
@@ -226,7 +220,7 @@ export default function HomePage() {
                     />
                 </div>
             </div>
-            <div className="bg-blue-50 py-16 mx-auto">
+            <div className="bg-gradient-to-br from-blue-300 to-blue-200 py-16 mx-auto">
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -270,31 +264,44 @@ export default function HomePage() {
                             viewport={{ once: true }}
                             className="w-full flex items-center"
                         >
-                            <div className="h-96 w-full rounded-2xl bg-blue-50 p-1 border border-neutral-300 shadow-inner">
-                                <ResponsiveContainer className="border border-neutral-200 rounded-xl bg-gradient-to-t from-blue-100 to-blue-50">
+                            <div className="h-96 w-full rounded-2xl bg-white/5 p-1 border border-white/20 backdrop-blur-md shadow-xl">
+                                <ResponsiveContainer className="bg-gradient-to-t from-blue-100 to-blue-200 rounded-xl">
                                     <AreaChart
                                         data={data}
                                         margin={{
                                             top: 25,
                                             right: 25,
                                             left: 25,
-                                            bottom: 0,
+                                            bottom: 25,
                                         }}
                                     >
-                                        <XAxis dataKey="date" tick={false} />
-                                        <Tooltip
-                                            content={<CustomTooltip />}
-                                            cursor={{
-                                                stroke: "#3b82f6",
-                                                strokeWidth: 1,
-                                                strokeDasharray: "5 5",
-                                            }}
-                                        />
+                                        <defs>
+                                            <linearGradient
+                                                id="colorValue"
+                                                x1="0"
+                                                y1="0"
+                                                x2="0"
+                                                y2="1"
+                                            >
+                                                <stop
+                                                    offset="5%"
+                                                    stopColor="#3b82f6"
+                                                    stopOpacity={0.3}
+                                                />
+                                                <stop
+                                                    offset="95%"
+                                                    stopColor="#3b82f6"
+                                                    stopOpacity={0}
+                                                />
+                                            </linearGradient>
+                                        </defs>
+                                        
+                                        <Tooltip content={<CustomTooltip />} />
                                         <Area
-                                            type="linear"
+                                            type="monotone"
                                             dataKey="uv"
                                             stroke="#3b82f6"
-                                            strokeWidth={2}
+                                            strokeWidth={3}
                                             fill="url(#colorValue)"
                                         />
                                     </AreaChart>

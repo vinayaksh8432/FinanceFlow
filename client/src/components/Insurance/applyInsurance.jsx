@@ -1,10 +1,14 @@
 import { useState, useEffect } from "react";
 import { fetchAllInsurance, createInsuranceQuota } from "@/utils/api";
 import { useNavigate } from "react-router-dom";
-import { Heartbeat } from "@phosphor-icons/react";
+import { Heartbeat, Moped } from "@phosphor-icons/react";
 import { MdDoneAll } from "react-icons/md";
 import { AiOutlineCar } from "react-icons/ai";
 import { useNotifications } from "@/context/notification";
+import { Cross } from "lucide-react";
+import { tailspin } from "ldrs";
+
+tailspin.register();
 
 export default function ApplyInsurance() {
     const [insuranceData, setInsuranceData] = useState({});
@@ -90,37 +94,48 @@ export default function ApplyInsurance() {
             className="flex overflow-hidden h-full border border-gray-300 rounded-xl"
             style={{ maxHeight: "calc(100vh - 14vh)" }}
         >
-            <div className="bg-gray-50 flex flex-col gap-4 items-start sticky top-0 border-r border-gray-300 p-4">
-                <h1 className="text-xl font-bold">Filters</h1>
-                <hr className="border border-gray-200 w-full" />
-                <p className="font-medium">Category</p>
-                <div className="flex flex-col gap-3 text-sm rounded-xl">
-                    {[
-                        { icon: <MdDoneAll size={20} />, label: "All" },
-                        { icon: <Heartbeat size={20} />, label: "Health" },
-                        { icon: <AiOutlineCar size={20} />, label: "Car" },
-                    ].map((type) => (
-                        <button
-                            key={type.label}
-                            onClick={() => setSelectedType(type.label)}
-                            className={`px-4 py-2 rounded-lg transition-colors flex gap-2 items-center ${
-                                selectedType === type.label
-                                    ? "bg-blue-500 text-white"
-                                    : "bg-blue-100 hover:bg-blue-200"
-                            }`}
-                        >
-                            {type.icon}
-                            {type.label}
-                        </button>
-                    ))}
+            <div className="bg-gray-50 flex flex-col gap-4 items-start sticky top-0 border-r border-gray-300 min-w-40">
+                <h1 className="text-xl font-bold px-4 py-4 flex items-center border-b border-gray-300 w-full">
+                    Filters
+                </h1>
+                <div className="px-4 flex flex-col gap-2">
+                    <p className="font-medium">Category</p>
+                    <div className="flex flex-col gap-3 text-sm rounded-xl">
+                        {[
+                            { icon: <MdDoneAll size={20} />, label: "All" },
+                            { icon: <Cross size={20} />, label: "Health" },
+                            { icon: <AiOutlineCar size={20} />, label: "Car" },
+                            {
+                                icon: <Moped size={20} />,
+                                label: "TwoWheeler",
+                                text: "Two Wheel",
+                            },
+                            { icon: <Heartbeat size={20} />, label: "Life" },
+                        ].map((type) => (
+                            <button
+                                key={type.label}
+                                onClick={() => setSelectedType(type.label)}
+                                className={`px-4 py-2 rounded-lg transition-colors flex gap-2 items-center ${
+                                    selectedType === type.label
+                                        ? "bg-blue-500 text-white"
+                                        : "bg-blue-100 hover:bg-blue-200"
+                                }`}
+                            >
+                                {type.icon}
+                                {type.label === "TwoWheeler"
+                                    ? type.text
+                                    : type.label}
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </div>
 
-            <div className="bg-white flex-1 flex flex-col gap-4 h-full p-4">
-                <h1 className="text-xl font-bold border-b border-gray-300 pb-4">
+            <div className="bg-white flex-1 flex flex-col gap-4 h-full">
+                <h1 className="text-xl font-bold border-b border-gray-300 pb-4 p-4">
                     Results ({filteredData.length})
                 </h1>
-                <div className="overflow-y-auto flex flex-col gap-4  rounded-md">
+                <div className="overflow-y-auto flex flex-col gap-4 rounded-md mx-4 border-y border-gray-300">
                     {filteredData.map((insurance) => (
                         <div
                             key={insurance.itemId}
@@ -130,7 +145,9 @@ export default function ApplyInsurance() {
                                 <div className="flex justify-between">
                                     <div className="flex gap-4 items-start">
                                         <img
-                                            src={insurance.image}
+                                            src={`${
+                                                import.meta.env.VITE_BACKEND_URL
+                                            }/${insurance.image}`}
                                             alt={insurance.name}
                                             className="w-12 h-12 rounded-full border border-gray-300 shadow-inner"
                                         />
@@ -205,15 +222,26 @@ export default function ApplyInsurance() {
                                                 : ""
                                         }`}
                                     >
-                                        {processingQuoteId === insurance.itemId
-                                            ? "Processing..."
-                                            : "Get Quote"}
+                                        {processingQuoteId ===
+                                        insurance.itemId ? (
+                                            <div className="m-auto flex px-5">
+                                                <l-tailspin
+                                                    size="20"
+                                                    stroke="3"
+                                                    speed="1"
+                                                    color="white"
+                                                />
+                                            </div>
+                                        ) : (
+                                            "Get Quote"
+                                        )}
                                     </button>
                                 </div>
                             </div>
                         </div>
                     ))}
                 </div>
+                <div></div>
             </div>
         </div>
     );

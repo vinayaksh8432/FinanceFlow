@@ -2,7 +2,7 @@ const CarInsurance = {
     items: [
         {
             itemId: "Bajaj Allianz General Insurance - CAR",
-            image: "assets/abgh.svg",
+            image: "assets/bajaj.svg",
             name: "Bajaj Allianz Car Insurance",
             type: "Retail",
             price: "3033",
@@ -15,7 +15,7 @@ const CarInsurance = {
         },
         {
             itemId: "SBI General Insurance",
-            image: "assets/amhi.svg",
+            image: "assets/sbi.svg",
             name: "SBI General Car Insurance",
             type: "Retail",
             price: "3043",

@@ -6,15 +6,13 @@ import {
     Download,
     Trash2,
     AlertCircle,
-    FileText,
     Shield,
     Calendar,
     Wallet,
     Clock,
-    CheckCircle,
-    XCircle,
     AlertTriangle,
 } from "lucide-react";
+import { CheckCircle, XCircle } from "@phosphor-icons/react";
 
 export default function InsuranceStatus() {
     const [policies, setPolicies] = useState([]);
@@ -90,12 +88,10 @@ export default function InsuranceStatus() {
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm("Are you sure you want to delete this policy?")) {
-            return;
-        }
         try {
             await deleteInsuranceQuota(id);
             await fetchPolicies();
+            showConfirm(false);
         } catch (err) {
             setError(err.message);
         }
@@ -151,6 +147,11 @@ export default function InsuranceStatus() {
         </div>
     );
 
+    const [confirmId, setConfirmId] = useState(null);
+
+    const showConfirm = (id) => {
+        setConfirmId(id);
+    };
     if (loading) return <LoadingSkeleton />;
 
     return (
@@ -282,13 +283,44 @@ export default function InsuranceStatus() {
                                         <Download className="w-4 h-4 mr-2" />
                                         Download Policy
                                     </button>
-                                    <button
-                                        onClick={() => handleDelete(policy._id)}
-                                        className="inline-flex items-center justify-center px-6 py-3 border-2 border-red-200 rounded-lg text-sm font-semibold text-red-600 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200"
-                                    >
-                                        <Trash2 className="w-4 h-4 mr-2" />
-                                        Delete
-                                    </button>
+                                    <div className="relative">
+                                        <button
+                                            onClick={() =>
+                                                showConfirm(policy._id)
+                                            }
+                                            className="inline-flex items-center justify-center px-6 py-3 border-2 border-red-200 rounded-lg text-sm font-semibold text-red-600 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200"
+                                        >
+                                            <Trash2 className="w-4 h-4 mr-2" />
+                                            Delete
+                                        </button>
+                                        {confirmId === policy._id && (
+                                            <div className="flex flex-col gap-4 absolute left-0 -top-32 bg-white p-4 w-48 text-sm border rounded-xl">
+                                                Are you sure you want to delete
+                                                this policy?
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        className="border px-2 py-1 rounded-md flex items-center gap-2 hover:bg-gray-50"
+                                                        onClick={() =>
+                                                            handleDelete(
+                                                                policy._id
+                                                            )
+                                                        }
+                                                    >
+                                                        Yes
+                                                        <CheckCircle />
+                                                    </button>
+                                                    <button
+                                                        className="border px-2 py-1 rounded-md flex items-center gap-2 hover:bg-gray-50"
+                                                        onClick={() =>
+                                                            showConfirm(null)
+                                                        }
+                                                    >
+                                                        No <XCircle />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         );
