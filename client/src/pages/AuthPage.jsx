@@ -3,6 +3,7 @@ import { useLocation, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import LoginComponent from "../components/Login/loginComponent";
 import SignUpComponent from "../components/Login/signUpComponent";
+import logo from "@/assets/logo.svg";
 
 export default function AuthPage() {
     const [isLogin, setIsLogin] = useState(true);
@@ -31,12 +32,13 @@ export default function AuthPage() {
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
-                        className="relative z-10"
+                        className="z-10"
                     >
                         <Link
                             to="/"
-                            className="text-2xl font-bold tracking-wider hover:text-blue-200 transition-colors"
+                            className="absolute left-1/2 -translate-x-1/2 top-20 text-2xl tracking-wider hover:text-blue-200 transition-colors flex items-center gap-4"
                         >
+                            <img src={logo} className="w-8 h-8" alt="" />
                             FinanceFlow
                         </Link>
                     </motion.div>

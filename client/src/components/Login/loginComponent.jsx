@@ -4,6 +4,7 @@ import { TbEyeClosed } from "react-icons/tb";
 import { FaRegEye } from "react-icons/fa";
 import { BsArrowRight } from "react-icons/bs";
 import { ring } from "ldrs";
+import { WarningCircle } from "@phosphor-icons/react";
 
 export default function LoginComponent() {
     const [email, setEmail] = useState("");
@@ -399,7 +400,8 @@ export default function LoginComponent() {
                     )}
                     <div className="flex justify-center">
                         {error && (
-                            <span className="text-red-500 text-sm">
+                            <span className="text-amber-600 text-sm bg-blue-100 px-4 py-1 rounded-full flex gap-1 items-center">
+                                <WarningCircle />
                                 {error}
                             </span>
                         )}

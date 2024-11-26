@@ -3,6 +3,7 @@ import {
     ArrowCircleRight,
     CheckCircle,
     User,
+    WarningCircle,
     XCircle,
 } from "@phosphor-icons/react";
 import React, { useState, useContext } from "react";
@@ -125,7 +126,7 @@ function ApplyLoanContent() {
     };
 
     const CurrentComponent = sidebar[selectedComponent].component;
-    // const CurrentComponent = sidebar[1].component;
+    // const CurrentComponent = sidebar[4].component;
 
     return (
         <div className="flex h-full rounded-lg border border-gray-300 overflow-hidden shadow-sm">
@@ -234,7 +235,7 @@ function ApplyLoanContent() {
                     )}
 
                     {selectedComponent === sidebar.length - 1 ? (
-                        <div className="relative">
+                        <div className="">
                             <button
                                 // onClick={handleSubmit}
                                 onClick={showConfirm}
@@ -265,23 +266,37 @@ function ApplyLoanContent() {
                                 )}
                             </button>
                             {confirm && (
-                                <div className="flex flex-col gap-4 absolute right-0 -top-32 bg-white p-4 w-48 text-sm border rounded-xl">
-                                    Are you sure you want to submit your
-                                    application?
-                                    <div className="flex gap-2">
-                                        <button
-                                            className="border px-2 py-1 rounded-md flex items-center gap-2 hover:bg-gray-50"
-                                            onClick={() => handleSubmit()}
-                                        >
-                                            Yes
-                                            <CheckCircle />
-                                        </button>
-                                        <button
-                                            className="border px-2 py-1 rounded-md flex items-center gap-2 hover:bg-gray-50"
-                                            onClick={() => showConfirm(false)}
-                                        >
-                                            No <XCircle />
-                                        </button>
+                                <div className="h-screen w-full z-30 absolute top-0 left-0 bg-black bg-opacity-45 flex items-start m-auto">
+                                    <div className="m-auto bg-gray-100 text-lg rounded-xl max-w-lg overflow-hidden">
+                                        <div className="px-4 py-4 border-b border-gray-400">
+                                            <p>
+                                                Are you sure you want to submit
+                                                your application?
+                                            </p>
+                                            <span className="text-sm flex items-center gap-1 text-yellow-600">
+                                                <WarningCircle /> You wont be
+                                                able to make changes after
+                                                submission.
+                                            </span>
+                                        </div>
+
+                                        <div className="flex gap-2 justify-end p-4 text-base bg-gradient-to-r from-blue-400 to-blue-300">
+                                            <button
+                                                className="px-2 py-1 rounded-md flex items-center gap-2 hover:bg-gray-50 bg-white"
+                                                onClick={() =>
+                                                    showConfirm(false)
+                                                }
+                                            >
+                                                Verify Again <XCircle />
+                                            </button>
+                                            <button
+                                                className="px-2 py-1 rounded-md flex items-center gap-2 hover:bg-gray-50 bg-gradient-to-b from-blue-600 to-blue-500 text-white"
+                                                onClick={() => handleSubmit()}
+                                            >
+                                                Confirm Changes
+                                                <CheckCircle />
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             )}

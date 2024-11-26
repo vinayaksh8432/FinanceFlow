@@ -126,7 +126,8 @@ export default function SignUpComponent() {
 
                     <div className="flex justify-center">
                         {error && (
-                            <span className="text-red-500 text-sm">
+                            <span className="text-amber-600 text-sm bg-blue-100 px-4 py-1 rounded-full flex gap-1 items-center">
+                                <WarningCircle />
                                 {error}
                             </span>
                         )}

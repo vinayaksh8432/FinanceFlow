@@ -34,19 +34,33 @@ export default function LoanAmount({ onValidate }) {
 
     const [formData, setFormData] = useState(initialFormData);
 
-    const formatIndianCurrency = useCallback((value) => {
-        // Remove all non-digit characters
-        const numericValue = value.replace(/[^0-9]/g, "");
+    const calculateMaxLoanAmount = useCallback(() => {
+        const grossIncome = parseInt(
+            loanApplication.grossIncome?.replace(/,/g, "") || "0"
+        );
+        return grossIncome * 30; // 15 times the monthly income
+    }, [loanApplication.grossIncome]);
 
-        // If empty, return empty string
-        if (!numericValue) return "";
+    const formatIndianCurrency = useCallback(
+        (value) => {
+            // Remove all non-digit characters
+            const numericValue = value.replace(/[^0-9]/g, "");
 
-        // Parse the number
-        const number = parseInt(numericValue);
+            // If empty, return empty string
+            if (!numericValue) return "";
 
-        // Format with commas
-        return number.toLocaleString("en-IN");
-    }, []);
+            // Parse the number
+            const number = parseInt(numericValue);
+
+            // Check against maximum allowed amount
+            const maxAmount = calculateMaxLoanAmount();
+            const finalNumber = Math.min(number, maxAmount);
+
+            // Format with commas (Indian numbering system)
+            return finalNumber.toLocaleString("en-IN");
+        },
+        [calculateMaxLoanAmount]
+    );
 
     const handleLoanTypeSelect = useCallback(
         (type) => {
@@ -68,20 +82,42 @@ export default function LoanAmount({ onValidate }) {
 
     const handleLoanAmountChange = useCallback(
         (e) => {
-            const numericValue = e.target.value.replace(/[^0-9]/g, "");
-            const formattedAmount = formatIndianCurrency(numericValue);
+            const formattedAmount = formatIndianCurrency(e.target.value);
+            const maxAmount = calculateMaxLoanAmount();
+            const currentAmount = parseInt(
+                formattedAmount.replace(/,/g, "") || "0"
+            );
 
             setFormData((prev) => ({
                 ...prev,
                 desiredLoanAmount: formattedAmount,
             }));
 
-            setTouched((prev) => ({
-                ...prev,
-                desiredLoanAmount: true,
-            }));
+            if (currentAmount > maxAmount) {
+                setTouched((prev) => ({
+                    ...prev,
+                    desiredLoanAmount: true,
+                }));
+                // You might want to add this to your errors context
+                errors.desiredLoanAmount = `Maximum loan amount based on your income: ₹${maxAmount.toLocaleString(
+                    "en-IN"
+                )}`;
+            } else {
+                errors.desiredLoanAmount = "";
+            }
+
+            updateLoanApplication({
+                ...formData,
+                desiredLoanAmount: formattedAmount,
+            });
         },
-        [formatIndianCurrency]
+        [
+            formatIndianCurrency,
+            calculateMaxLoanAmount,
+            formData,
+            updateLoanApplication,
+            errors,
+        ]
     );
 
     const handleLoanTenureChange = useCallback((tenure) => {
@@ -166,7 +202,6 @@ export default function LoanAmount({ onValidate }) {
 
                 <div className="flex items-center justify-between py-1">
                     <h1>Loan Amount</h1>
-
                     <div className="flex items-center relative">
                         <div
                             className={`text-blue-500 flex items-center bg-blue-200 rounded-sm p-0.5 px-1 ${
@@ -184,7 +219,6 @@ export default function LoanAmount({ onValidate }) {
                                 onChange={handleLoanAmountChange}
                                 disabled={!selectedLoanType}
                                 placeholder="0"
-                                maxLength={10}
                                 className={`text-blue-500 text-right w-24 outline-none ${
                                     !selectedLoanType
                                         ? "cursor-not-allowed"

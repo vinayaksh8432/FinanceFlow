@@ -13,8 +13,7 @@ if (!MONGODB_URI) {
 const connectDB = async () => {
     try {
         await mongoose.connect(MONGODB_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
+            dbName: "FinanceFlow",
         });
         console.log("Connected to MongoDB");
     } catch (err) {

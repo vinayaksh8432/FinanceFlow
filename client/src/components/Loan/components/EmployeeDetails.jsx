@@ -53,9 +53,29 @@ export default function EmployeeDetails({ onValidate }) {
     const handleChange = useCallback(
         (e) => {
             const { name, value } = e.target;
+            let processedValue = value;
+
+            // Format gross income input
+            if (name === "grossIncome") {
+                // Remove non-numeric characters
+                const numericValue = value.replace(/[^0-9]/g, "");
+                if (numericValue) {
+                    // Ensure the value doesn't exceed 2,00,000
+                    const parsedValue = parseInt(numericValue);
+                    if (parsedValue > 100000) {
+                        processedValue = "1,00,000";
+                    } else {
+                        // Format with commas for Indian currency
+                        processedValue = parsedValue.toLocaleString("en-IN");
+                    }
+                } else {
+                    processedValue = "";
+                }
+            }
+
             const updatedFormData = {
                 ...formData,
-                [name]: value,
+                [name]: processedValue,
             };
             setFormData(updatedFormData);
             updateLoanApplication(updatedFormData);
@@ -63,7 +83,6 @@ export default function EmployeeDetails({ onValidate }) {
         },
         [formData, updateLoanApplication, handleValidation]
     );
-
     const handleBlur = useCallback(
         (e) => {
             const { name } = e.target;
@@ -125,7 +144,7 @@ export default function EmployeeDetails({ onValidate }) {
                         {
                             name: "grossIncome",
                             label: "Gross Monthly Income",
-                            type: "number",
+                            type: "text",
                             placeholder: "Ex: ₹15,000",
                             required: true,
                         },

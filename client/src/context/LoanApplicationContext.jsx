@@ -1,4 +1,10 @@
-import React, { createContext, useState, useCallback, useMemo } from "react";
+import React, {
+    createContext,
+    useState,
+    useCallback,
+    useMemo,
+    useEffect,
+} from "react";
 import { submitLoanApplication } from "@/utils/api";
 
 export const LoanApplicationContext = createContext();
@@ -14,57 +20,48 @@ export const LoanApplicationProvider = ({ children }) => {
         loanAmount: false,
     });
 
+    // Add debug logging for validation state
+    useEffect(() => {
+        console.log("Current Validation State:", currentValidation);
+        console.log("Current Loan Application:", loanApplication);
+    }, [currentValidation, loanApplication]);
+
     const validatePersonalDetails = useCallback((formData) => {
         const newErrors = {};
 
-        // First Name Validation
-        if (!formData.FirstName || formData.FirstName.trim() === "") {
+        if (!formData.FirstName?.trim())
             newErrors.FirstName = "First Name is required";
-        }
-
-        // Last Name Validation
-        if (!formData.LastName || formData.LastName.trim() === "") {
+        if (!formData.LastName?.trim())
             newErrors.LastName = "Last Name is required";
-        }
 
-        // Email Validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!formData.Email || formData.Email.trim() === "") {
+        if (!formData.Email?.trim()) {
             newErrors.Email = "Email is required";
         } else if (!emailRegex.test(formData.Email)) {
             newErrors.Email = "Invalid email format";
         }
 
-        // Phone Validation
         const phoneRegex = /^[6-9]\d{9}$/;
-        if (!formData.Phone || formData.Phone.trim() === "") {
+        if (!formData.Phone?.trim()) {
             newErrors.Phone = "Phone number is required";
         } else if (!phoneRegex.test(formData.Phone)) {
             newErrors.Phone = "Invalid phone number";
         }
 
-        // Date of Birth Validation
         if (!formData.DateofBirth) {
             newErrors.DateofBirth = "Date of Birth is required";
         } else {
             const dob = new Date(formData.DateofBirth);
             const minAge = new Date();
             minAge.setFullYear(minAge.getFullYear() - 21);
-
             if (dob > minAge) {
                 newErrors.DateofBirth = "You must be at least 21 years old";
             }
         }
 
-        // Gender Validation
-        if (!formData.Gender) {
-            newErrors.Gender = "Gender is required";
-        }
-
-        // Marital Status Validation
-        if (!formData.MartialStatus) {
+        if (!formData.Gender) newErrors.Gender = "Gender is required";
+        if (!formData.MartialStatus)
             newErrors.MartialStatus = "Marital Status is required";
-        }
 
         return newErrors;
     }, []);
@@ -72,22 +69,18 @@ export const LoanApplicationProvider = ({ children }) => {
     const validateIdentityDetails = useCallback((formData) => {
         const newErrors = {};
 
-        // Document Type Validation
         if (!formData.DocumentType) {
             newErrors.DocumentType = "Please select a document type";
         }
 
-        // Document Number Validation
-        if (!formData.DocumentNumber || formData.DocumentNumber.trim() === "") {
+        if (!formData.DocumentNumber?.trim()) {
             newErrors.DocumentNumber = "Document number is required";
         }
 
-        // Document File Validation - Updated to check for both File object and preview
         if (!formData.DocumentFile && !formData.DocumentPreview) {
             newErrors.DocumentFile = "Document file is required";
         }
 
-        // Additional specific validations based on document type
         const documentTypes = {
             Passport: /^[A-Z]\d{7}$/,
             "Driving License": /^[A-Z]{2}\d{13}$/,
@@ -95,9 +88,16 @@ export const LoanApplicationProvider = ({ children }) => {
             AadharCard: /^\d{12}$/,
         };
 
-        if (formData.DocumentType && formData.DocumentNumber) {
-            const regex = documentTypes[formData.DocumentType];
-            if (regex && !regex.test(formData.DocumentNumber)) {
+        if (
+            formData.DocumentType &&
+            formData.DocumentNumber &&
+            documentTypes[formData.DocumentType]
+        ) {
+            if (
+                !documentTypes[formData.DocumentType].test(
+                    formData.DocumentNumber
+                )
+            ) {
                 newErrors.DocumentNumber = "Invalid document number format";
             }
         }
@@ -108,17 +108,11 @@ export const LoanApplicationProvider = ({ children }) => {
     const validateAddressDetails = useCallback((formData) => {
         const newErrors = {};
 
-        // Residential Status Validation
-        if (!formData.residentialStatus) {
+        if (!formData.residentialStatus)
             newErrors.residentialStatus = "Residential Status is required";
-        }
-
-        // Address Line 1 Validation
-        if (!formData.addressLine1 || formData.addressLine1.trim() === "") {
+        if (!formData.addressLine1?.trim())
             newErrors.addressLine1 = "Address Line 1 is required";
-        }
 
-        // Postal Code Validation
         const postalCodeRegex = /^\d{6}$/;
         if (!formData.postalCode) {
             newErrors.postalCode = "Postal Code is required";
@@ -126,17 +120,10 @@ export const LoanApplicationProvider = ({ children }) => {
             newErrors.postalCode = "Invalid Postal Code";
         }
 
-        // State Validation
-        if (!formData.selectedState) {
+        if (!formData.selectedState)
             newErrors.selectedState = "State is required";
-        }
+        if (!formData.selectedCity) newErrors.selectedCity = "City is required";
 
-        // City Validation
-        if (!formData.selectedCity) {
-            newErrors.selectedCity = "City is required";
-        }
-
-        // Address Duration Validation
         if (!formData.addressDuration) {
             newErrors.addressDuration = "Address Duration is required";
         } else {
@@ -146,59 +133,40 @@ export const LoanApplicationProvider = ({ children }) => {
             }
         }
 
-        // Optional: Rent validation for rented properties
-        if (
-            formData.residentialStatus === "Rented" &&
-            (!formData.rent || parseFloat(formData.rent) <= 0)
-        ) {
-            newErrors.rent = "Rent amount is required for rented properties";
-        }
-
         return newErrors;
     }, []);
 
     const validateEmployeeDetails = useCallback((formData) => {
         const newErrors = {};
 
-        // Occupation Validation
-        if (!formData.occupation) {
+        if (!formData.occupation)
             newErrors.occupation = "Organization Type is required";
-        }
-
-        // Employment Status Validation
-        if (!formData.employmentStatus) {
+        if (!formData.employmentStatus)
             newErrors.employmentStatus = "Employment Status is required";
-        }
 
-        // Gross Income Validation
-        const grossIncome = parseFloat(formData.grossIncome);
-        if (!formData.grossIncome || isNaN(grossIncome) || grossIncome <= 0) {
+        const grossIncomeStr = String(formData.grossIncome || "").replace(
+            /[₹,\s]/g,
+            ""
+        );
+        const grossIncome = parseInt(grossIncomeStr);
+
+        if (!grossIncomeStr || isNaN(grossIncome) || grossIncome <= 0) {
             newErrors.grossIncome = "Valid Gross Monthly Income is required";
-        } else if (grossIncome < 10000 || grossIncome > 9999999) {
-            newErrors.grossIncome =
-                "Income should be between ₹10,000 and ₹99,99,999";
+        } else if (grossIncome < 10000) {
+            newErrors.grossIncome = "Minimum income should be ₹10,000";
+        } else if (grossIncome > 200000) {
+            newErrors.grossIncome = "Maximum income limit is ₹2,00,000";
         }
 
-        // Years of Experience Validation
-        const yearsExperience = parseInt(formData.yearsExperience);
-        if (!formData.yearsExperience || isNaN(yearsExperience)) {
-            newErrors.yearsExperience = "Years of Experience is required";
-        } else if (yearsExperience < 0 || yearsExperience > 50) {
+        const yearsExp = parseInt(formData.yearsExperience);
+        const monthsExp = parseInt(formData.monthsExperience);
+
+        if (isNaN(yearsExp) || yearsExp < 0 || yearsExp > 50) {
             newErrors.yearsExperience = "Invalid Years of Experience";
         }
 
-        // Months of Experience Validation
-        const monthsExperience = parseInt(formData.monthsExperience);
-        if (!formData.monthsExperience || isNaN(monthsExperience)) {
-            newErrors.monthsExperience = "Months of Experience is required";
-        } else if (monthsExperience < 0 || monthsExperience > 12) {
+        if (isNaN(monthsExp) || monthsExp < 0 || monthsExp > 11) {
             newErrors.monthsExperience = "Invalid Months of Experience";
-        }
-
-        // Additional contextual validations
-        if (formData.occupation === "Employed" && !formData.employmentStatus) {
-            newErrors.employmentStatus =
-                "Employment Status is required for Employed candidates";
         }
 
         return newErrors;
@@ -207,39 +175,26 @@ export const LoanApplicationProvider = ({ children }) => {
     const validateLoanAmount = useCallback((formData) => {
         const newErrors = {};
 
-        // Loan Type Validation
-        if (!formData.loanType) {
-            newErrors.loanType = "Loan type is required";
-        }
+        if (!formData.loanType) newErrors.loanType = "Loan type is required";
 
-        // Desired Loan Amount Validation
         if (!formData.desiredLoanAmount) {
             newErrors.desiredLoanAmount = "Desired loan amount is required";
         } else {
-            // Remove currency formatting and convert to number
-            const numericValue = parseFloat(
-                String(formData.desiredLoanAmount).replace(/[₹,]/g, "")
+            const numericValue = parseInt(
+                String(formData.desiredLoanAmount).replace(/[₹,\s]/g, "")
             );
 
-            // Minimum loan amount check
             if (numericValue < 100000) {
                 newErrors.desiredLoanAmount =
                     "Minimum loan amount is ₹1,00,000";
-            }
-
-            // Maximum loan amount check (you might want to dynamically set this based on loan type or income)
-            if (numericValue > 10000000) {
+            } else if (numericValue > 5000000) {
                 newErrors.desiredLoanAmount =
-                    "Maximum loan amount is ₹1,00,00,000";
+                    "Maximum loan amount is ₹50,00,000";
             }
         }
 
-        // Loan Tenure Validation
-        const allowedTenures = ["12", "24", "36", "48", "60", "72", "84", "96"];
         if (!formData.loanTenure) {
             newErrors.loanTenure = "Loan tenure is required";
-        } else if (!allowedTenures.includes(formData.loanTenure)) {
-            newErrors.loanTenure = "Invalid loan tenure selected";
         }
 
         return newErrors;
@@ -247,26 +202,40 @@ export const LoanApplicationProvider = ({ children }) => {
 
     const validateForm = useCallback(
         (formType, formData) => {
-            const newErrors =
-                formType === "personalDetails"
-                    ? validatePersonalDetails(formData)
-                    : formType === "identityDetails"
-                    ? validateIdentityDetails(formData)
-                    : formType === "addressDetails"
-                    ? validateAddressDetails(formData)
-                    : formType === "employeeDetails"
-                    ? validateEmployeeDetails(formData)
-                    : formType === "loanAmount"
-                    ? validateLoanAmount(formData)
-                    : {};
+            let validationFunction;
+            switch (formType) {
+                case "personalDetails":
+                    validationFunction = validatePersonalDetails;
+                    break;
+                case "identityDetails":
+                    validationFunction = validateIdentityDetails;
+                    break;
+                case "addressDetails":
+                    validationFunction = validateAddressDetails;
+                    break;
+                case "employeeDetails":
+                    validationFunction = validateEmployeeDetails;
+                    break;
+                case "loanAmount":
+                    validationFunction = validateLoanAmount;
+                    break;
+                default:
+                    return false;
+            }
 
+            const newErrors = validationFunction(formData);
             setErrors(newErrors);
 
             const isValid = Object.keys(newErrors).length === 0;
-            setCurrentValidation((prev) => ({
-                ...prev,
-                [formType]: isValid,
-            }));
+            setCurrentValidation((prev) => {
+                const updated = {
+                    ...prev,
+                    [formType]: isValid,
+                };
+                console.log(`Validation update for ${formType}:`, isValid);
+                console.log("New validation state:", updated);
+                return updated;
+            });
 
             return isValid;
         },
@@ -280,48 +249,16 @@ export const LoanApplicationProvider = ({ children }) => {
     );
 
     const updateLoanApplication = useCallback((newData) => {
-        console.log("Updating Loan Application with:", newData);
         setLoanApplication((prev) => {
             const updated = { ...prev, ...newData };
-            console.log("Updated Loan Application:", updated);
+            console.log("Updating loan application:", updated);
             return updated;
         });
     }, []);
 
-    const parseNumericValue = useCallback((value) => {
-        if (typeof value === "number") return value;
-        if (!value) return 0;
-        // Remove currency symbol, commas and convert to number
-        return parseFloat(String(value).replace(/[₹,]/g, "")) || 0;
-    }, []);
-
     const submitApplication = useCallback(async () => {
         try {
-            // Create a FormData instance
-            const formDataToSubmit = new FormData();
-
-            // Ensure numeric values are properly formatted
-            const desiredLoanAmount = loanApplication.desiredLoanAmount;
-            const monthlyEmi = loanApplication.monthlyEmi;
-            const loanAmountWithInterest =
-                loanApplication.loanAmountWithInterest;
-            const totalLoanAmount = loanApplication.totalLoanAmount;
-
-            // Validate required numeric fields before proceeding
-            if (desiredLoanAmount <= 0) {
-                throw new Error("Invalid desired loan amount");
-            }
-            if (monthlyEmi <= 0) {
-                throw new Error("Invalid monthly EMI amount");
-            }
-            if (totalLoanAmount <= 0) {
-                throw new Error("Invalid total loan amount");
-            }
-            if (loanAmountWithInterest <= 0) {
-                throw new Error("Invalid loan amount with interest");
-            }
-
-            // Convert the loan application data to a structure suitable for API
+            const formData = new FormData();
             const applicationData = {
                 personalDetails: {
                     firstName: loanApplication.FirstName,
@@ -354,53 +291,24 @@ export const LoanApplicationProvider = ({ children }) => {
                 },
                 loanDetails: {
                     loanType: loanApplication.loanType,
-                    desiredLoanAmount: desiredLoanAmount,
+                    desiredLoanAmount: String(
+                        loanApplication.desiredLoanAmount || ""
+                    )?.replace(/[₹,\s]/g, ""),
                     loanTenure: loanApplication.loanTenure,
-                    monthlyEmi: monthlyEmi,
-                    loanAmountWithInterest: loanAmountWithInterest,
-                    totalLoanAmount: totalLoanAmount,
+                    monthlyEmi: loanApplication.monthlyEmi,
+                    loanAmountWithInterest:
+                        loanApplication.loanAmountWithInterest,
+                    totalLoanAmount: loanApplication.totalLoanAmount,
                 },
             };
 
-            console.log("Submitting application data:", applicationData); // Debug log
+            formData.append("applicationData", JSON.stringify(applicationData));
 
-            // Append the JSON data
-            formDataToSubmit.append(
-                "applicationData",
-                JSON.stringify(applicationData)
-            );
-
-            // Handle document file
-            let documentFile;
-            if (loanApplication.DocumentFile instanceof File) {
-                documentFile = loanApplication.DocumentFile;
-            } else if (loanApplication.DocumentPreview) {
-                try {
-                    const response = await fetch(
-                        loanApplication.DocumentPreview
-                    );
-                    const blob = await response.blob();
-                    documentFile = new File(
-                        [blob],
-                        loanApplication.DocumentFileName || "document.pdf",
-                        { type: blob.type }
-                    );
-                } catch (error) {
-                    console.error("Error processing document:", error);
-                    throw new Error("Failed to process document file");
-                }
+            if (loanApplication.DocumentFile) {
+                formData.append("document", loanApplication.DocumentFile);
             }
 
-            if (!documentFile) {
-                throw new Error("Document file is required");
-            }
-
-            // Append the file with the field name expected by multer
-            formDataToSubmit.append("document", documentFile);
-
-            // Submit the form data using the API utility
-            const response = await submitLoanApplication(formDataToSubmit);
-
+            const response = await submitLoanApplication(formData);
             if (!response.success) {
                 throw new Error(
                     response.message || "Failed to submit application"
@@ -410,11 +318,9 @@ export const LoanApplicationProvider = ({ children }) => {
             return response;
         } catch (error) {
             console.error("Application submission error:", error);
-            throw error instanceof Error
-                ? error
-                : new Error("Failed to submit application");
+            throw error;
         }
-    }, [loanApplication, parseNumericValue]);
+    }, [loanApplication]);
 
     const contextValue = useMemo(
         () => ({
@@ -441,3 +347,5 @@ export const LoanApplicationProvider = ({ children }) => {
         </LoanApplicationContext.Provider>
     );
 };
+
+export default LoanApplicationProvider;

@@ -18,10 +18,18 @@ export default function Header() {
             </div>
             <div className="fixed left-1/2 -translate-x-1/2 w-2/5 z-50">
                 <ul className="mx-auto h-10 bg-blue-600 backdrop-blur-xl bg-opacity-25 py-2 border border-slate-400 rounded-full flex justify-between text-white text-center px-8 items-center">
-                    <li>Overview</li>
-                    <li>Overview</li>
-                    <li>Overview</li>
-                    <li>Overview</li>
+                    <li>
+                        <a href="">Overview</a>
+                    </li>
+                    <li>
+                        <a href="">Get Started</a>
+                    </li>
+                    <li>
+                        <a href="">Stocks</a>
+                    </li>
+                    <li>
+                        <a href="">About</a>
+                    </li>
                 </ul>
             </div>
             <div className="flex gap-2 items-center">

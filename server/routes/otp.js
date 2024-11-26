@@ -24,12 +24,11 @@ async function sendOTP(email, otp) {
         subject: "Your Login OTP",
         text: `Your OTP is: ${otp}`,
         html: `<h1>Your OTP is: ${otp}</h1>`,
-        // html: `<b>Your OTP is: ${otp}</b>`,
     };
 
     try {
         let info = await transporter.sendMail(mailOptions);
-        console.log("Message sent: %s", info.messageId);
+        console.log("Message sent: %s", info.response);
         return true;
     } catch (error) {
         console.error("Error sending email:", error);
