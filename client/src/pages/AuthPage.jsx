@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import LoginComponent from "../components/Login/loginComponent";
 import SignUpComponent from "../components/Login/signUpComponent";
 import logo from "@/assets/logo.svg";
+import ForgotPassword from "@/components/Login/forgotPassword";
 
 export default function AuthPage() {
     const [isLogin, setIsLogin] = useState(true);
@@ -22,21 +23,18 @@ export default function AuthPage() {
 
     return (
         <div className="min-h-screen overflow-hidden bg-[url('assets/loginBG.svg')] bg-cover bg-center bg-no-repeat flex items-center justify-center p-4">
-            <div className="w-1/2 h-full flex justify-end absolute right-0">
-                <div className="text-white backdrop-blur-md bg-gradient-to-br from-blue-600/85 to-blue-400/85 flex flex-col items-center justify-center gap-6 rounded-l-3xl shadow-2xl p-8 relative overflow-hidden">
-                    {/* Decorative circles */}
+            <div className="h-full flex justify-end absolute right-0 w-full">
+                <div className="text-white backdrop-blur-md bg-gradient-to-br from-blue-600/85 to-blue-400/85 flex flex-col items-center justify-center gap-6 rounded-l-3xl shadow-2xl p-8 relative overflow-hidden w-1/3">
                     <div className="absolute top-0 left-0 w-32 h-32 bg-white/10 rounded-full -translate-x-16 -translate-y-16" />
-
-                    {/* Logo */}
                     <motion.div
-                        initial={{ opacity: 0, y: -20 }}
+                        initial={{ opacity: 0, y: 0 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
                         className="z-10"
                     >
                         <Link
                             to="/"
-                            className="absolute left-1/2 -translate-x-1/2 top-20 text-2xl tracking-wider hover:text-blue-200 transition-colors flex items-center gap-4"
+                            className="absolute left-1/2 -translate-x-1/2 top-16 text-2xl tracking-wider hover:text-blue-200 transition-colors flex items-center gap-4"
                         >
                             <img src={logo} className="w-8 h-8" alt="" />
                             FinanceFlow
@@ -53,6 +51,8 @@ export default function AuthPage() {
                             >
                                 {isLogin ? (
                                     <LoginComponent />
+                                ) : location.pathname === "/forgotpassword" ? (
+                                    <ForgotPassword />
                                 ) : (
                                     <SignUpComponent />
                                 )}

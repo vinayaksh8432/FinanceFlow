@@ -1,210 +1,302 @@
-import { useEffect, useState } from "react";
-import { getPortfolioData } from "@/utils/api";
-import { FiSearch } from "react-icons/fi";
-import { CurrencyInr } from "@phosphor-icons/react";
-import { RiMoneyRupeeCircleLine } from "react-icons/ri";
+import React, { useEffect, useState } from "react";
+import {
+    getPortfolioData,
+    // updateStockHolding,
+    // deleteStockHolding,
+} from "@/utils/api";
+import {
+    CaretDown,
+    CaretUp,
+    ChartLineDown,
+    ChartLineUp,
+    TrendUp,
+} from "@phosphor-icons/react";
+import { Search, Edit } from "lucide-react";
+import EditModal from "./components/editModal";
 
-export default function Portfolio() {
+const StockCard = ({ holding, onEditClick }) => {
+    return (
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-md p-6 transform transition-all hover:scale-[1.02] hover:shadow-xl relative">
+            <button
+                onClick={() => onEditClick(holding)}
+                className="absolute bottom-4 right-4 text-gray-500 hover:text-gray-700"
+            >
+                <Edit size={20} />
+            </button>
+
+            <div className="flex justify-between items-center mb-4">
+                <div className="flex items-center">
+                    <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mr-4 text-blue-600 font-bold text-xl">
+                        {holding.companyName[0]}
+                    </div>
+                    <div>
+                        <h3 className="font-bold text-lg text-gray-800">
+                            {holding.companyName}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                            {holding.symbol}
+                        </p>
+                    </div>
+                </div>
+                <div
+                    className={`flex items-center font-semibold ${
+                        holding.profitLossPercentage >= 0
+                            ? "text-green-600"
+                            : "text-red-600"
+                    }`}
+                >
+                    {holding.profitLossPercentage >= 0 ? (
+                        <CaretUp size={20} />
+                    ) : (
+                        <CaretDown size={20} />
+                    )}
+                    {holding.profitLossPercentage.toFixed(2)}%
+                </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 mt-4">
+                <div>
+                    <p className="text-xs text-gray-500">Quantity</p>
+                    <p className="font-medium text-gray-800">
+                        {holding.quantity}
+                    </p>
+                </div>
+                <div>
+                    <p className="text-xs text-gray-500">Current Price</p>
+                    <p className="font-medium text-gray-800">
+                        ₹{holding.currentPrice.toLocaleString()}
+                    </p>
+                </div>
+                <div>
+                    <p className="text-xs text-gray-500">Investment Value</p>
+                    <p className="font-medium text-gray-800">
+                        ₹{holding.investmentValue.toLocaleString()}
+                    </p>
+                </div>
+                <div>
+                    <p className="text-xs text-gray-500">Profit/Loss</p>
+                    <p
+                        className={`font-medium ${
+                            holding.profitLoss >= 0
+                                ? "text-green-600"
+                                : "text-red-600"
+                        }`}
+                    >
+                        {holding.profitLoss >= 0 ? "+" : "-"}₹
+                        {Math.abs(holding.profitLoss).toLocaleString()}
+                    </p>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const PortfolioGrid = () => {
     const [portfolioData, setPortfolioData] = useState(null);
     const [error, setError] = useState(null);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filterOption, setFilterOption] = useState("all");
+    const [selectedStock, setSelectedStock] = useState(null);
 
     useEffect(() => {
-        let isMounted = true;
-
         const fetchPortfolio = async () => {
             try {
                 const data = await getPortfolioData();
                 if (!data) {
                     throw new Error("No data received from server");
                 }
-                if (isMounted) {
-                    if (!Array.isArray(data.holdings)) {
-                        data.holdings = []; // Initialize empty array if holdings is missing
-                    }
-                    setPortfolioData(data);
-                }
+
+                data.holdings = Array.isArray(data.holdings)
+                    ? data.holdings
+                    : [];
+
+                setPortfolioData(data);
             } catch (err) {
                 console.error("Error fetching portfolio:", err);
-                if (isMounted) {
-                    setError(err.message);
-                }
+                setError(err.message);
             }
         };
 
         fetchPortfolio();
-
-        return () => {
-            isMounted = false;
-        };
     }, []);
 
-    const [searchTerm, setSearchTerm] = useState("");
-    const [filterOption, setFilterOption] = useState("all"); // all, profit, loss
+    const handleEditStock = (stock) => {
+        setSelectedStock(stock);
+    };
 
-    if (error) return <div className="error">{error}</div>;
-    if (!portfolioData) return null;
+    const handleUpdateStock = async (updatedStock) => {
+        try {
+            // Call API to update stock holding
+            await updateStockHolding(updatedStock);
+
+            // Refresh portfolio data
+            const updatedPortfolio = await getPortfolioData();
+            setPortfolioData(updatedPortfolio);
+
+            // Close the edit modal
+            setSelectedStock(null);
+        } catch (err) {
+            console.error("Error updating stock:", err);
+            // Handle error (e.g., show error message)
+        }
+    };
+
+    const handleDeleteStock = async (stockId) => {
+        try {
+            // Call API to delete stock holding
+            await deleteStockHolding(stockId);
+
+            // Refresh portfolio data
+            const updatedPortfolio = await getPortfolioData();
+            setPortfolioData(updatedPortfolio);
+        } catch (err) {
+            console.error("Error deleting stock:", err);
+            // Handle error (e.g., show error message)
+        }
+    };
+
+    const filteredHoldings =
+        portfolioData?.data?.holdings?.filter((holding) => {
+            const matchesSearch = holding.companyName
+                .toLowerCase()
+                .includes(searchTerm.toLowerCase());
+
+            if (filterOption === "all") return matchesSearch;
+            if (filterOption === "profit")
+                return matchesSearch && holding.profitLoss > 0;
+            if (filterOption === "loss")
+                return matchesSearch && holding.profitLoss < 0;
+
+            return matchesSearch;
+        }) || [];
+
+    if (error) return <div className="text-red-500 p-4">{error}</div>;
+    if (!portfolioData)
+        return <div className="animate-pulse p-4">Loading...</div>;
 
     return (
-        <div className="w-full flex flex-col gap-4">
-            <div className="flex items-center bg-white rounded-xl p-4">
-                <div className="flex gap-4">
-                    <div className="bg-gray-200 flex h-fit rounded-full p-1.5 text-blue-600">
-                        <RiMoneyRupeeCircleLine size={25} />
+        <div>
+            <div className="max-w-7xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div className="bg-white rounded-2xl shadow-md p-6 flex items-center">
+                        <div className="bg-blue-100 rounded-full p-3 mr-4">
+                            <ChartLineUp size={32} className="text-blue-600" />
+                        </div>
+                        <div>
+                            <p className="text-sm text-gray-600 uppercase">
+                                Total Investment
+                            </p>
+                            <h2 className="text-3xl font-bold text-blue-800">
+                                ₹
+                                {portfolioData?.data?.totalInvestment?.toLocaleString() ||
+                                    0}
+                            </h2>
+                        </div>
                     </div>
-                    <div className="border-r border-gray-300 pr-4 flex flex-col gap-2">
-                        <h1 className="uppercase text-sm">Total Asset Value</h1>
-                        <p className="font-medium text-3xl">
-                            ₹ {portfolioData?.data?.totalInvestment || 0}
-                        </p>
+
+                    <div className="bg-white rounded-2xl shadow-md p-6 flex items-center">
+                        <div className="bg-green-100 rounded-full p-3 mr-4">
+                            <TrendUp size={32} className="text-green-600" />
+                        </div>
+                        <div>
+                            <p className="text-sm text-gray-600 uppercase">
+                                Total Profit
+                            </p>
+                            <h2 className="text-3xl font-bold text-green-800">
+                                {filteredHoldings.reduce(
+                                    (acc, holding) => acc + holding.profitLoss,
+                                    0
+                                ) >= 0
+                                    ? "+"
+                                    : "-"}
+                                ₹
+                                {Math.abs(
+                                    filteredHoldings.reduce(
+                                        (acc, holding) =>
+                                            acc + holding.profitLoss,
+                                        0
+                                    )
+                                ).toLocaleString()}
+                            </h2>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-2xl shadow-md p-6 flex items-center">
+                        <div className="bg-purple-100 rounded-full p-3 mr-4">
+                            <ChartLineDown
+                                size={32}
+                                className="text-purple-600"
+                            />
+                        </div>
+                        <div>
+                            <p className="text-sm text-gray-600 uppercase">
+                                Total Holdings
+                            </p>
+                            <h2 className="text-3xl font-bold text-purple-800">
+                                {filteredHoldings.length}
+                            </h2>
+                        </div>
                     </div>
                 </div>
 
-                <div className="px-4">
-                    <h1>products</h1>
-                    <div className="flex gap-2">
-                        <div className="bg-blue-50 px-2 py-1">in stock</div>
-                        <div className="bg-blue-50 px-2 py-1">loss</div>
-                        <div className="bg-blue-50 px-2 py-1">profit</div>
+                {/* Search and Filter */}
+                <div className="flex flex-col md:flex-row justify-between mb-8 gap-4">
+                    <div className="relative flex-grow">
+                        <input
+                            type="text"
+                            placeholder="Search stocks..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        />
+                        <Search
+                            size={20}
+                            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                        />
                     </div>
-                </div>
-            </div>
 
-            <div className="flex justify-between">
-                <div className="flex items-center bg-white px-3 rounded-full overflow-hidden text-base relative border border-gray-300">
-                    <FiSearch className="text-gray-400" size={22} />
-                    <input
-                        type="text"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="p-2 outline-none text-gray-700 placeholder-gray-400"
-                        placeholder="Search holdings..."
-                    />
-                </div>
-                <div className="flex items-center gap-2">
                     <select
                         value={filterOption}
                         onChange={(e) => setFilterOption(e.target.value)}
-                        className="border border-gray-300 shadow-sm px-4 py-2 rounded-full bg-white hover:bg-gray-50"
+                        className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     >
-                        <option value="all">Filter</option>
-                        <option value="profit">Profit</option>
-                        <option value="loss">Loss</option>
+                        <option value="all">All Stocks</option>
+                        <option value="profit">Profitable</option>
+                        <option value="loss">Loss-making</option>
                     </select>
                 </div>
-            </div>
 
-            <div className="overflow-x-auto rounded-xl border border-gray-200">
-                <table className="w-full bg-white">
-                    <thead>
-                        <tr className="bg-gray-50 border-b border-gray-200">
-                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Company
-                            </th>
-                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Symbol
-                            </th>
-                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Quantity
-                            </th>
-                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Current Price
-                            </th>
-                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Investment Value
-                            </th>
-                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Profit/Loss
-                            </th>
-                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                P/L %
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200">
-                        {portfolioData.data?.holdings &&
-                        portfolioData.data.holdings.length > 0 ? (
-                            portfolioData.data.holdings.map((holding) => (
-                                <tr
-                                    key={holding._id}
-                                    className="hover:bg-gray-50 transition-colors"
-                                >
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="flex items-center">
-                                            <div className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
-                                                {holding.companyName[0]}
-                                            </div>
-                                            <div>
-                                                <div className="font-medium text-gray-900">
-                                                    {holding.companyName}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
-                                        {holding.symbol}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-gray-900">
-                                        {holding.quantity}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-gray-900">
-                                        <div className="flex items-center">
-                                            <CurrencyInr className="mr-1" />
-                                            {holding.currentPrice}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-gray-900">
-                                        <div className="flex items-center">
-                                            <CurrencyInr className="mr-1" />
-                                            {holding.investmentValue}
-                                        </div>
-                                    </td>
-                                    <td
-                                        className={`px-6 py-4 whitespace-nowrap ${
-                                            holding.profitLoss >= 0
-                                                ? "text-green-600"
-                                                : "text-red-600"
-                                        }`}
-                                    >
-                                        <div className="flex items-center">
-                                            <CurrencyInr className="mr-1" />
-                                            {Math.abs(
-                                                holding.profitLoss
-                                            ).toFixed(2)}
-                                            {holding.profitLoss >= 0
-                                                ? " +"
-                                                : " -"}
-                                        </div>
-                                    </td>
-                                    <td
-                                        className={`px-6 py-4 whitespace-nowrap ${
-                                            holding.profitLossPercentage >= 0
-                                                ? "text-green-600"
-                                                : "text-red-600"
-                                        }`}
-                                    >
-                                        {holding.profitLossPercentage >= 0
-                                            ? "+"
-                                            : ""}
-                                        {holding.profitLossPercentage.toFixed(
-                                            2
-                                        )}
-                                        %
-                                    </td>
-                                </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td
-                                    colSpan="7"
-                                    className="px-6 py-8 text-center text-gray-500"
-                                >
-                                    No holdings found in your portfolio.
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
+                {/* Stock Grid */}
+                {filteredHoldings.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {filteredHoldings.map((holding) => (
+                            <StockCard
+                                key={holding._id}
+                                holding={holding}
+                                onEditClick={handleEditStock}
+                            />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-16 bg-white rounded-2xl shadow-md">
+                        <p className="text-gray-500 text-xl">
+                            No stocks found matching your search or filter.
+                        </p>
+                    </div>
+                )}
+
+                {/* Edit Modal for Stock */}
+                {selectedStock && (
+                    <EditModal
+                        stock={selectedStock}
+                        onSave={handleUpdateStock}
+                        onCancel={() => setSelectedStock(null)}
+                        onApplicationDeleted={handleDeleteStock}
+                    />
+                )}
             </div>
         </div>
     );
-}
+};
+
+export default PortfolioGrid;

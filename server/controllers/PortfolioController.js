@@ -149,3 +149,164 @@ exports.addStock = async (req, res) => {
         });
     }
 };
+
+exports.removeStock = async (req, res) => {
+    try {
+        const { symbol } = req.body;
+
+        if (!symbol) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing required fields",
+                details: {
+                    symbol: "Symbol is required",
+                },
+            });
+        }
+
+        const portfolio = await Portfolio.findOne({ userId: req.user.id });
+
+        if (!portfolio) {
+            return res.status(404).json({
+                success: false,
+                message: "Portfolio not found",
+            });
+        }
+
+        const holdingIndex = portfolio.holdings.findIndex(
+            (holding) => holding.symbol === symbol
+        );
+
+        if (holdingIndex === -1) {
+            return res.status(404).json({
+                success: false,
+                message: "Stock not found in portfolio",
+            });
+        }
+
+        portfolio.holdings.splice(holdingIndex, 1);
+
+        // Update portfolio totals
+        portfolio.totalInvestment = portfolio.holdings.reduce(
+            (sum, holding) => sum + holding.investmentValue,
+            0
+        );
+        portfolio.currentValue = portfolio.holdings.reduce(
+            (sum, holding) => sum + holding.currentValue,
+            0
+        );
+        portfolio.lastUpdated = new Date();
+
+        // Save the updated portfolio
+        await portfolio.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Stock removed from portfolio successfully",
+            data: portfolio,
+        });
+    } catch (error) {
+        console.error("Error removing stock from portfolio:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to remove stock from portfolio",
+            error: error.message || "Internal server error",
+            details: error.errors
+                ? Object.keys(error.errors).reduce((acc, key) => {
+                      acc[key] = error.errors[key].message;
+                      return acc;
+                  }, {})
+                : null,
+        });
+    }
+};
+
+exports.updateStock = async (req, res) => {
+    try {
+        const {
+            symbol,
+            quantity,
+            currentPrice,
+            averagePrice,
+            investmentValue,
+            currentValue,
+            profitLoss,
+            profitLossPercentage,
+        } = req.body;
+
+        if (!symbol) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing required fields",
+                details: {
+                    symbol: "Symbol is required",
+                },
+            });
+        }
+
+        const portfolio = await Portfolio.findOne({ userId: req.user.id });
+
+        if (!portfolio) {
+            return res.status(404).json({
+                success: false,
+                message: "Portfolio not found",
+            });
+        }
+
+        const holdingIndex = portfolio.holdings.findIndex(
+            (holding) => holding.symbol === symbol
+        );
+
+        if (holdingIndex === -1) {
+            return res.status(404).json({
+                success: false,
+                message: "Stock not found in portfolio",
+            });
+        }
+
+        portfolio.holdings[holdingIndex] = {
+            ...portfolio.holdings[holdingIndex],
+            quantity,
+            currentPrice,
+            averagePrice,
+            investmentValue,
+            currentValue,
+            profitLoss,
+            profitLossPercentage,
+            lastUpdated: new Date(),
+        };
+
+        // Update portfolio totals
+        portfolio.totalInvestment = portfolio.holdings.reduce(
+            (sum, holding) => sum + holding.investmentValue,
+            0
+        );
+        portfolio.currentValue = portfolio.holdings.reduce(
+            (sum, holding) => sum + holding.currentValue,
+            0
+        );
+        portfolio.lastUpdated = new Date();
+
+        // Save the updated portfolio
+        await portfolio.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Stock updated successfully",
+            data: portfolio,
+        });
+    } catch (error) {
+        console.error("Error updating stock in portfolio:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to update stock in portfolio",
+            error: error.message || "Internal server error",
+            details: error.errors
+                ? Object.keys(error.errors).reduce((acc, key) => {
+                      acc[key] = error.errors[key].message;
+                      return acc;
+                  }, {})
+                : null,
+        });
+    }
+};

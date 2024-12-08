@@ -159,7 +159,7 @@ export default function UserDetails() {
                 }`}
                 className="text-2xl leading-[1] flex items-center gap-6 font-semibold text-blue-600 hover:text-blue-700 transition-colors"
             >
-                {activeRoute ? activeRoute.label : "undefined"}
+                {activeRoute ? activeRoute.label : ""}
             </NavLink>
 
             <div className="flex relative dropdown-container">

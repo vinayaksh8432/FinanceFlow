@@ -1,22 +1,24 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { LuPlus } from "react-icons/lu";
+import { LuPlus, LuCheckCircle } from "react-icons/lu";
 import StockSearch from "./components/StockSearch";
 import RecentlyAdded from "./components/RecentlyAdded";
 import AddToPortfolio from "./components/AddToPortfolio";
 import StockChart from "./components/StockChart";
-import { mockHistoricalData, mockStockQuote } from "./mock";
 import {
-    convertUnixTimestampToDate,
-    createDate,
-    convertDateToUnixTimestamp,
-} from "@/utils/helper/date-helper";
-import { ArrowsOut } from "@phosphor-icons/react";
-import { addToPortfolio } from "@/utils/api";
+    mockHistoricalData,
+    mockStockQuote,
+    mockCompanyDetails,
+    mockSearchResults,
+} from "./mock";
+import { convertUnixTimestampToDate } from "@/utils/helper/date-helper";
+import { ArrowsOut, CheckCircle } from "@phosphor-icons/react";
+import { addToPortfolio, getPortfolioData } from "@/utils/api";
 import { useNavigate } from "react-router-dom";
 
 export default function StockMarket() {
     const [timeFrame, setTimeFrame] = useState("1W");
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [existingPortfolio, setExistingPortfolio] = useState([]);
     const navigate = useNavigate();
 
     const chartConfig = {
@@ -26,53 +28,59 @@ export default function StockMarket() {
         "1Y": { resolution: "D", days: 0, weeks: 0, months: 0, years: 1 },
     };
 
-    const [stockData, setStockData] = useState(mockStockQuote);
-    const [historicalData, setHistoricalData] = useState([]);
     const [selectedStock, setSelectedStock] = useState({
-        symbol: "AAPL",
-        data: null,
+        symbol: "RELIANCE.NS",
+        name: "Reliance Industries Ltd",
     });
+
+    const [stockData, setStockData] = useState(mockStockQuote["RELIANCE.NS"]);
+    const [historicalData, setHistoricalData] = useState([]);
+    const [companyDetails, setCompanyDetails] = useState(
+        mockCompanyDetails["RELIANCE.NS"]
+    );
+
+    useEffect(() => {
+        const fetchPortfolio = async () => {
+            try {
+                const portfolioData = await getPortfolioData();
+                const existingStocks =
+                    portfolioData?.data?.holdings?.map(
+                        (holding) => holding.symbol
+                    ) || [];
+                setExistingPortfolio(existingStocks);
+            } catch (error) {
+                console.error("Error fetching portfolio:", error);
+            }
+        };
+
+        fetchPortfolio();
+    }, []);
+
+    const isStockInPortfolio = useMemo(() => {
+        return existingPortfolio.includes(selectedStock.symbol);
+    }, [existingPortfolio, selectedStock.symbol]);
 
     const formatHistoricalData = (data) => {
         return data.c.map((close, index) => ({
-            close: close.toFixed(2),
-            high: data.h[index].toFixed(2),
-            low: data.l[index].toFixed(2),
-            open: data.o[index].toFixed(2),
+            close: Number(close).toFixed(2),
+            high: Number(data.h[index]).toFixed(2),
+            low: Number(data.l[index]).toFixed(2),
+            open: Number(data.o[index]).toFixed(2),
             date: convertUnixTimestampToDate(data.t[index]),
             volume: data.v[index],
         }));
     };
 
-    const fetchHistoricalData = async (symbol, timeFrame) => {
-        try {
-            // Get date range based on timeframe
-            const endDate = new Date();
-            const { days, weeks, months, years } = chartConfig[timeFrame];
-            const startDate = createDate(
-                endDate,
-                -days,
-                -weeks,
-                -months,
-                -years
-            );
-
-            const startTimestamp = convertDateToUnixTimestamp(startDate);
-            const endTimestamp = convertDateToUnixTimestamp(endDate);
-
-            // For demo, using mock data
-            const data = mockHistoricalData;
-            const formattedData = formatHistoricalData(data);
-            setHistoricalData(formattedData);
-        } catch (error) {
-            console.error("Error fetching historical data:", error);
-        }
+    const fetchStockData = (symbol) => {
+        setStockData(mockStockQuote[symbol]);
+        setCompanyDetails(mockCompanyDetails[symbol]);
+        const historicalData = mockHistoricalData[symbol];
+        setHistoricalData(formatHistoricalData(historicalData));
     };
 
-    // Fetch data when selected stock or timeframe changes
     useEffect(() => {
-        fetchHistoricalData(selectedStock.symbol, timeFrame);
-    }, [selectedStock.symbol, timeFrame]);
+        fetchStockData(selectedStock.symbol);
+    }, [selectedStock.symbol]);
 
     const handleTimeFrameChange = (newTimeFrame) => {
         setTimeFrame(newTimeFrame);
@@ -80,9 +88,8 @@ export default function StockMarket() {
 
     const handleStockSelect = (result) => {
         setSelectedStock({
-            symbol: result["1. symbol"],
-            name: result["2. name"],
-            data: null,
+            symbol: result.symbol || result["1. symbol"],
+            name: result.description || result["2. name"],
         });
     };
 
@@ -125,14 +132,19 @@ export default function StockMarket() {
 
     return (
         <div className="w-full flex flex-col gap-4">
-            <StockSearch onStockSelect={handleStockSelect} />
+            <StockSearch
+                onStockSelect={handleStockSelect}
+                searchResults={mockSearchResults.result}
+            />
             <div className="flex items-center justify-between">
                 <div className="flex gap-4 items-center">
                     <div className="p-2 bg-white border border-gray-300 rounded-xl">
                         <img
-                            src={`/api/placeholder/48/48`}
+                            src={
+                                companyDetails.logo || `/api/placeholder/48/48`
+                            }
                             alt={selectedStock.symbol}
-                            className="w-12 h-12"
+                            className="w-12 h-12 object-contain"
                         />
                     </div>
                     <div className="flex flex-col">
@@ -141,7 +153,7 @@ export default function StockMarket() {
                         </h1>
                         <div className="flex items-center gap-2">
                             <span className="text-xl">
-                                ₹{stockData.c.toFixed(2)}
+                                ₹{Number(stockData.c).toFixed(2)}{" "}
                             </span>
                             <span
                                 className={`text-sm ${
@@ -158,29 +170,38 @@ export default function StockMarket() {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2">
-                    <button
-                        onClick={() => setIsAddModalOpen(true)}
-                        className="p-2 border border-blue-400 bg-blue-200 rounded-xl shadow-sm hover:bg-blue-300 transition-colors"
-                    >
-                        <LuPlus size={25} />
-                    </button>
-                </div>
+                {!isStockInPortfolio ? (
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setIsAddModalOpen(true)}
+                            className="p-2 border border-blue-400 bg-blue-200 rounded-xl shadow-sm hover:bg-blue-300 transition-colors"
+                        >
+                            <LuPlus size={25} />
+                        </button>
+                    </div>
+                ) : (
+                    <div className="flex items-center gap-2 p-2 border border-blue-400 bg-blue-200 rounded-xl shadow-sm transition-colors">
+                        <span className="text-sm font-medium">
+                            In Portfolio
+                        </span>
+                        <CheckCircle size={25} />
+                    </div>
+                )}
             </div>
 
             <div className="grid grid-cols-6 text-sm gap-4">
                 {[
                     {
                         label: "Open",
-                        value: stockData.o.toFixed(2),
+                        value: Number(stockData.o).toFixed(2),
                     },
                     {
                         label: "High",
-                        value: stockData.h.toFixed(2),
+                        value: Number(stockData.h).toFixed(2),
                     },
                     {
                         label: "Low",
-                        value: stockData.l.toFixed(2),
+                        value: Number(stockData.l).toFixed(2),
                     },
                     {
                         label: "Volume",
@@ -260,7 +281,11 @@ export default function StockMarket() {
                 <AddToPortfolio
                     isOpen={isAddModalOpen}
                     onClose={() => setIsAddModalOpen(false)}
-                    selectedStock={selectedStock}
+                    selectedStock={{
+                        symbol: selectedStock.symbol,
+                        name: selectedStock.name,
+                        ...companyDetails,
+                    }}
                     currentPrice={stockData.c}
                     onAddToPortfolio={handleAddToPortfolio}
                     priceChange={priceChange.change.toFixed(2)}

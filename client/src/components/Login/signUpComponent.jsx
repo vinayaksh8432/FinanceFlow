@@ -5,6 +5,7 @@ import { TbEye, TbEyeClosed } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
 import { BsArrowRight } from "react-icons/bs";
 import { ring } from "ldrs";
+import { WarningCircle } from "@phosphor-icons/react";
 
 ring.register();
 

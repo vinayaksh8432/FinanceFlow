@@ -39,6 +39,9 @@
     .authForm input[type="password"]::placeholder {
         color: white;
     }
+    .authForm input[type="confirmpassword"]::placeholder {
+        color: white;
+    }
 }
 
 .login-BG {

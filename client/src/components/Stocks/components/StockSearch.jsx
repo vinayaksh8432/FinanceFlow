@@ -1,6 +1,7 @@
 import { XCircle } from "@phosphor-icons/react";
 import React, { useState, useEffect, useRef } from "react";
 import { FiSearch } from "react-icons/fi";
+import { mockSearchResults } from "../mock";
 
 export default function StockSearch({ onStockSelect }) {
     const [query, setQuery] = useState("");
@@ -8,44 +9,6 @@ export default function StockSearch({ onStockSelect }) {
     const [isLoading, setIsLoading] = useState(false);
     const [showResults, setShowResults] = useState(false);
     const searchRef = useRef(null);
-
-    const sampleData = {
-        bestMatches: [
-            {
-                "1. symbol": "TSCO.LON",
-                "2. name": "Tesco PLC",
-                "3. type": "Equity",
-                "4. region": "United Kingdom",
-                "5. marketOpen": "08:00",
-                "6. marketClose": "16:30",
-                "7. timezone": "UTC+01",
-                "8. currency": "GBX",
-                "9. matchScore": "0.7273",
-            },
-            {
-                "1. symbol": "TSCDF",
-                "2. name": "Tesco plc",
-                "3. type": "Equity",
-                "4. region": "United States",
-                "5. marketOpen": "09:30",
-                "6. marketClose": "16:00",
-                "7. timezone": "UTC-04",
-                "8. currency": "USD",
-                "9. matchScore": "0.7143",
-            },
-            {
-                "1. symbol": "RELIANCE.BSE",
-                "2. name": "Reliance Industries Limited",
-                "3. type": "Equity",
-                "4. region": "India",
-                "5. marketOpen": "09:15",
-                "6. marketClose": "15:30",
-                "7. timezone": "UTC+05:30",
-                "8. currency": "INR",
-                "9. matchScore": "0.8143",
-            },
-        ],
-    };
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -71,10 +34,10 @@ export default function StockSearch({ onStockSelect }) {
             setIsLoading(true);
             // Simulate API delay
             setTimeout(() => {
-                const filteredResults = sampleData.bestMatches.filter(
+                const filteredResults = mockSearchResults.result.filter(
                     (item) =>
-                        item["1. symbol"].toLowerCase().includes(searchTerm) ||
-                        item["2. name"].toLowerCase().includes(searchTerm)
+                        item.symbol.toLowerCase().includes(searchTerm) ||
+                        item.description.toLowerCase().includes(searchTerm)
                 );
                 setResults(filteredResults);
                 setIsLoading(false);
@@ -85,9 +48,22 @@ export default function StockSearch({ onStockSelect }) {
     };
 
     const handleResultClick = (result) => {
-        setQuery(result["2. name"]); // Set the company name instead of symbol for better UX
+        setQuery(result.description);
         setShowResults(false);
-        onStockSelect(result); // Pass the selected stock data to parent component
+        if (Array.isArray(result.c)) {
+            result.c = result.c.map((value) =>
+                !isNaN(value) ? Number(value).toFixed(2) : value
+            );
+        } else if (
+            result.c !== undefined &&
+            result.c !== null &&
+            !isNaN(result.c)
+        ) {
+            result.c = Number(result.c).toFixed(2);
+        } else {
+            result.c = result.c;
+        }
+        onStockSelect(result);
     };
 
     return (
@@ -125,24 +101,21 @@ export default function StockSearch({ onStockSelect }) {
                     ) : results.length > 0 ? (
                         <ul className="max-h-[300px] overflow-y-auto">
                             {results.map((result, index) => (
-                                <li key={result["1. symbol"]}>
+                                <li key={result.symbol}>
                                     <button
                                         onClick={() =>
                                             handleResultClick(result)
                                         }
                                         className="w-full px-4 py-3 hover:bg-gray-50 flex items-center justify-between group transition-colors duration-150"
                                     >
-                                        <div className="flex flex-col items-start">
+                                        <div className="flex justify-between w-full">
                                             <span className="font-medium text-gray-900 group-hover:text-blue-600">
-                                                {result["2. name"]}
+                                                {result.description}
                                             </span>
                                             <span className="text-sm text-gray-500">
-                                                {result["1. symbol"]}
+                                                {result.symbol}
                                             </span>
                                         </div>
-                                        <span className="text-xs text-gray-400">
-                                            {result["4. region"]}
-                                        </span>
                                     </button>
                                     {index < results.length - 1 && (
                                         <hr className="border-gray-100" />

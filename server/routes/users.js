@@ -33,6 +33,44 @@ router.get("/", async (req, res) => {
     }
 });
 
+router.post("/userAuth", async (req, res) => {
+    const { userId, otp } = req.body;
+    try {
+        const user = await UserModel.findById(userId);
+        if (!user) {
+            return res.status(400).json({ message: "User not found" });
+        }
+
+        if (!otpModule.verifyOTP(userId, otp)) {
+            return res.status(400).json({ message: "Invalid or expired OTP" });
+        }
+
+        // Generate token
+        const token = jwt.sign({ id: user._id }, JWT_SECRET, {
+            expiresIn: "1d", // Change to 1 day
+        });
+
+        res.cookie("token", token, {
+            httpOnly: true,
+            maxAge: 86400000, // 1 day in milliseconds
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+        });
+
+        res.json({
+            message: "Login successful",
+            user: { name: user.name, email: user.email },
+            token: token,
+        });
+    } catch (error) {
+        console.error("OTP verification error:", error);
+        res.status(500).json({
+            message: "Internal server error",
+            error: error.message,
+        });
+    }
+});
+
 router.post("/register", async (req, res) => {
     try {
         const { name, email, password } = req.body;
@@ -86,37 +124,45 @@ router.post("/login", async (req, res) => {
     }
 });
 
-router.post("/userAuth", async (req, res) => {
-    const { userId, otp } = req.body;
+router.post("/reset-password", async (req, res) => {
+    const { email } = req.body;
+    try {
+        const user = await UserModel.findOne({ email });
+        if (!user) {
+            return res
+                .status(400)
+                .json({ message: "No user found with this email" });
+        }
+        const otp = otpModule.generateOTP();
+        otpModule.storeOTP(user._id.toString(), otp);
+        await otpModule.sendOTP(user.email, otp);
+        res.json({
+            message: "OTP sent to your email",
+            userId: user._id,
+            requireOtp: true,
+        });
+    } catch (error) {
+        console.error("Reset password error:", error);
+        res.status(500).json({
+            message: "Internal server error",
+            error: error.message,
+        });
+    }
+});
+
+router.post("/update-password", async (req, res) => {
+    const { userId, newPassword } = req.body;
     try {
         const user = await UserModel.findById(userId);
         if (!user) {
             return res.status(400).json({ message: "User not found" });
         }
-
-        if (!otpModule.verifyOTP(userId, otp)) {
-            return res.status(400).json({ message: "Invalid or expired OTP" });
-        }
-
-        // Generate token
-        const token = jwt.sign({ id: user._id }, JWT_SECRET, {
-            expiresIn: "1d", // Change to 1 day
-        });
-
-        res.cookie("token", token, {
-            httpOnly: true,
-            maxAge: 86400000, // 1 day in milliseconds
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
-        });
-
-        res.json({
-            message: "Login successful",
-            user: { name: user.name, email: user.email },
-            token: token,
-        });
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
+        await user.save();
+        res.json({ message: "Password updated successfully" });
     } catch (error) {
-        console.error("OTP verification error:", error);
+        console.error("Update password error:", error);
         res.status(500).json({
             message: "Internal server error",
             error: error.message,

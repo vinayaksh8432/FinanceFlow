@@ -43,6 +43,26 @@ export const logout = async () => {
     }
 };
 
+export const resetPassword = async (email) => {
+    try {
+        const response = await api.post("/users/reset-password", { email });
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || error.message;
+    }
+};
+
+export const updatePassword = async (newPassword) => {
+    try {
+        const response = await api.post("/users/update-password", {
+            newPassword,
+        });
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || error.message;
+    }
+};
+
 export const fetchLoanTypes = async () => {
     try {
         const response = await api.get("/loan-types");
@@ -109,6 +129,46 @@ export const addToPortfolio = async (stockData) => {
         console.error("Portfolio addition error:", error);
         if (error.response?.status === 401) {
             throw new Error("Please login to add stocks to portfolio");
+        }
+        throw error.response?.data || { message: error.message };
+    }
+};
+
+export const removeFromPortfolio = async (symbol) => {
+    try {
+        const response = await api.delete(`/portfolio/remove-stock/${symbol}`);
+        if (!response.data.success) {
+            throw new Error(
+                response.data.message || "Failed to remove stock from portfolio"
+            );
+        }
+
+        return response.data;
+    } catch (error) {
+        console.error("Portfolio removal error:", error);
+        if (error.response?.status === 401) {
+            throw new Error("Please login to remove stocks from portfolio");
+        }
+        throw error.response?.data || { message: error.message };
+    }
+};
+
+export const updatePortfolioStock = async (symbol, updatedData) => {
+    try {
+        const response = await api.put(`/portfolio/update-stock/${symbol}`, {
+            ...updatedData,
+        });
+        if (!response.data.success) {
+            throw new Error(
+                response.data.message || "Failed to update stock in portfolio"
+            );
+        }
+
+        return response.data;
+    } catch (error) {
+        console.error("Portfolio update error:", error);
+        if (error.response?.status === 401) {
+            throw new Error("Please login to update stocks in portfolio");
         }
         throw error.response?.data || { message: error.message };
     }

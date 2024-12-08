@@ -331,7 +331,7 @@ export default function IdentityDetails({ onValidate }) {
 
                 {/* Document Preview */}
                 {formData.DocumentPreview && (
-                    <div className="bg-gray-50 p-4 rounded-lg flex items-center gap-4 relative">
+                    <div className="bg-gray-50 p-8 rounded-lg flex items-center gap-4 relative">
                         <div className="min-w-64 h-48 border rounded-lg overflow-hidden">
                             {formData.DocumentPreview.includes("pdf") ? (
                                 <div className="h-full relative">
@@ -365,7 +365,7 @@ export default function IdentityDetails({ onValidate }) {
                 )}
             </div>
             {preview && (
-                <div className="h-screen w-full absolute top-0 left-0 bg-black bg-opacity-45 flex items-start m-auto">
+                <div className="z-30 h-screen w-full absolute top-0 left-0 bg-black bg-opacity-45 flex items-start m-auto">
                     <div className="w-2/3 h-5/6 m-auto">
                         <iframe
                             src={formData.DocumentPreview}

@@ -62,8 +62,8 @@ export default function EmployeeDetails({ onValidate }) {
                 if (numericValue) {
                     // Ensure the value doesn't exceed 2,00,000
                     const parsedValue = parseInt(numericValue);
-                    if (parsedValue > 100000) {
-                        processedValue = "1,00,000";
+                    if (parsedValue > 200000) {
+                        processedValue = "2,00,000";
                     } else {
                         // Format with commas for Indian currency
                         processedValue = parsedValue.toLocaleString("en-IN");

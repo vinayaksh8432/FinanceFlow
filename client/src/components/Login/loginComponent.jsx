@@ -5,6 +5,7 @@ import { FaRegEye } from "react-icons/fa";
 import { BsArrowRight } from "react-icons/bs";
 import { ring } from "ldrs";
 import { WarningCircle } from "@phosphor-icons/react";
+import { login } from "@/utils/api";
 
 export default function LoginComponent() {
     const [email, setEmail] = useState("");
@@ -69,30 +70,14 @@ export default function LoginComponent() {
         }
         setIsLoading(true); // Set loading to true when submission starts
         try {
-            const response = await fetch(
-                `${import.meta.env.VITE_BACKEND_URL}/api/users/login`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ email, password }),
-                    credentials: "include",
-                }
-            );
+            const data = await login({ email, password });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Login failed");
-            }
-
-            const result = await response.json();
-            if (result.requireOtp) {
-                setUserId(result.userId);
+            if (data.requireOtp) {
+                setUserId(data.userId);
                 setShowOtpInput(true);
             } else {
-                localStorage.setItem("user", JSON.stringify(result.user));
-                localStorage.setItem("token", result.token);
+                localStorage.setItem("user", JSON.stringify(data.user));
+                localStorage.setItem("token", data.token);
                 navigate("/dashboard");
             }
         } catch (error) {
@@ -225,7 +210,7 @@ export default function LoginComponent() {
         <>
             <div className="px-8 py-4 flex flex-col items-center rounded-lg">
                 <h1 className="text-5xl text-center pb-2">Welcome Back</h1>
-                <h1 className="text-center pb-10    ">
+                <h1 className="text-center pb-10">
                     Enter your email and password to access your account
                 </h1>
                 <form
@@ -297,8 +282,15 @@ export default function LoginComponent() {
                                     </label>
                                 </div>
                                 <button
+                                    type="button"
+                                    className="text-sm py-2"
+                                    onClick={() => navigate("/forgotpassword")}
+                                >
+                                    Forgot your password?
+                                </button>
+                                <button
                                     type="submit"
-                                    className="w-full rounded-lg mt-6 px-5 p-3 bg-white text-black font-semibold flex items-center justify-between"
+                                    className="w-full rounded-lg px-5 p-3 bg-white text-black font-semibold flex items-center justify-between"
                                 >
                                     Login to your Account
                                     {isLoading ? (

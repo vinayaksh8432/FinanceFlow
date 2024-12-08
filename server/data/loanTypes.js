@@ -4,7 +4,7 @@ const loanTypes = [
         typeImage: "assets/personal.svg",
         name: "Personal",
         description:
-            "Get a Personal Loan upto 12 lakhs in few easy steps with FinanceFlow",
+            "Get yourself a Loan for your personal needs in just a few easy steps with FinanceFlow",
         shortDescription: "For all your needs",
         interestRate: "8%",
         upto: "12 Lakhs",

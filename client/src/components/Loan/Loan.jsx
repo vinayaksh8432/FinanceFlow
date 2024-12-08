@@ -79,11 +79,11 @@ export default function Loan() {
                                     </span>
                                 </div>
                                 <div className="flex gap-6 pl-6 pb-4 py-2">
-                                    <div className="flex flex-col gap-2 flex-1">
+                                    <div className="flex flex-col justify-between gap-4 flex-1">
                                         <p className="text-sm text-gray-600 text-left">
                                             {type.description}
                                         </p>
-                                        <span className="w-max bg-orange-50 border border-orange-400 px-4 py-2 rounded-full text-sm font-medium text-orange-600">
+                                        <span className="w-max bg-orange-50 border border-orange-400 px-4 py-1 rounded-full text-sm font-medium text-orange-600">
                                             Upto {type.upto}
                                         </span>
                                     </div>
@@ -92,7 +92,7 @@ export default function Loan() {
                                             import.meta.env.VITE_BACKEND_URL
                                         }/${type.typeImage}`}
                                         alt={`${type.name} icon`}
-                                        className="w-28 h-auto object-contain drop-shadow-lg"
+                                        className="w-28 h-24 object-contain drop-shadow-lg"
                                     />
                                 </div>
                             </div>
@@ -100,25 +100,6 @@ export default function Loan() {
                     ))}
                 </div>
             </div>
-
-            {/* <div className="w-1/3 pl-8 flex flex-col gap-8 border-l-2 border-blue-100">
-                <h1 className="text-3xl font-bold text-blue-800 text-center">
-                    Why Choose Us?
-                </h1>
-                {reasons.map((reason, index) => (
-                    <div
-                        key={index}
-                        className="bg-white border-2 border-blue-100 rounded-xl flex gap-4 items-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
-                    >
-                        <div className="text-4xl bg-gradient-to-r from-blue-500 to-blue-600 p-5 text-white rounded-l-xl">
-                            {reason.icon}
-                        </div>
-                        <p className="uppercase text-sm font-semibold text-gray-700 pr-4">
-                            {reason.text}
-                        </p>
-                    </div>
-                ))}
-            </div> */}
         </div>
     );
 }
