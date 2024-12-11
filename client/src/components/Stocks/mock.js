@@ -3,13 +3,22 @@ function getRandomValue(base, variance) {
 }
 
 function generateRandomStockData(baseValues) {
+    // Get current timestamp
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+
+    // Generate timestamps for the last 5 days
+    const timestamps = Array.from(
+        { length: 5 },
+        (_, i) => currentTimestamp - i * 24 * 60 * 60
+    ).reverse(); // Reverse to get from oldest to newest
+
     return {
         c: baseValues.map((value) => getRandomValue(value, 5)),
         h: baseValues.map((value) => getRandomValue(value, 5)),
         l: baseValues.map((value) => getRandomValue(value, 5)),
         o: baseValues.map((value) => getRandomValue(value, 5)),
         s: "ok",
-        t: [1569297600, 1569384000, 1569470400, 1569556800, 1569643200],
+        t: timestamps,
         v: baseValues.map(() => Math.floor(Math.random() * 50000000)),
     };
 }
@@ -62,7 +71,7 @@ export const mockCompanyDetails = {
         shareOutstanding: 6250.48,
         ticker: "RELIANCE.NS",
         weburl: "https://www.ril.com/",
-        logo: "https://upload.wikimedia.org/wikipedia/commons/3/3c/Reliance_Industries_Logo.svg",
+        logo: "https://upload.wikimedia.org/wikipedia/hi/9/99/Reliance_Industries_Logo.svg",
         finnhubIndustry: "Conglomerate",
     },
     "TCS.NS": {
@@ -76,7 +85,7 @@ export const mockCompanyDetails = {
         shareOutstanding: 4375.22,
         ticker: "TCS.NS",
         weburl: "https://www.tcs.com/",
-        logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Tata_Consultancy_Services_Logo.svg/1200px-Tata_Consultancy_Services_Logo.svg.png",
+        logo: "https://upload.wikimedia.org/wikipedia/commons/b/b1/Tata_Consultancy_Services_Logo.svg",
         finnhubIndustry: "IT Services",
     },
     "HDFCBANK.NS": {
@@ -90,7 +99,7 @@ export const mockCompanyDetails = {
         shareOutstanding: 2962.44,
         ticker: "HDFCBANK.NS",
         weburl: "https://www.hdfcbank.com/",
-        logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/HDFC_Bank_Logo.svg/1200px-HDFC_Bank_Logo.svg.png",
+        logo: "https://upload.wikimedia.org/wikipedia/commons/2/28/HDFC_Bank_Logo.svg",
         finnhubIndustry: "Banking",
     },
     "INFY.NS": {
@@ -104,7 +113,7 @@ export const mockCompanyDetails = {
         shareOutstanding: 4375.22,
         ticker: "INFY.NS",
         weburl: "https://www.infosys.com/",
-        logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Infosys_logo.svg/1200px-Infosys_logo.svg.png",
+        logo: "https://upload.wikimedia.org/wikipedia/commons/9/95/Infosys_logo.svg",
         finnhubIndustry: "IT Services",
     },
     "ADANIENTER.NS": {
@@ -118,7 +127,7 @@ export const mockCompanyDetails = {
         shareOutstanding: 3962.44,
         ticker: "ADANIENTER.NS",
         weburl: "https://www.adanienterprises.com/",
-        logo: "https://upload.wikimedia.org/wikipedia/commons/e/e7/Adani_Group_Logo.svg",
+        logo: "https://upload.wikimedia.org/wikipedia/commons/d/d4/Adani_logo_2012.svg",
         finnhubIndustry: "Conglomerate",
     },
     "SBIN.NS": {
@@ -132,7 +141,7 @@ export const mockCompanyDetails = {
         shareOutstanding: 5962.44,
         ticker: "SBIN.NS",
         weburl: "https://www.onlinesbi.com/",
-        logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/State_Bank_of_India_Logo.svg/1200px-State_Bank_of_India_Logo.svg.png",
+        logo: "https://upload.wikimedia.org/wikipedia/commons/c/cc/SBI-logo.svg",
         finnhubIndustry: "Banking",
     },
 };

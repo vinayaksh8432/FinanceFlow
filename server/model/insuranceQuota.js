@@ -19,7 +19,7 @@ const insuranceQuotaSchema = new mongoose.Schema(
                 },
                 coverage: {
                     type: Number,
-                    required: true,
+                    required: false,
                 },
                 premium: {
                     type: Number,

@@ -10,6 +10,7 @@ import {
 
 export default function StockChart({ stockData, timeFrame, isLoading }) {
     const formatDate = (dateStr, format = "default") => {
+        if (!dateStr) return dateStr; // Ensure dateStr is not null or undefined
         try {
             const date = new Date(dateStr);
             if (isNaN(date)) return dateStr;
@@ -19,12 +20,6 @@ export default function StockChart({ stockData, timeFrame, isLoading }) {
                     switch (timeFrame) {
                         case "1D":
                             return date.toLocaleTimeString();
-                        case "1W":
-                            return date.toLocaleDateString("en-US", {
-                                weekday: "short",
-                                month: "short",
-                                day: "numeric",
-                            });
                         default:
                             return date.toLocaleDateString("en-US", {
                                 month: "short",
@@ -37,10 +32,6 @@ export default function StockChart({ stockData, timeFrame, isLoading }) {
                             return date.toLocaleTimeString("en-US", {
                                 hour: "numeric",
                                 minute: "2-digit",
-                            });
-                        case "1W":
-                            return date.toLocaleDateString("en-US", {
-                                weekday: "short",
                             });
                         default:
                             return date.toLocaleDateString("en-US", {
@@ -67,7 +58,7 @@ export default function StockChart({ stockData, timeFrame, isLoading }) {
                     {formatDate(payload[0].payload.date, "tooltip")}
                 </div>
                 <div className="text-xs text-gray-400">
-                    Volume:{" "}
+                    Volume:
                     {parseInt(payload[0].payload.volume).toLocaleString()}
                 </div>
             </div>

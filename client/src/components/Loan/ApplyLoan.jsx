@@ -126,7 +126,7 @@ function ApplyLoanContent() {
     };
 
     const CurrentComponent = sidebar[selectedComponent].component;
-    // const CurrentComponent = sidebar[4].component;
+    // const CurrentComponent = sidebar[1].component;
 
     return (
         <div className="flex h-full rounded-lg border border-gray-300 overflow-hidden shadow-sm">

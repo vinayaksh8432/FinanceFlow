@@ -170,6 +170,14 @@ const PortfolioGrid = () => {
             return matchesSearch;
         }) || [];
 
+    // Calculate total profit/loss and total holdings from ALL holdings, not just filtered
+    const totalHoldings = portfolioData?.data?.holdings?.length || 0;
+    const totalProfitLoss =
+        portfolioData?.data?.holdings?.reduce(
+            (acc, holding) => acc + holding.profitLoss,
+            0
+        ) || 0;
+
     if (error) return <div className="text-red-500 p-4">{error}</div>;
     if (!portfolioData)
         return <div className="animate-pulse p-4">Loading...</div>;
@@ -203,20 +211,8 @@ const PortfolioGrid = () => {
                                 Total Profit
                             </p>
                             <h2 className="text-3xl font-bold text-green-800">
-                                {filteredHoldings.reduce(
-                                    (acc, holding) => acc + holding.profitLoss,
-                                    0
-                                ) >= 0
-                                    ? "+"
-                                    : "-"}
-                                ₹
-                                {Math.abs(
-                                    filteredHoldings.reduce(
-                                        (acc, holding) =>
-                                            acc + holding.profitLoss,
-                                        0
-                                    )
-                                ).toLocaleString()}
+                                {totalProfitLoss >= 0 ? "+" : "-"}₹
+                                {Math.abs(totalProfitLoss).toLocaleString()}
                             </h2>
                         </div>
                     </div>
@@ -233,7 +229,7 @@ const PortfolioGrid = () => {
                                 Total Holdings
                             </p>
                             <h2 className="text-3xl font-bold text-purple-800">
-                                {filteredHoldings.length}
+                                {totalHoldings}
                             </h2>
                         </div>
                     </div>

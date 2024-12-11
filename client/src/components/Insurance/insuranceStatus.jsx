@@ -212,18 +212,22 @@ export default function InsuranceStatus() {
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-4 gap-6">
+                                <div className="grid grid-cols-3 gap-6">
                                     {[
                                         {
                                             label: "Coverage Amount",
-                                            value: `₹${policy.coverage.toLocaleString()}`,
+                                            value: policy.coverage
+                                                ? `₹${policy.coverage.toLocaleString()}`
+                                                : "N/A",
                                             icon: (
                                                 <Shield className="w-5 h-5" />
                                             ),
                                         },
                                         {
                                             label: "Annual Premium",
-                                            value: `₹${policy.premium.toLocaleString()}`,
+                                            value: policy.premium
+                                                ? `₹${policy.premium.toLocaleString()}`
+                                                : "N/A",
                                             icon: (
                                                 <Wallet className="w-5 h-5" />
                                             ),
@@ -235,13 +239,13 @@ export default function InsuranceStatus() {
                                                 <Calendar className="w-5 h-5" />
                                             ),
                                         },
-                                        {
-                                            label: "Next Premium Due",
-                                            value: formatDate(
-                                                policy.nextPremiumDate
-                                            ),
-                                            icon: <Clock className="w-5 h-5" />,
-                                        },
+                                        // {
+                                        //     label: "Next Premium Due",
+                                        //     value: formatDate(
+                                        //         policy.nextPremiumDate
+                                        //     ),
+                                        //     icon: <Clock className="w-5 h-5" />,
+                                        // },
                                     ].map((item, index) => (
                                         <div
                                             key={index}

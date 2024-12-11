@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { LuPlus, LuCheckCircle } from "react-icons/lu";
+import { LuPlus } from "react-icons/lu";
 import StockSearch from "./components/StockSearch";
 import RecentlyAdded from "./components/RecentlyAdded";
 import AddToPortfolio from "./components/AddToPortfolio";
@@ -23,9 +23,6 @@ export default function StockMarket() {
 
     const chartConfig = {
         "1D": { resolution: "1", days: 1, weeks: 0, months: 0, years: 0 },
-        "1W": { resolution: "15", days: 0, weeks: 1, months: 0, years: 0 },
-        "1M": { resolution: "60", days: 0, weeks: 0, months: 1, years: 0 },
-        "1Y": { resolution: "D", days: 0, weeks: 0, months: 0, years: 1 },
     };
 
     const [selectedStock, setSelectedStock] = useState({
@@ -242,27 +239,10 @@ export default function StockMarket() {
                 ))}
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex gap-4 flex-1 overflow-y-auto">
                 <div className="flex gap-4 flex-grow">
                     <div className="flex flex-col gap-4 bg-white rounded-xl p-4 border border-gray-300 w-full">
-                        <div className="flex justify-between items-center">
-                            <div className="grid grid-cols-4 gap-2 bg-blue-50 px-3 py-2 rounded-lg text-sm">
-                                {Object.keys(chartConfig).map((period) => (
-                                    <button
-                                        key={period}
-                                        onClick={() =>
-                                            handleTimeFrameChange(period)
-                                        }
-                                        className={`p-1 px-2 rounded-lg transition-colors ${
-                                            timeFrame === period
-                                                ? "bg-blue-600 text-white"
-                                                : "bg-blue-200 hover:bg-blue-300"
-                                        }`}
-                                    >
-                                        {period}
-                                    </button>
-                                ))}
-                            </div>
+                        <div className="flex justify-end items-center">
                             <div className="bg-blue-50 p-2 rounded-lg text-sm cursor-pointer shadow-sm">
                                 <ArrowsOut size={23} />
                             </div>

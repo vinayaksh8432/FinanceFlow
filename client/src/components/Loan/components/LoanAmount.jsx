@@ -38,7 +38,7 @@ export default function LoanAmount({ onValidate }) {
         const grossIncome = parseInt(
             loanApplication.grossIncome?.replace(/,/g, "") || "0"
         );
-        return grossIncome * 75; // 15 times the monthly income
+        return grossIncome * 75;
     }, [loanApplication.grossIncome]);
 
     const formatIndianCurrency = useCallback(

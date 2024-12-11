@@ -319,7 +319,12 @@ export default function UserDetails() {
                                                 </div>
                                             </div>
                                             <div className="p-2 flex items-center gap-2">
-                                                <button className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-50 rounded-lg transition-colors text-left">
+                                                <button
+                                                    className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-50 rounded-lg transition-colors text-left"
+                                                    onClick={() =>
+                                                        navigate("/profile")
+                                                    }
+                                                >
                                                     <SlSettings size={18} />
                                                     View Profile
                                                 </button>

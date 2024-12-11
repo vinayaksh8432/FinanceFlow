@@ -6,7 +6,7 @@ const LifeInsurance = {
             name: "Bajaj Allianz Life Smart Project Goal",
             type: "Retail",
             price: "8844",
-            coverage: "1 Crore",
+            coverage: "500000",
             details: {
                 1: "A non-linked, non participating, pure life term insurance plan",
                 2: "Option of Whole Life cover up to 99 years of age",
@@ -19,7 +19,7 @@ const LifeInsurance = {
             name: "HDF Life Click 2 Protect",
             type: "Retail",
             price: "2356",
-            coverage: "50 Lakhs",
+            coverage: "500000",
             details: {
                 1: "Get regular payout from 60 years of age",
                 2: "Avail return of premium on survival",

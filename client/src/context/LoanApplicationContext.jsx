@@ -187,7 +187,7 @@ export const LoanApplicationProvider = ({ children }) => {
             if (numericValue < 100000) {
                 newErrors.desiredLoanAmount =
                     "Minimum loan amount is ₹1,00,000";
-            } else if (numericValue > 5000000) {
+            } else if (numericValue > 6000000) {
                 newErrors.desiredLoanAmount =
                     "Maximum loan amount is ₹50,00,000";
             }

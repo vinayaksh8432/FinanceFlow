@@ -1,10 +1,10 @@
 /**
  * Converts a Date Object to a UNIX timestamp
  * @param {Date} date - The Date Object to be converted
- * @param {number} unixTimestamp The corresponding UNIX timestamp (seconds elapsed since January 1st, 1970 at UTC)
+ * @returns {number} The corresponding UNIX timestamp (seconds elapsed since January 1st, 1970 at UTC)
  */
 export const convertDateToUnixTimestamp = (date) => {
-  return Math.floor(date.getTime() / 1000);
+    return Math.floor(date.getTime() / 1000);
 };
 
 /**
@@ -13,8 +13,8 @@ export const convertDateToUnixTimestamp = (date) => {
  * @returns {string} The corresponding Date Object formatted as a string
  */
 export const convertUnixTimestampToDate = (unixTimestamp) => {
-  const milliseconds = unixTimestamp * 1000;
-  return new Date(milliseconds).toLocaleDateString();
+    const milliseconds = unixTimestamp * 1000;
+    return new Date(milliseconds).toLocaleDateString();
 };
 
 /**
@@ -27,9 +27,9 @@ export const convertUnixTimestampToDate = (unixTimestamp) => {
  * @returns {Date} The new date
  */
 export const createDate = (date, days, weeks, months, years) => {
-  let newDate = new Date(date);
-  newDate.setDate(newDate.getDate() + days + 7 * weeks);
-  newDate.setMonth(newDate.getMonth() + months);
-  newDate.setFullYear(newDate.getFullYear() + years);
-  return newDate;
+    let newDate = new Date(date);
+    newDate.setDate(newDate.getDate() + days + 7 * weeks);
+    newDate.setMonth(newDate.getMonth() + months);
+    newDate.setFullYear(newDate.getFullYear() + years);
+    return newDate;
 };

@@ -6,7 +6,7 @@ const TwoWheelInsurance = {
             name: "ACKO Two Wheeler Insurance",
             type: "Retail",
             price: "702",
-            coverage: "1 year",
+            coverage: "500000",
             details: {
                 1: "Comprehensive coverage including third-party liability and own damage cover",
                 2: "Offers personal accident cover upto 1.5 lakhs for the owner-driver",
@@ -19,7 +19,7 @@ const TwoWheelInsurance = {
             name: "HDFC ERGO Two Wheeler Insurance",
             type: "Retail",
             price: "538",
-            coverage: "1 year",
+            coverage: "500000",
             details: {
                 1: "Own-damage and third party liability cover",
                 2: "Express theft claim statement",

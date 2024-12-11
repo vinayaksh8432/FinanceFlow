@@ -5,6 +5,7 @@ import Dashboard from "./pages/dashboard";
 import AuthPage from "./pages/AuthPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import HomePage from "./pages/homePage";
+import Profile from "./components/Profile";
 
 function App() {
     return (
@@ -16,6 +17,7 @@ function App() {
                     <Route path="login" element={<AuthPage />} />
                     <Route path="forgotpassword" element={<AuthPage />} />
                     <Route path="register" element={<AuthPage />} />
+                    <Route path="profile" element={<Profile />} />
                     <Route
                         path="dashboard/*"
                         element={

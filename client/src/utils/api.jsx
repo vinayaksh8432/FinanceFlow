@@ -89,6 +89,54 @@ export const fetchLoanApplications = async () => {
     }
 };
 
+export const approveLoanApplication = async (applicationId) => {
+    try {
+        const response = await api.put(
+            `/loan-applications/approve/${applicationId}`
+        );
+
+        if (!response.data.success) {
+            throw new Error(
+                response.data.message || "Failed to approve application"
+            );
+        }
+
+        return response.data;
+    } catch (error) {
+        console.error("Application approval error:", error);
+        if (error.response?.status === 401) {
+            throw new Error("Please login to approve applications");
+        }
+        if (error.response?.status === 403) {
+            throw new Error("Admin access required");
+        }
+        throw error.response?.data || { message: error.message };
+    }
+};
+
+export const rejectLoanApplication = async (applicationId) => {
+    try {
+        const response = await api.put(
+            `/loan-applications/reject/${applicationId}`
+        );
+        if (!response.data.success) {
+            throw new Error(
+                response.data.message || "Failed to reject application"
+            );
+        }
+        return response.data;
+    } catch (error) {
+        console.error("Application rejection error:", error);
+        if (error.response?.status === 401) {
+            throw new Error("Please login to reject applications");
+        }
+        if (error.response?.status === 403) {
+            throw new Error("Admin access required");
+        }
+        throw error.response?.data || { message: error.message };
+    }
+};
+
 export const submitLoanApplication = async (formData) => {
     try {
         const response = await api.post("/loan-applications", formData, {

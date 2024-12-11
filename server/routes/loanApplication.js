@@ -83,4 +83,58 @@ router.delete("/:id", async (req, res) => {
     }
 });
 
+router.put("/approve/:id", authMiddleware, async (req, res) => {
+    try {
+        const application = await LoanApplication.findByIdAndUpdate(
+            req.params.id,
+            { Status: "Approved" }, // Changed from lowercase 'status' to uppercase 'Status'
+            { new: true }
+        );
+
+        if (!application) {
+            return res.status(404).json({
+                success: false,
+                message: "Application not found",
+            });
+        }
+
+        res.json({
+            success: true,
+            message: "Application approved successfully",
+            application,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+});
+
+router.put("/reject/:id", authMiddleware, async (req, res) => {
+    try {
+        const application = await LoanApplication.findByIdAndUpdate(
+            req.params.id,
+            { Status: "Rejected" },
+            { new: true }
+        );
+        if (!application) {
+            return res.status(404).json({
+                success: false,
+                message: "Application not found",
+            });
+        }
+        res.json({
+            success: true,
+            message: "Application rejected successfully",
+            application,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+});
+
 module.exports = router;
