@@ -11,11 +11,11 @@ import { FaRegAddressCard } from "react-icons/fa6";
 import { MdOutlineHomeWork } from "react-icons/md";
 import { PiBuildingOffice } from "react-icons/pi";
 import { BsFileEarmarkText } from "react-icons/bs";
-import PersonalDetails from "./components/PersonalDetails";
-import IdentityDetails from "./components/IdentityDetails";
-import AddressDetails from "./components/AddressDetails";
-import EmployeeDetails from "./components/EmployeeDetails";
-import LoanAmount from "./components/LoanAmount";
+import PersonalDetails from "@/components/Loan/components/PersonalDetails";
+import IdentityDetails from "@/components/Loan/components/IdentityDetails";
+import AddressDetails from "@/components/Loan/components/AddressDetails";
+import EmployeeDetails from "@/components/Loan/components/EmployeeDetails";
+import LoanAmount from "@/components/Loan/components/LoanAmount";
 import {
     LoanApplicationProvider,
     LoanApplicationContext,

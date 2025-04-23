@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Default to the production backend URL if the environment variable is not set
-const API_URL = import.meta.env.VITE_BACKEND_URL 
+const API_URL = import.meta.env.VITE_BACKEND_URL
     ? `${import.meta.env.VITE_BACKEND_URL}/api`
     : "/api"; // This will use the proxy defined in vercel.json
 
@@ -14,9 +14,12 @@ const api = axios.create({
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response?.status === 401 && window.location.pathname !== '/login') {
+        if (
+            error.response?.status === 401 &&
+            window.location.pathname !== "/login"
+        ) {
             // Redirect to login if unauthorized
-            window.location.href = '/login';
+            window.location.href = "/login";
         }
         return Promise.reject(error);
     }
