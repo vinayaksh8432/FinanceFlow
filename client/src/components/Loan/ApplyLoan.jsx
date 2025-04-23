@@ -11,11 +11,12 @@ import { FaRegAddressCard } from "react-icons/fa6";
 import { MdOutlineHomeWork } from "react-icons/md";
 import { PiBuildingOffice } from "react-icons/pi";
 import { BsFileEarmarkText } from "react-icons/bs";
-import PersonalDetails from "@/components/Loan/components/PersonalDetails";
-import IdentityDetails from "@/components/Loan/components/IdentityDetails";
-import AddressDetails from "@/components/Loan/components/AddressDetails";
-import EmployeeDetails from "@/components/Loan/components/EmployeeDetails";
-import LoanAmount from "@/components/Loan/components/LoanAmount";
+// Updated imports to use standard @ alias that matches jsconfig.json
+import PersonalDetails from "@/components/Loan/components/PersonalDetails.jsx";
+import IdentityDetails from "@/components/Loan/components/IdentityDetails.jsx";
+import AddressDetails from "@/components/Loan/components/AddressDetails.jsx";
+import EmployeeDetails from "@/components/Loan/components/EmployeeDetails.jsx";
+import LoanAmount from "@/components/Loan/components/LoanAmount.jsx";
 import {
     LoanApplicationProvider,
     LoanApplicationContext,

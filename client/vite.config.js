@@ -7,12 +7,6 @@ export default defineConfig({
     resolve: {
         alias: {
             "@": path.resolve(__dirname, "./src"),
-            "@components": path.resolve(__dirname, "./src/components"),
-            "@loan": path.resolve(__dirname, "./src/components/Loan"),
-            "@loanComponents": path.resolve(
-                __dirname,
-                "./src/components/Loan/components"
-            ),
         },
         extensions: [".js", ".jsx", ".ts", ".tsx", ".json"],
     },
@@ -20,7 +14,7 @@ export default defineConfig({
     build: {
         outDir: "dist",
         assetsDir: "assets",
-        sourcemap: false, // Set to true for debugging production builds
+        sourcemap: false,
         rollupOptions: {
             output: {
                 manualChunks: {
