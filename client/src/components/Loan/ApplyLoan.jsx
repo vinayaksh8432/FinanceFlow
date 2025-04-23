@@ -11,11 +11,12 @@ import { FaRegAddressCard } from "react-icons/fa6";
 import { MdOutlineHomeWork } from "react-icons/md";
 import { PiBuildingOffice } from "react-icons/pi";
 import { BsFileEarmarkText } from "react-icons/bs";
-import PersonalDetails from "@/components/Loan/components/PersonalDetails";
-import IdentityDetails from "@/components/Loan/components/IdentityDetails";
-import AddressDetails from "@/components/Loan/components/AddressDetails";
-import EmployeeDetails from "@/components/Loan/components/EmployeeDetails";
-import LoanAmount from "@/components/Loan/components/LoanAmount";
+// Import directly using relative paths with explicit file extensions
+import PersonalDetails from "./components/PersonalDetails.jsx";
+import IdentityDetails from "./components/IdentityDetails.jsx";
+import AddressDetails from "./components/AddressDetails.jsx";
+import EmployeeDetails from "./components/EmployeeDetails.jsx";
+import LoanAmount from "./components/LoanAmount.jsx";
 import {
     LoanApplicationProvider,
     LoanApplicationContext,
