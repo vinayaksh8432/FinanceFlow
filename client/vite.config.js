@@ -7,10 +7,15 @@ export default defineConfig({
     resolve: {
         alias: {
             "@": path.resolve(__dirname, "./src"),
+            "@components": path.resolve(__dirname, "./src/components"),
+            "@loan": path.resolve(__dirname, "./src/components/Loan"),
+            "@loanComponents": path.resolve(
+                __dirname,
+                "./src/components/Loan/components"
+            ),
         },
         extensions: [".js", ".jsx", ".ts", ".tsx", ".json"],
     },
-    // Add base and build configuration for Vercel deployment
     base: "./",
     build: {
         outDir: "dist",

@@ -11,11 +11,14 @@ import { FaRegAddressCard } from "react-icons/fa6";
 import { MdOutlineHomeWork } from "react-icons/md";
 import { PiBuildingOffice } from "react-icons/pi";
 import { BsFileEarmarkText } from "react-icons/bs";
-import PersonalDetails from "@/components/Loan/components/PersonalDetails.jsx";
-import IdentityDetails from "@/components/Loan/components/IdentityDetails.jsx";
-import AddressDetails from "@/components/Loan/components/AddressDetails.jsx";
-import EmployeeDetails from "@/components/Loan/components/EmployeeDetails.jsx";
-import LoanAmount from "@/components/Loan/components/LoanAmount.jsx";
+// Use the new aliases defined in vite.config.js
+import {
+    PersonalDetails,
+    IdentityDetails,
+    AddressDetails,
+    EmployeeDetails,
+    LoanAmount,
+} from "@loanComponents/index.js";
 import {
     LoanApplicationProvider,
     LoanApplicationContext,
