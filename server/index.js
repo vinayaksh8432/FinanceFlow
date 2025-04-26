@@ -24,7 +24,9 @@ console.log("dirname", __dirname);
 const allowedOrigins = [
     "http://localhost:5173",
     "http://localhost:5174",
+    "https://finance-flow-brown.vercel.app",
     "https://financeflow-brown.vercel.app",
+    "https://financeflow-lovat.vercel.app",
 ];
 app.use("/uploads", express.static(path.join(__dirname, "/public/uploads")));
 

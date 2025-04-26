@@ -47,14 +47,32 @@ export default function LoginComponent() {
 
     const checkAuthStatus = async () => {
         try {
+            // Add debug logging to help diagnose the issue
+            console.log(
+                "Checking auth status with URL:",
+                `${getBackendUrl()}/api/users/`
+            );
+
             const response = await fetch(`${getBackendUrl()}/api/users/`, {
+                method: "GET",
                 credentials: "include",
+                headers: {
+                    Accept: "application/json",
+                    // Add Authorization header if token exists in localStorage
+                    ...(localStorage.getItem("token") && {
+                        Authorization: `Bearer ${localStorage.getItem(
+                            "token"
+                        )}`,
+                    }),
+                },
             });
+
             if (response.ok) {
                 navigate("/dashboard");
             }
         } catch (error) {
             console.error("Auth check failed:", error);
+            // Don't show error to user during initial auth check
         }
     };
 
