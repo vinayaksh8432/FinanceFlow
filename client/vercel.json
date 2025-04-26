@@ -4,10 +4,7 @@
             "source": "/api/:path*",
             "destination": "https://financeflow-server-brown.vercel.app/api/:path*"
         },
-        {
-            "source": "/((?!\\.).*)",
-            "destination": "/index.html"
-        }
+        { "source": "/(.*)", "destination": "/index.html" }
     ],
     "headers": [
         {
