@@ -45,17 +45,60 @@ app.use(
         },
         credentials: true,
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+        allowedHeaders: [
+            "Content-Type",
+            "Authorization",
+            "X-Requested-With",
+            "Accept",
+        ],
+        exposedHeaders: [
+            "Content-Length",
+            "X-Requested-With",
+            "Access-Control-Allow-Origin",
+        ],
+        maxAge: 86400, // 24 hours in seconds
     })
 );
 
 // Handle preflight OPTIONS requests separately for better browser compatibility
-app.options("*", cors());
+app.options("*", (req, res) => {
+    const origin = req.headers.origin;
+    if (origin && allowedOrigins.includes(origin)) {
+        res.header("Access-Control-Allow-Origin", origin);
+        res.header("Access-Control-Allow-Credentials", "true");
+        res.header(
+            "Access-Control-Allow-Methods",
+            "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS"
+        );
+        res.header(
+            "Access-Control-Allow-Headers",
+            "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+        );
+        res.header("Access-Control-Max-Age", "86400"); // 24 hours in seconds
+    }
+    res.status(204).end();
+});
 
 // Add CORS debugging information to all responses
 app.use((req, res, next) => {
     // Log request details
     console.log(`${req.method} ${req.url} from origin: ${req.headers.origin}`);
+
+    // Add explicit CORS headers to every response for additional security
+    const origin = req.headers.origin;
+    if (origin && allowedOrigins.includes(origin)) {
+        res.header("Access-Control-Allow-Origin", origin);
+        res.header("Access-Control-Allow-Credentials", "true");
+        res.header(
+            "Access-Control-Allow-Methods",
+            "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS"
+        );
+        res.header(
+            "Access-Control-Allow-Headers",
+            "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+        );
+    }
+
     next();
 });
 
