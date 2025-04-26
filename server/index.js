@@ -22,9 +22,7 @@ app.use(cookieParser());
 const allowedOrigins = [
     "http://localhost:5173",
     "http://localhost:5174",
-    "https://finance-flow-brown.vercel.app",
-    "https://financeflow-brown.vercel.app",
-    "https://financeflow-lovat.vercel.app",
+    "https://financeflow-white.vercel.app/",
 ];
 
 // Use the cors package explicitly with proper options
@@ -81,6 +79,12 @@ app.get("/api/test-cors", (req, res) => {
 });
 
 // API routes
+app.get("/", (req, res) => {
+    res.send("Welcome to the FinanceFlow API!");
+});
+app.get("/api", (req, res) => {
+    res.send("Welcome to the FinanceFlow API!");
+});
 app.use("/api/users", authRoutes);
 app.use("/api/loan-types", loanTypesRoutes);
 app.use("/api/loan-applications", loanApplicationRoutes);
