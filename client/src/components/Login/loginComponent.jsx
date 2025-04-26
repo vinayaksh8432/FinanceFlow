@@ -47,32 +47,55 @@ export default function LoginComponent() {
 
     const checkAuthStatus = async () => {
         try {
-            // Add debug logging to help diagnose the issue
+            // Skip auth check if there's no token
+            if (!localStorage.getItem("token")) {
+                return;
+            }
+
             console.log(
                 "Checking auth status with URL:",
                 `${getBackendUrl()}/api/users/`
             );
+            console.log(
+                "Using token:",
+                localStorage.getItem("token")?.substring(0, 10) + "..."
+            );
 
-            const response = await fetch(`${getBackendUrl()}/api/users/`, {
+            const response = await fetch(`${getBackendUrl()}/api/test-cors`, {
                 method: "GET",
-                credentials: "include",
+                mode: "cors",
                 headers: {
                     Accept: "application/json",
-                    // Add Authorization header if token exists in localStorage
-                    ...(localStorage.getItem("token") && {
-                        Authorization: `Bearer ${localStorage.getItem(
-                            "token"
-                        )}`,
-                    }),
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
             });
 
+            // If CORS test passes, try actual auth check
             if (response.ok) {
-                navigate("/dashboard");
+                console.log("CORS test successful, checking actual auth...");
+                const authResponse = await fetch(
+                    `${getBackendUrl()}/api/users/`,
+                    {
+                        method: "GET",
+                        mode: "cors",
+                        headers: {
+                            Accept: "application/json",
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${localStorage.getItem(
+                                "token"
+                            )}`,
+                        },
+                    }
+                );
+
+                if (authResponse.ok) {
+                    navigate("/dashboard");
+                }
             }
         } catch (error) {
             console.error("Auth check failed:", error);
-            // Don't show error to user during initial auth check
+            // Don't display errors to the user for initial auth check
         }
     };
 
