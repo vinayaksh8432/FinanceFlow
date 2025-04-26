@@ -22,7 +22,8 @@ app.use(cookieParser());
 const allowedOrigins = [
     "http://localhost:5173",
     "http://localhost:5174",
-    "https://financeflow-white.vercel.app/",
+    "https://financeflow-white.vercel.app",
+    "https://financeflowserver.vercel.app",
 ];
 
 // Use the cors package explicitly with proper options
