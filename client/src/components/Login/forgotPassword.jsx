@@ -4,16 +4,24 @@ import { ring } from "ldrs";
 import { WarningCircle } from "@phosphor-icons/react";
 import ConfirmPassword from "./confirmPassword";
 import { resetPassword } from "@/utils/api";
+import { useLocation, useNavigate } from "react-router-dom";
+
+// Utility to ensure no trailing slashes in backend URL
+const getBackendUrl = () => {
+    return import.meta.env.VITE_BACKEND_URL
+        ? import.meta.env.VITE_BACKEND_URL.replace(/\/$/, "")
+        : "";
+};
 
 export default function ForgotPassword() {
+    const location = useLocation();
+    const navigate = useNavigate();
+
     const checkAuthStatus = async () => {
         try {
-            const response = await fetch(
-                `${import.meta.env.VITE_BACKEND_URL}/api/users/`,
-                {
-                    credentials: "include",
-                }
-            );
+            const response = await fetch(`${getBackendUrl()}/api/users/`, {
+                credentials: "include",
+            });
             if (response.ok) {
                 navigate("/dashboard");
             }
@@ -76,7 +84,7 @@ export default function ForgotPassword() {
 
         try {
             const response = await fetch(
-                `${import.meta.env.VITE_BACKEND_URL}/api/users/resend-otp`, // Updated endpoint
+                `${getBackendUrl()}/api/users/resend-otp`, // Updated endpoint
                 {
                     method: "POST",
                     headers: {
@@ -170,7 +178,7 @@ export default function ForgotPassword() {
         setIsLoading(true);
         try {
             const response = await fetch(
-                `${import.meta.env.VITE_BACKEND_URL}/api/users/verify-otp`,
+                `${getBackendUrl()}/api/users/verify-otp`,
                 {
                     method: "POST",
                     headers: {

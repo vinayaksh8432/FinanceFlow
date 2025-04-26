@@ -1,8 +1,8 @@
 import axios from "axios";
 
-// Default to the production backend URL if the environment variable is not set
+// Fix to ensure we never have double slashes in the API URL
 const API_URL = import.meta.env.VITE_BACKEND_URL
-    ? `${import.meta.env.VITE_BACKEND_URL}/api`
+    ? `${import.meta.env.VITE_BACKEND_URL.replace(/\/$/, "")}/api`
     : "/api"; // This will use the proxy defined in vercel.json
 
 const api = axios.create({

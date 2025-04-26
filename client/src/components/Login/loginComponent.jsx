@@ -7,6 +7,13 @@ import { ring } from "ldrs";
 import { WarningCircle } from "@phosphor-icons/react";
 import { login } from "@/utils/api";
 
+// Utility to ensure no trailing slashes in backend URL
+const getBackendUrl = () => {
+    return import.meta.env.VITE_BACKEND_URL
+        ? import.meta.env.VITE_BACKEND_URL.replace(/\/$/, "")
+        : "";
+};
+
 export default function LoginComponent() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -40,12 +47,9 @@ export default function LoginComponent() {
 
     const checkAuthStatus = async () => {
         try {
-            const response = await fetch(
-                `${import.meta.env.VITE_BACKEND_URL}/api/users/`,
-                {
-                    credentials: "include",
-                }
-            );
+            const response = await fetch(`${getBackendUrl()}/api/users/`, {
+                credentials: "include",
+            });
             if (response.ok) {
                 navigate("/dashboard");
             }
@@ -98,7 +102,7 @@ export default function LoginComponent() {
         setIsLoading(true);
         try {
             const response = await fetch(
-                `${import.meta.env.VITE_BACKEND_URL}/api/users/verify-otp`,
+                `${getBackendUrl()}/api/users/verify-otp`,
                 {
                     method: "POST",
                     headers: {
@@ -147,7 +151,7 @@ export default function LoginComponent() {
 
         try {
             const response = await fetch(
-                `${import.meta.env.VITE_BACKEND_URL}/api/users/resend-otp`, // Updated endpoint
+                `${getBackendUrl()}/api/users/resend-otp`, // Updated endpoint
                 {
                     method: "POST",
                     headers: {
