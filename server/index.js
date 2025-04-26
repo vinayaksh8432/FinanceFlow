@@ -21,12 +21,17 @@ app.use(cookieParser());
 // const __dirname = path.dirname(__filename);
 
 console.log("dirname", __dirname);
-const allowedOrigins = ["http://localhost:5173", "http://localhost:5174"];
+const allowedOrigins = [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "https://financeflow-brown.vercel.app",
+];
 app.use("/uploads", express.static(path.join(__dirname, "/public/uploads")));
 
 app.use(
     cors({
         origin: function (origin, callback) {
+            // Allow requests with no origin (like mobile apps or curl requests)
             if (!origin) return callback(null, true);
             if (allowedOrigins.indexOf(origin) === -1) {
                 var msg =
