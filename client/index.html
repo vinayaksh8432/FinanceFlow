@@ -5,6 +5,22 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>FinanceFlow</title>
         <link rel="icon" type="image/x-icon" href="src/assets/logo.svg" />
+        <script>
+            // Check if we were redirected from a 404 page
+            document.addEventListener("DOMContentLoaded", function () {
+                // Get the stored path from sessionStorage
+                var intendedPath = sessionStorage.getItem("intendedPath");
+                if (intendedPath && window.location.pathname === "/") {
+                    // Clear the sessionStorage to prevent future redirects
+                    sessionStorage.removeItem("intendedPath");
+                    sessionStorage.removeItem("redirected");
+
+                    // Use history API to change the URL without reloading the page
+                    // This allows React Router to handle the route properly
+                    history.replaceState(null, "", intendedPath);
+                }
+            });
+        </script>
     </head>
     <body>
         <div id="root"></div>
