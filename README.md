@@ -6,16 +6,17 @@
 
 ![image](https://github.com/user-attachments/assets/5972ea6a-d1d1-4521-b1ce-26121acb6824)
 
- ## 🌟 Features
+## 🌟 Features
 
- -   🔐 **User Authentication** - Secure login and registration
- -   💰 **Loan Management** - Apply for loans, track status, generate PDFs
- -   🛡️ **Insurance Services** - Get quotes and compare providers
- -   📊 **Portfolio Management** - Track financial assets with interactive charts
- -   👤 **Profile Management** - Update personal info and view history
- -   🧑‍💼 **Admin Dashboard** - Manage users and view statistics
- 
- ## 🛠️ Technology Stack
+-   🔐 **User Authentication** - Secure login and registration
+-   💰 **Loan Management** - Apply for loans, track status, generate PDFs
+-   🛡️ **Insurance Services** - Get quotes and compare providers
+-   📊 **Portfolio Management** - Track financial assets with interactive charts
+-   👤 **Profile Management** - Update personal info and view history
+-   🧑‍💼 **Admin Dashboard** - Manage users and view statistics
+
+## 🛠️ Technology Stack
+
  <table>
    <tr>
      <td align="center"><b>Frontend</b></td>
