@@ -5,22 +5,76 @@ const API_URL = import.meta.env.VITE_BACKEND_URL
     ? `${import.meta.env.VITE_BACKEND_URL.replace(/\/$/, "")}/api`
     : "/api"; // This will use the proxy defined in vercel.json
 
+console.log("API utility initialized with URL:", API_URL);
+
 const api = axios.create({
     baseURL: API_URL,
     withCredentials: true,
+    headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+    },
 });
 
-// Add response interceptor to handle common errors like auth issues
-api.interceptors.response.use(
-    (response) => response,
+// Add request interceptor to include auth token
+api.interceptors.request.use(
+    (config) => {
+        // Add authorization header if token exists
+        const token = localStorage.getItem("token");
+        if (token) {
+            config.headers["Authorization"] = `Bearer ${token}`;
+        }
+
+        // Log outgoing requests in development
+        if (import.meta.env.DEV) {
+            console.log(
+                `API Request: ${config.method?.toUpperCase()} ${config.url}`,
+                config
+            );
+        }
+
+        return config;
+    },
     (error) => {
+        console.error("Request configuration error:", error);
+        return Promise.reject(error);
+    }
+);
+
+// Add response interceptor for better error handling
+api.interceptors.response.use(
+    (response) => {
+        // Log successful responses in development
+        if (import.meta.env.DEV) {
+            console.log(
+                `API Response: ${response.status} ${response.config.url}`,
+                response.data
+            );
+        }
+        return response;
+    },
+    (error) => {
+        // Log detailed error information for debugging
+        console.error("API Error:", {
+            url: error.config?.url,
+            method: error.config?.method,
+            status: error.response?.status,
+            data: error.response?.data,
+            message: error.message,
+        });
+
+        // Handle authentication errors
         if (
             error.response?.status === 401 &&
-            window.location.pathname !== "/login"
+            window.location.pathname !== "/login" &&
+            window.location.pathname !== "/register"
         ) {
-            // Redirect to login if unauthorized
+            // Clear token if it's invalid
+            localStorage.removeItem("token");
+            // Redirect to login
             window.location.href = "/login";
         }
+
         return Promise.reject(error);
     }
 );
