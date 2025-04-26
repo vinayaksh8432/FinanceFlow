@@ -9,12 +9,12 @@ const insuranceTypesRoutes = require("./routes/insuranceTypes");
 const insuranceQuotaRoutes = require("./routes/insuranceQuota");
 const loanApplicationRoutes = require("./routes/loanApplication");
 const portfolioRoutes = require("./routes/portfolio");
+const otpRoutes = require("./routes/otp");
 const path = require("path");
-const { fileURLToPath } = require("url");
 
 const app = express();
 
-// Apply basic middleware first
+// Apply basic middleware
 app.use(express.json());
 app.use(cookieParser());
 
@@ -23,24 +23,26 @@ const allowedOrigins = [
     "http://localhost:5173",
     "http://localhost:5174",
     "https://financeflow-white.vercel.app",
-    "https://financeflowserver.vercel.app",
+    "https://www.financeflow-white.vercel.app",
+    process.env.CLIENT_URL,
 ];
 
-// Use the cors package explicitly with proper options
+// Apply CORS configuration
 app.use(
     cors({
         origin: function (origin, callback) {
-            // Allow requests with no origin (like mobile apps or curl requests)
+            // Allow requests with no origin (like mobile apps, Postman, or curl requests)
             if (!origin) return callback(null, true);
 
             if (allowedOrigins.indexOf(origin) !== -1) {
                 callback(null, origin);
             } else {
-                console.log(`Blocked request from origin: ${origin}`);
-                // During development, you might want to allow all origins
-                callback(null, origin); // Comment this in production
-                // Uncomment in production:
+                console.log(
+                    `Blocked request from disallowed origin: ${origin}`
+                );
+                // For security in production, remove this line and uncomment the line below
                 // callback(new Error('Not allowed by CORS'));
+                callback(null, origin); // More permissive during testing
             }
         },
         credentials: true,
@@ -51,56 +53,10 @@ app.use(
             "X-Requested-With",
             "Accept",
         ],
-        exposedHeaders: [
-            "Content-Length",
-            "X-Requested-With",
-            "Access-Control-Allow-Origin",
-        ],
+        exposedHeaders: ["Content-Length", "X-Requested-With"],
         maxAge: 86400, // 24 hours in seconds
     })
 );
-
-// Handle preflight OPTIONS requests separately for better browser compatibility
-app.options("*", (req, res) => {
-    const origin = req.headers.origin;
-    if (origin && allowedOrigins.includes(origin)) {
-        res.header("Access-Control-Allow-Origin", origin);
-        res.header("Access-Control-Allow-Credentials", "true");
-        res.header(
-            "Access-Control-Allow-Methods",
-            "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS"
-        );
-        res.header(
-            "Access-Control-Allow-Headers",
-            "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-        );
-        res.header("Access-Control-Max-Age", "86400"); // 24 hours in seconds
-    }
-    res.status(204).end();
-});
-
-// Add CORS debugging information to all responses
-app.use((req, res, next) => {
-    // Log request details
-    console.log(`${req.method} ${req.url} from origin: ${req.headers.origin}`);
-
-    // Add explicit CORS headers to every response for additional security
-    const origin = req.headers.origin;
-    if (origin && allowedOrigins.includes(origin)) {
-        res.header("Access-Control-Allow-Origin", origin);
-        res.header("Access-Control-Allow-Credentials", "true");
-        res.header(
-            "Access-Control-Allow-Methods",
-            "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS"
-        );
-        res.header(
-            "Access-Control-Allow-Headers",
-            "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-        );
-    }
-
-    next();
-});
 
 // Static file serving
 app.use("/uploads", express.static(path.join(__dirname, "/public/uploads")));
@@ -111,16 +67,6 @@ mongoose
     .connect(process.env.MONGODB_URI)
     .then(() => console.log("Connected to MongoDB"))
     .catch((err) => console.error("Could not connect to MongoDB...", err));
-
-// Test endpoint to verify CORS is working
-app.get("/api/test-cors", (req, res) => {
-    res.json({
-        message: "CORS is working correctly!",
-        origin: req.headers.origin,
-        headers: req.headers,
-        allowedOrigins: allowedOrigins,
-    });
-});
 
 // API routes
 app.get("/", (req, res) => {
@@ -135,6 +81,20 @@ app.use("/api/loan-applications", loanApplicationRoutes);
 app.use("/api/insurance-types", insuranceTypesRoutes);
 app.use("/api/insurance-quotas", insuranceQuotaRoutes);
 app.use("/api/portfolio", portfolioRoutes);
+app.use("/api/otp", otpRoutes);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({
+        success: false,
+        message: "Something went wrong on the server",
+        error:
+            process.env.NODE_ENV === "development"
+                ? err.message
+                : "Internal server error",
+    });
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

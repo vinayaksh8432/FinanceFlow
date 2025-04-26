@@ -14,6 +14,7 @@ const api = axios.create({
         "Content-Type": "application/json",
         Accept: "application/json",
     },
+    timeout: 15000, // 15 seconds timeout for requests
 });
 
 // Add request interceptor to include auth token
@@ -63,16 +64,25 @@ api.interceptors.response.use(
             message: error.message,
         });
 
+        // Handle network errors - these could be due to CORS issues
+        if (error.message === "Network Error") {
+            console.error(
+                "Network Error detected - this could be a CORS issue"
+            );
+            // You might want to notify the user here
+        }
+
         // Handle authentication errors
         if (
             error.response?.status === 401 &&
             window.location.pathname !== "/login" &&
-            window.location.pathname !== "/register"
+            window.location.pathname !== "/register" &&
+            window.location.pathname !== "/"
         ) {
             // Clear token if it's invalid
             localStorage.removeItem("token");
             // Redirect to login
-            window.location.href = "/login";
+            window.location.href = "/login?session=expired";
         }
 
         return Promise.reject(error);

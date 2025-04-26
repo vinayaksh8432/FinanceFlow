@@ -1,14 +1,23 @@
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
+
+// Ensure uploads directory exists
+const uploadDir = path.join(process.cwd(), "public/uploads");
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 // Configure multer storage
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, "public/uploads/"); // Updated to save in public/uploads directory
+        cb(null, uploadDir); // Use the absolute path
     },
     filename: function (req, file, cb) {
         const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-        cb(null, `${uniqueSuffix}-${file.originalname}`);
+        // Sanitize filename to avoid issues
+        const sanitizedName = file.originalname.replace(/[^a-zA-Z0-9.-]/g, "_");
+        cb(null, `${uniqueSuffix}-${sanitizedName}`);
     },
 });
 
@@ -35,6 +44,16 @@ const upload = multer({
 
 // Create middleware function
 const uploadMiddleware = (req, res, next) => {
+    // Special handling for Vercel and other serverless environments
+    if (process.env.NODE_ENV === "production" && process.env.VERCEL) {
+        // For Vercel, we can't directly save files to disk in production
+        // Instead, you might want to use a service like AWS S3, Firebase Storage, etc.
+        // For now, we'll still handle the upload but with a warning
+        console.warn(
+            "Running on Vercel - file uploads will be temporary and may not persist"
+        );
+    }
+
     upload(req, res, function (err) {
         if (err instanceof multer.MulterError) {
             return res.status(400).json({
@@ -49,6 +68,17 @@ const uploadMiddleware = (req, res, next) => {
                 error: err.message,
             });
         }
+
+        // Add the file URL to the request for easier access
+        if (req.file) {
+            const baseUrl =
+                process.env.NODE_ENV === "production"
+                    ? "https://financeflowserver.vercel.app"
+                    : `http://localhost:${process.env.PORT || 3000}`;
+
+            req.file.url = `${baseUrl}/uploads/${req.file.filename}`;
+        }
+
         next();
     });
 };
