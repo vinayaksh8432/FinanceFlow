@@ -127,19 +127,3 @@ FinanceFlow/
     ├── utils/              # Utility functions
     └── index.js            # Entry point
 ```
-
-## 🔒 Authentication
-
-The application uses JWT-based authentication with secure HTTP-only cookies for maintaining user sessions. User passwords are securely hashed using bcrypt before storage.
-
-## 📱 Responsive Design
-
-The application is fully responsive and works on devices of all sizes, from mobile phones to desktop computers.
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📄 License
-
-This project is licensed under the terms found in the LICENSE file in the root directory.
