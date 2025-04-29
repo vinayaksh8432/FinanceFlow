@@ -19,15 +19,14 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Configure CORS with specific allowed origins
-const allowedOrigins = [
-    "http://localhost:5173",
-    "http://localhost:5174",
-    "https://financeflow-white.vercel.app",
-    "https://www.financeflow-white.vercel.app",
-    process.env.CLIENT_URL,
-];
+const allowedOrigins = [process.env.CLIENT_URL].filter(Boolean); // Remove any undefined values
 
-app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
+app.use(
+    cors({
+        origin: allowedOrigins,
+        credentials: true,
+    })
+);
 
 // Static file serving
 app.use("/uploads", express.static(path.join(__dirname, "/public/uploads")));

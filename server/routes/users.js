@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const UserModel = require("../model/users");
-const otpModule = require("../routes/otp");
+const otpRouter = require("../routes/otp");
+const otpModule = otpRouter.utils; // Access the utility functions through the utils property
 const bcrypt = require("bcrypt");
 const authMiddleware = require("../middleware/authMiddleware");
 
