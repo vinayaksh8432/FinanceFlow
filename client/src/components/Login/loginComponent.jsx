@@ -61,16 +61,6 @@ export default function LoginComponent() {
                 localStorage.getItem("token")?.substring(0, 10) + "..."
             );
 
-            const response = await fetch(`${getBackendUrl()}/api/test-cors`, {
-                method: "GET",
-                mode: "cors",
-                headers: {
-                    Accept: "application/json",
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
-            });
-
             // If CORS test passes, try actual auth check
             if (response.ok) {
                 console.log("CORS test successful, checking actual auth...");
