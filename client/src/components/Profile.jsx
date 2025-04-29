@@ -85,7 +85,7 @@ export default function Profile() {
     };
 
     const handleBackToDashboard = () => {
-        navigate("http://localhost:5173/dashboard/home");
+        navigate(`${import.meta.VITE_BACKEND_URL}/dashboard/home`);
     };
 
     const fetchPendingApplications = async () => {

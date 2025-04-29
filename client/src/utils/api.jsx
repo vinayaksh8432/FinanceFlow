@@ -149,13 +149,16 @@ export const rejectLoanApplication = async (applicationId) => {
 
 export const submitLoanApplication = async (formData) => {
     try {
+        // Debug log to see what's being sent
+        console.log("Submitting form data:", [...formData.entries()]);
+
         const response = await api.post("/loan-applications", formData, {
             headers: {
-                // Don't set Content-Type - axios will set it automatically for FormData
-                // Including the boundary parameter
+                // Important: Let axios set the content type for FormData
+                "Content-Type": undefined,
             },
         });
-        console.log("Form data", response.data);
+        console.log("Form submission response:", response.data);
 
         return response.data;
     } catch (error) {

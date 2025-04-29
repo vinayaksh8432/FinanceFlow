@@ -258,7 +258,10 @@ export const LoanApplicationProvider = ({ children }) => {
 
     const submitApplication = useCallback(async () => {
         try {
+            // Create a new FormData object
             const formData = new FormData();
+
+            // Format applicationData to be sent to the server
             const applicationData = {
                 personalDetails: {
                     firstName: loanApplication.FirstName,
@@ -302,13 +305,82 @@ export const LoanApplicationProvider = ({ children }) => {
                 },
             };
 
+            // Add the application data as a JSON string
             formData.append("applicationData", JSON.stringify(applicationData));
 
-            if (loanApplication.DocumentFile) {
+            // Add debug info to track what's happening
+            console.log("Document information:", {
+                hasDocumentFile: !!loanApplication.DocumentFile,
+                documentFileType:
+                    loanApplication.DocumentFile instanceof File
+                        ? "File object"
+                        : typeof loanApplication.DocumentFile,
+                hasDocumentPreview: !!loanApplication.DocumentPreview,
+                documentFileName: loanApplication.DocumentFileName,
+            });
+
+            // Handle file upload - we need to ensure a file is being attached
+            let fileAttached = false;
+
+            // First check if we have a File object directly
+            if (loanApplication.DocumentFile instanceof File) {
+                console.log("Using actual File object");
                 formData.append("document", loanApplication.DocumentFile);
+                fileAttached = true;
+            }
+            // If not, try to convert from data URL if we have a preview
+            else if (
+                loanApplication.DocumentPreview &&
+                loanApplication.DocumentPreview.startsWith("data:")
+            ) {
+                try {
+                    console.log("Converting data URL to file");
+                    const response = await fetch(
+                        loanApplication.DocumentPreview
+                    );
+                    const blob = await response.blob();
+                    const fileName =
+                        loanApplication.DocumentFileName || "document";
+                    const file = new File([blob], fileName, {
+                        type: blob.type,
+                    });
+
+                    console.log("Created file from preview:", {
+                        name: file.name,
+                        type: file.type,
+                        size: file.size,
+                    });
+
+                    formData.append("document", file);
+                    fileAttached = true;
+                } catch (error) {
+                    console.error("Error converting preview to file:", error);
+                    throw new Error(
+                        "Could not process document file. Please try uploading again."
+                    );
+                }
             }
 
+            // If we couldn't attach a file, throw an error
+            if (!fileAttached) {
+                throw new Error(
+                    "Document file is required. Please upload your document."
+                );
+            }
+
+            // For debugging, log the formData entries
+            console.log("Form data entries:");
+            for (let pair of formData.entries()) {
+                console.log(
+                    pair[0],
+                    typeof pair[1],
+                    pair[1] instanceof File ? `File: ${pair[1].name}` : pair[1]
+                );
+            }
+
+            // Submit the form data
             const response = await submitLoanApplication(formData);
+
             if (!response.success) {
                 throw new Error(
                     response.message || "Failed to submit application"

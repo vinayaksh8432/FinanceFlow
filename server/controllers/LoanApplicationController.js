@@ -56,9 +56,10 @@ const submitLoanApplication = async (req, res) => {
             DocumentType: identityDetails.documentType,
             DocumentNumber: identityDetails.documentNumber,
             DocumentFile: {
-                fileName: req.file.filename,
+                fileName: req.file.originalname || "document",
                 fileType: req.file.mimetype,
-                fileData: req.file.path,
+                fileData: req.file.url, // Using Cloudinary URL instead of local path
+                cloudinaryId: req.file.publicId, // Store Cloudinary public ID for future reference
             },
 
             // Address Details

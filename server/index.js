@@ -28,8 +28,7 @@ app.use(
     })
 );
 
-// Static file serving
-app.use("/uploads", express.static(path.join(__dirname, "/public/uploads")));
+// Static file serving - only for assets, uploads now handled by Cloudinary
 app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 
 // Database connection

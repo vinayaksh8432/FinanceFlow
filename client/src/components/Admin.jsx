@@ -87,7 +87,8 @@ export default function Admin({
                 ) : (
                     <iframe
                         src={
-                            "http://localhost:3000/uploads/" + document.fileName
+                            `${import.meta.VITE_BACKEND_URL}/uploads/` +
+                            document.fileName
                         }
                         className="w-full h-64"
                         title="Document Preview"

@@ -1,25 +1,11 @@
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const { uploadToCloudinary } = require("../utils/cloudinary");
 
-// Ensure uploads directory exists
-const uploadDir = path.join(process.cwd(), "public/uploads");
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-// Configure multer storage
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, uploadDir); // Use the absolute path
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-        // Sanitize filename to avoid issues
-        const sanitizedName = file.originalname.replace(/[^a-zA-Z0-9.-]/g, "_");
-        cb(null, `${uniqueSuffix}-${sanitizedName}`);
-    },
-});
+// Always use memory storage for both local and production environments
+// This simplifies our approach by using Cloudinary in all environments
+const storage = multer.memoryStorage();
 
 // Configure multer upload settings
 const upload = multer({
@@ -44,17 +30,7 @@ const upload = multer({
 
 // Create middleware function
 const uploadMiddleware = (req, res, next) => {
-    // Special handling for Vercel and other serverless environments
-    if (process.env.NODE_ENV === "production" && process.env.VERCEL) {
-        // For Vercel, we can't directly save files to disk in production
-        // Instead, you might want to use a service like AWS S3, Firebase Storage, etc.
-        // For now, we'll still handle the upload but with a warning
-        console.warn(
-            "Running on Vercel - file uploads will be temporary and may not persist"
-        );
-    }
-
-    upload(req, res, function (err) {
+    upload(req, res, async function (err) {
         if (err instanceof multer.MulterError) {
             return res.status(400).json({
                 success: false,
@@ -69,17 +45,34 @@ const uploadMiddleware = (req, res, next) => {
             });
         }
 
-        // Add the file URL to the request for easier access
+        // Process the file if it exists
         if (req.file) {
-            const baseUrl =
-                process.env.NODE_ENV === "production"
-                    ? "https://financeflowserver.vercel.app"
-                    : `http://localhost:${process.env.PORT || 3000}`;
+            try {
+                // Upload the file to Cloudinary
+                const result = await uploadToCloudinary(req.file.buffer);
 
-            req.file.url = `${baseUrl}/uploads/${req.file.filename}`;
+                // Add Cloudinary information to the request object
+                req.file.cloudinary = result;
+                req.file.url = result.secure_url;
+                req.file.publicId = result.public_id;
+
+                console.log(
+                    `File uploaded to Cloudinary: ${result.secure_url}`
+                );
+
+                next();
+            } catch (cloudinaryError) {
+                console.error("Cloudinary upload error:", cloudinaryError);
+                return res.status(500).json({
+                    success: false,
+                    message: "Error uploading file to cloud storage",
+                    error: cloudinaryError.message,
+                });
+            }
+        } else {
+            // No file was uploaded, continue to the next middleware
+            next();
         }
-
-        next();
     });
 };
 
