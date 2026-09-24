@@ -18,13 +18,16 @@ const upload = multer({
         } else {
             cb(
                 new Error(
-                    "Invalid file type. Only PDF, JPEG and PNG files are allowed."
-                )
+                    "Invalid file type. Only PDF, JPEG and PNG files are allowed.",
+                ),
             );
         }
     },
     limits: {
         fileSize: 5 * 1024 * 1024, // 5MB limit
+        // Client sends only flat field names; closes CVE-2026-5079 / CVE-2026-82333
+        fieldNestingDepth: 0,
+        fieldArrayIndexLimit: 0,
     },
 }).single("document"); // 'document' matches the field name in FormData
 
@@ -57,7 +60,7 @@ const uploadMiddleware = (req, res, next) => {
                 req.file.publicId = result.public_id;
 
                 console.log(
-                    `File uploaded to Cloudinary: ${result.secure_url}`
+                    `File uploaded to Cloudinary: ${result.secure_url}`,
                 );
 
                 next();

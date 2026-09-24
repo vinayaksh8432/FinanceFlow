@@ -48,7 +48,7 @@ export default function Menu({ isCollapsed }) {
                 {menuItems.map((item) => (
                     <NavLink
                         key={item.path}
-                        to={item.path}
+                        to={`/dashboard/${item.path}`}
                         className={({ isActive }) => `
                             flex items-center
                             transition-all duration-300
